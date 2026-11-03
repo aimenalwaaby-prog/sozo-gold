@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Yuklanmoqda...",
     "error": "Xatolik yuz berdi",
@@ -787,7 +787,8 @@
     "tint_nav": "Panelni ranglash",
     "tint_nav_desc": "Tanlangan bo'limni oq emas, o'z rangingizda ko'rsatish",
     "shuffle": "Keyingi rangni sinash",
-    "shuffle_desc": "Palitrani birma-bir aylanib chiqish"
+    "shuffle_desc": "Palitrani birma-bir aylanib chiqish",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Qidirish",

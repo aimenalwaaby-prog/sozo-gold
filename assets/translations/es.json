@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Cargando…",
     "error": "Algo salió mal",
@@ -787,7 +787,8 @@
     "tint_nav": "Colorear la barra de pestañas",
     "tint_nav_desc": "Pinta la pestaña activa con tu acento en lugar de blanco",
     "shuffle": "Probar el siguiente color",
-    "shuffle_desc": "Recorre la paleta acento a acento"
+    "shuffle_desc": "Recorre la paleta acento a acento",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Buscar",

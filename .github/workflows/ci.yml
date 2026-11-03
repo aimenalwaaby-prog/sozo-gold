@@ -4,19 +4,13 @@ name: CI
 # only ever ran on whichever machine happened to run them — which means a PR
 # from somebody else arrived with no evidence at all that it built.
 #
-# `push` is the default branch only, on purpose. It used to be every branch,
-# and with `pull_request` alongside it every push to a branch with a PR open ran
-# the whole thing TWICE: two analyses and two Android builds, about twenty-four
-# runner-minutes where twelve would do. The pair covers everything between them
-# — a branch with a PR is covered by `pull_request`, a push straight to the
-# default branch by `push` — and nothing is covered twice.
-#
-# A branch with no PR yet now gets no CI. That is the intended trade: it is the
-# state where nobody is waiting on a verdict, and opening the PR runs it.
+# Push CI runs on the upstream default branch and Sozo Gold development/stable
+# branches. Pull requests are covered once by `pull_request`; concurrency cancels
+# stale runs so parallel builds do not waste runner time.
 
 on:
   push:
-    branches: [master]
+    branches: [master, gold-development, gold-stable]
     tags-ignore: ['v*']      # a tag push is a release; release.yml owns that
   pull_request:
 

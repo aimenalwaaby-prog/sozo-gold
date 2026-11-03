@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Tê barkirin...",
     "error": "Tiştek xelet çû",
@@ -787,7 +787,8 @@
     "tint_nav": "Darika tabê reng bike",
     "tint_nav_desc": "Taba hilbijartî li şûna spî bi rengê xwe yê taybet boyax bike",
     "shuffle": "Rengê din biceribîne",
-    "shuffle_desc": "Yek bi yek di nav paletê de biçe"
+    "shuffle_desc": "Yek bi yek di nav paletê de biçe",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Lêgerîn",

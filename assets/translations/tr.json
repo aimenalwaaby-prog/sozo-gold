@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Yükleniyor…",
     "error": "Bir şeyler ters gitti",
@@ -787,7 +787,8 @@
     "tint_nav": "Sekme çubuğunu renklendir",
     "tint_nav_desc": "Seçili sekmeyi beyaz yerine vurgu renginle boyar",
     "shuffle": "Sıradaki rengi dene",
-    "shuffle_desc": "Paleti tek tek gez"
+    "shuffle_desc": "Paleti tek tek gez",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Arama",

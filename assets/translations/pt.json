@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Carregando…",
     "error": "Algo deu errado",
@@ -787,7 +787,8 @@
     "tint_nav": "Colorir a barra de abas",
     "tint_nav_desc": "Pinta a aba selecionada com sua cor de destaque em vez de branco",
     "shuffle": "Testar a próxima cor",
-    "shuffle_desc": "Percorra a paleta uma cor por vez"
+    "shuffle_desc": "Percorra a paleta uma cor por vez",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Buscar",

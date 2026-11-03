@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Memuat…",
     "error": "Ada yang tidak beres",
@@ -787,7 +787,8 @@
     "tint_nav": "Warnai bilah tab",
     "tint_nav_desc": "Mewarnai tab terpilih dengan aksenmu, bukan putih",
     "shuffle": "Coba warna berikutnya",
-    "shuffle_desc": "Telusuri palet satu aksen demi satu"
+    "shuffle_desc": "Telusuri palet satu aksen demi satu",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Cari",

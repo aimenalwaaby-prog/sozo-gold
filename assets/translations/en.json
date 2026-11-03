@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Loading...",
     "error": "Something went wrong",
@@ -756,6 +756,7 @@
     "material_you": "Material You",
     "material_you_desc": "Colour from your wallpaper",
     "accent_red": "Sozo Red",
+    "accent_gold": "Sozo Gold",
     "accent_ember": "Ember",
     "accent_amber": "Amber",
     "accent_emerald": "Emerald",

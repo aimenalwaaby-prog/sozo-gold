@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Wird geladen …",
     "error": "Etwas ist schiefgelaufen",
@@ -787,7 +787,8 @@
     "tint_nav": "Tab-Leiste einfärben",
     "tint_nav_desc": "Färbt den aktiven Tab in deinem Akzent statt in Weiß",
     "shuffle": "Nächste Farbe probieren",
-    "shuffle_desc": "Geh die Palette Akzent für Akzent durch"
+    "shuffle_desc": "Geh die Palette Akzent für Akzent durch",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Suche",

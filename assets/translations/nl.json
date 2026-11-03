@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Laden…",
     "error": "Er ging iets mis",
@@ -787,7 +787,8 @@
     "tint_nav": "Tabbalk inkleuren",
     "tint_nav_desc": "Kleurt het gekozen tabblad in je accent in plaats van wit",
     "shuffle": "Volgende kleur proberen",
-    "shuffle_desc": "Loop het palet accent voor accent door"
+    "shuffle_desc": "Loop het palet accent voor accent door",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Zoeken",

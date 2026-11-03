@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "Chargement…",
     "error": "Un problème est survenu",
@@ -787,7 +787,8 @@
     "tint_nav": "Colorer la barre d’onglets",
     "tint_nav_desc": "Peint l’onglet actif dans ton accent au lieu du blanc",
     "shuffle": "Essayer la couleur suivante",
-    "shuffle_desc": "Parcours la palette accent par accent"
+    "shuffle_desc": "Parcours la palette accent par accent",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "Recherche",

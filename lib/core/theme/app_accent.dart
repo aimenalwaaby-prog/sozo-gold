@@ -71,21 +71,26 @@ class AppAccent {
 
   bool get isSystem => id == systemId;
 
-  /// The accent the app has always shipped. Also the value a corrupt or
-  /// unknown stored id falls back to, so a bad preference can never leave the
-  /// app unthemed.
+  /// Sozo Gold's default metallic-gold accent. The original Sozo red remains
+  /// available as a distinct preset and is retained for destructive states.
   static const AppAccent fallback = AppAccent(
-    id: 'red',
-    base: Color(0xFFE50914),
-    dark: Color(0xFFB20710),
-    light: Color(0xFFFF4B55),
+    id: 'gold',
+    base: Color(0xFFA66A00),
+    dark: Color(0xFF815200),
+    light: Color(0xFFD19439),
   );
 
-  /// The swatch row, in hue order starting from the default red. Slate sits
+  /// The swatch row, in hue order starting from Sozo Gold. Slate sits
   /// last on purpose: it is the "no colour" choice and reads as the end of the
   /// wheel rather than a hue on it.
   static const List<AppAccent> presets = <AppAccent>[
     fallback,
+    AppAccent(
+      id: 'red',
+      base: Color(0xFFE50914),
+      dark: Color(0xFFB20710),
+      light: Color(0xFFFF4B55),
+    ),
     AppAccent(
       id: 'ember',
       base: Color(0xFFED4700),

@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ ما",
@@ -756,6 +756,7 @@
     "material_you": "Material You",
     "material_you_desc": "ألوان من خلفية الشاشة",
     "accent_red": "أحمر Sozo",
+    "accent_gold": "Sozo Gold الذهبي",
     "accent_ember": "جمري",
     "accent_amber": "كهرماني",
     "accent_emerald": "زمردي",

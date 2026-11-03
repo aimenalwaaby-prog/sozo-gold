@@ -1,5 +1,5 @@
 {
-  "app_name": "Sozo",
+  "app_name": "Sozo Gold",
   "general": {
     "loading": "載入緊…",
     "error": "出咗啲問題",
@@ -787,7 +787,8 @@
     "tint_nav": "為分頁列上色",
     "tint_nav_desc": "揀咗嗰個分頁用你嘅主色，唔用白色",
     "shuffle": "試下一隻色",
-    "shuffle_desc": "喺調色盤入面逐隻主色行過"
+    "shuffle_desc": "喺調色盤入面逐隻主色行過",
+    "accent_gold": "Sozo Gold"
   },
   "search": {
     "title": "搜尋",

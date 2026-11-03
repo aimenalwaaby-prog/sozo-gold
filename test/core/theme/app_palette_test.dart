@@ -16,11 +16,11 @@ void main() {
     );
   });
 
-  group('default palette is byte-identical to the shipped constants', () {
+  group('default palette uses Sozo Gold branding while preserving neutral constants', () {
     test('accent triple', () {
-      expect(AppColors.primary, const Color(0xFFE50914));
-      expect(AppColors.primaryDark, const Color(0xFFB20710));
-      expect(AppColors.primaryLight, const Color(0xFFFF4B55));
+      expect(AppColors.primary, const Color(0xFFA66A00));
+      expect(AppColors.primaryDark, const Color(0xFF815200));
+      expect(AppColors.primaryLight, const Color(0xFFD19439));
     });
 
     test('neutral ramp', () {
@@ -35,7 +35,7 @@ void main() {
 
     test('fixed roles are untouched by the accent', () {
       expect(AppColors.error, const Color(0xFFE50914));
-      // The exact old primaryLight — the "wrong answer" / "failed" states used
+      // The original red remains the fixed error colour. The "wrong answer" / "failed" states used
       // to borrow it, and must render identically now they point at error.
       expect(AppColors.errorLight, const Color(0xFFFF4B55));
       expect(AppColors.success, const Color(0xFF46D369));
@@ -54,12 +54,12 @@ void main() {
       expect(AppColors.primaryLight, isNot(AppColors.errorLight));
     });
 
-    test('hero gradient reproduces the old literal stops', () {
-      // Was hard-coded as [#1E1416, #181818, #101010] in profile_page.dart.
+    test('hero gradient follows the gold brand hue', () {
+      // Gold accent tint is derived from the selected accent hue.
       final top = AppColors.heroTop;
       expect(top.r * 255, closeTo(0x1E, 1.0));
-      expect(top.g * 255, closeTo(0x14, 1.0));
-      expect(top.b * 255, closeTo(0x16, 2.0));
+      expect(top.g * 255, closeTo(0x1A, 1.0));
+      expect(top.b * 255, closeTo(0x14, 2.0));
       expect(AppColors.heroMid, const Color(0xFF181818));
       expect(AppColors.heroBottom, const Color(0xFF101010));
     });
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('the accent is untouched by the darkness level', () {
-      expect(AppColors.primary, const Color(0xFFE50914));
+      expect(AppColors.primary, const Color(0xFFA66A00));
     });
 
     test('hero gradient bottoms out at true black', () {
@@ -149,7 +149,9 @@ void main() {
     test('preset ids are unique and stable', () {
       final ids = AppAccent.presets.map((a) => a.id).toList();
       expect(ids.toSet().length, ids.length);
-      expect(ids.first, 'red', reason: 'the default must stay first');
+      expect(ids.first, 'gold', reason: 'Sozo Gold is the default accent');
+      final originalRed = AppAccent.byId('red');
+      expect(originalRed?.base, const Color(0xFFE50914));
       expect(ids, isNot(contains(AppAccent.customId)));
     });
   });
@@ -244,7 +246,7 @@ void main() {
       );
       expect(AppColors.isNavTinted, isTrue);
       // ...and changes nothing else.
-      expect(AppColors.primary, const Color(0xFFE50914));
+      expect(AppColors.primary, const Color(0xFFA66A00));
       expect(AppColors.background, const Color(0xFF181818));
     });
 
