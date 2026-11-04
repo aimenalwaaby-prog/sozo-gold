@@ -106,16 +106,10 @@ class StremioAddonClient {
   }
 
   Future<Map<String, dynamic>> _getJson(Uri uri) async {
-    final cancelToken = CancelToken();
     final response = await _dio.getUri<Object?>(uri,
       options: Options(responseType: ResponseType.bytes, followRedirects: false,
         receiveDataWhenStatusError: false, connectTimeout: connectTimeout,
-        receiveTimeout: receiveTimeout, onReceiveProgress: (received, total) {
-          if (received > maxResponseBytes) {
-            cancelToken.cancel('Addon response exceeds configured size limit.');
-          }
-        }),
-      cancelToken: cancelToken);
+        receiveTimeout: receiveTimeout));
     final data = response.data;
     if (data is! List<int> || data.length > maxResponseBytes) {
       throw const StremioAddonException('Response is not bytes or exceeds size limit.');

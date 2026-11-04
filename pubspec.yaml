@@ -78,6 +78,9 @@ dependencies:
   # Local Storage
   hive_flutter: ^1.1.0
   flutter_secure_storage: ^9.2.2
+  # StremioAddonStore imports Hive directly; do not rely on hive_flutter's
+  # transitive export for analyzer or future dependency resolution.
+  hive: ^2.2.3
 
   # Security
   crypto: ^3.0.6

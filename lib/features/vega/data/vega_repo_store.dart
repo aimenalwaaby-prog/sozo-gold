@@ -155,7 +155,7 @@ class VegaRepoStore {
   /// Removes just one provider, leaving its repository and siblings untouched.
   Future<void> removeProvider(String repoId, String value) async {
     final next = providers.where((VegaProvider p) =>
-      !(p.repoId == repoId && p.value == value)).toList();
+        !(p.repoId == repoId && p.value == value)).toList();
     await _writeProviders(next);
   }
 
@@ -192,7 +192,9 @@ class VegaRepoStore {
         final version = entry['version'];
         final type = entry['type'];
         if (displayName is! String || displayName.trim().isEmpty ||
-            version is! String || type is! String) continue;
+            version is! String || type is! String) {
+          continue;
+        }
         if (entry['icon'] != null && entry['icon'] is! String) continue;
         final modules = <String, String>{};
         for (final group in vegaRequiredModuleGroups) {
