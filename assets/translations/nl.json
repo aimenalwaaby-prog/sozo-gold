@@ -1186,6 +1186,8 @@
     "source_removed": "Bron verwijderd.",
     "recommended": "AANBEVOLEN",
     "installed_sources": "GEÏNSTALLEERDE BRONNEN",
+    "installed_extensions": "GEÏNSTALLEERDE EXTENSIES",
+    "remove_extension_confirm": "Hiermee wordt alleen deze extensie uit de app verwijderd. De repository en overige extensies blijven geïnstalleerd.",
     "source_settings": "BRONINSTELLINGEN",
     "no_sources": "Nog geen bronnen",
     "show_nsfw": "Bronnen voor volwassenen",

@@ -110,6 +110,43 @@ class MangaRepoManager(private val context: Context, private val host: MangaHost
         return JSONObject().apply { put("repos", JSONArray(repos)) }.toString()
     }
 
+    /** Removes one installed extension package without removing its repository. */
+    @Synchronized
+    fun removeExtension(pkg: String): String {
+        val packageName = pkg.trim()
+        require(packageName.isNotEmpty()) { "Extension package is required" }
+        val meta = loadMeta()
+        val removedIds = mutableListOf<String>()
+        val apkUrls = linkedSetOf<String>()
+        var removed = 0
+        for (repo in savedRepos()) {
+            val entries = meta.optJSONArray(repo) ?: continue
+            val kept = JSONArray()
+            for (i in 0 until entries.length()) {
+                val entry = entries.optJSONObject(i) ?: continue
+                if (entry.optString("pkg") == packageName) {
+                    entry.optString("id").takeIf { it.isNotEmpty() }?.let(removedIds::add)
+                    entry.optString("apkUrl").takeIf { it.isNotEmpty() }?.let(apkUrls::add)
+                    removed++
+                } else {
+                    kept.put(entry)
+                }
+            }
+            if (kept.length() == 0) meta.remove(repo) else meta.put(repo, kept)
+        }
+        if (removed > 0) {
+            saveMeta(meta)
+            // Evict runtime instances and their cached APK while metadata is still
+            // registered, then remove any remaining provider identities.
+            apkUrls.forEach(host::dropCachedApk)
+            host.removeSources(removedIds)
+        }
+        return JSONObject().apply {
+            put("removed", removed)
+            put("pkg", packageName)
+        }.toString()
+    }
+
     @Synchronized
     fun addRepo(input: String, progress: ((Int, Int) -> Unit)? = null): JSONObject {
         val result = addRepoInternal(input, progress)

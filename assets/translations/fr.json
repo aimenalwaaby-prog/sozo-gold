@@ -1186,6 +1186,8 @@
     "source_removed": "Source supprimée.",
     "recommended": "RECOMMANDÉ",
     "installed_sources": "SOURCES INSTALLÉES",
+    "installed_extensions": "EXTENSIONS INSTALLÉES",
+    "remove_extension_confirm": "Cette opération supprime uniquement cette extension de l’application. Le dépôt et ses autres extensions resteront installés.",
     "source_settings": "RÉGLAGES DE LA SOURCE",
     "no_sources": "Aucune source pour l’instant",
     "show_nsfw": "Sources pour adultes",

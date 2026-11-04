@@ -102,6 +102,68 @@ class _MangaSourcesPageState extends State<MangaSourcesPage> {
       ? _sources
       : _sources.where((s) => s['nsfw'] != true).toList();
 
+  /// The native runtime exposes source rows, while install/uninstall operates
+  /// on the extension APK package that can publish several source rows.
+  List<Map<String, dynamic>> get _installedExtensions {
+    final byPackage = <String, Map<String, dynamic>>{};
+    for (final source in _sources) {
+      final pkg = (source['pkg'] as String? ?? '').trim();
+      if (pkg.isNotEmpty) byPackage.putIfAbsent(pkg, () => source);
+    }
+    return byPackage.values.toList()
+      ..sort((a, b) =>
+          (a['name'] as String? ?? '').compareTo(b['name'] as String? ?? ''));
+  }
+
+  Future<void> _removeExtension(Map<String, dynamic> source) async {
+    final pkg = (source['pkg'] as String? ?? '').trim();
+    if (pkg.isEmpty || _busy) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('general.remove'.tr()),
+        content: Text('manga.remove_extension_confirm'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('general.cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('general.remove'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() {
+      _busy = true;
+      _status = 'manga.installing'.tr();
+      _statusError = false;
+    });
+    try {
+      final result = await MangaChannel.removeExtension(pkg);
+      final removed = (result['removed'] as num?)?.toInt() ?? 0;
+      if (removed == 0) throw StateError('Extension was not installed');
+      if (!mounted) return;
+      _reloadProviders();
+      await _refresh();
+      if (!mounted) return;
+      setState(() {
+        _statusError = false;
+        _status = 'manga.source_removed'.tr();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _statusError = true;
+        _status = 'manga.error_prefix'.tr(args: ['$e']);
+      });
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _setShowNsfw(bool value) async {
     await _hive.setShowAdultContent(value);
     if (!mounted) return;
@@ -262,6 +324,22 @@ class _MangaSourcesPageState extends State<MangaSourcesPage> {
           ),
           const SizedBox(height: 8),
           if (_repos.isEmpty) _empty() else ..._repos.map(_repoTile),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Text('manga.installed_extensions'.tr(),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.textHint, letterSpacing: 1)),
+              const Spacer(),
+              Text('${_installedExtensions.length}',
+                  style: const TextStyle(color: AppColors.textHint)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (_installedExtensions.isEmpty)
+            _empty()
+          else
+            ..._installedExtensions.map(_extensionTile),
           if (visibleSources.isNotEmpty) ...[
             const SizedBox(height: 24),
             Row(
@@ -538,6 +616,43 @@ class _MangaSourcesPageState extends State<MangaSourcesPage> {
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
             onPressed: _busy ? null : () => _remove(url),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _extensionTile(Map<String, dynamic> source) {
+    final name = (source['name'] as String?) ?? '';
+    final pkg = (source['pkg'] as String?) ?? '';
+    final lang = (source['lang'] as String?)?.toUpperCase() ?? '';
+    final repo = (source['repo'] as String?) ?? '';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          leading: Icon(Icons.extension_rounded, color: _accent),
+          title: Text(name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600)),
+          subtitle: Text(
+            [if (lang.isNotEmpty) lang, pkg, if (repo.isNotEmpty) repo]
+                .join(' · '),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: AppColors.textHint, fontSize: 11),
+          ),
+          trailing: IconButton(
+            tooltip: 'general.remove'.tr(),
+            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+            onPressed: _busy ? null : () => _removeExtension(source),
           ),
         ),
       ),

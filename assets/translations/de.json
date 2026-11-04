@@ -1186,6 +1186,8 @@
     "source_removed": "Quelle entfernt.",
     "recommended": "EMPFOHLEN",
     "installed_sources": "INSTALLIERTE QUELLEN",
+    "installed_extensions": "INSTALLIERTE ERWEITERUNGEN",
+    "remove_extension_confirm": "Diese Erweiterung wird nur aus der App entfernt. Das Repository und seine übrigen Erweiterungen bleiben installiert.",
     "source_settings": "QUELLENEINSTELLUNGEN",
     "no_sources": "Noch keine Quellen",
     "show_nsfw": "Quellen für Erwachsene",

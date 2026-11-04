@@ -1186,6 +1186,8 @@
     "source_removed": "Source removed.",
     "recommended": "RECOMMENDED",
     "installed_sources": "INSTALLED SOURCES",
+    "installed_extensions": "INSTALLED EXTENSIONS",
+    "remove_extension_confirm": "This removes only this extension from the app. Its repository and other extensions will stay installed.",
     "source_settings": "SOURCE SETTINGS",
     "no_sources": "No sources yet",
     "show_nsfw": "Adult sources",

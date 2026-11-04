@@ -1186,6 +1186,8 @@
     "source_removed": "已移除來源。",
     "recommended": "推薦",
     "installed_sources": "已安裝來源",
+    "installed_extensions": "已安裝嘅擴充功能",
+    "remove_extension_confirm": "呢個操作只會喺應用程式移除呢個擴充功能，來源庫同其他擴充功能會保留。",
     "source_settings": "來源設定",
     "no_sources": "仲未有來源",
     "show_nsfw": "成人來源",

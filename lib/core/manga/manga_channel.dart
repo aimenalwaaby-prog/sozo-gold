@@ -103,6 +103,11 @@ class MangaChannel {
   static Future<Map<String, dynamic>> removeRepo(String url) async =>
       _obj(await _call<String>('removeRepo', {'url': url}));
 
+  /// Uninstalls one Mihon/Tachiyomi package while preserving its repository
+  /// and every other package installed from that repository.
+  static Future<Map<String, dynamic>> removeExtension(String pkg) async =>
+      _obj(await _call<String>('removeExtension', {'pkg': pkg}));
+
   static Future<Map<String, dynamic>> addRepo(String url) async =>
       _obj(await _call<String>('addRepo', {'url': url}));
 

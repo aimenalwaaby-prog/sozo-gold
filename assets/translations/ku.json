@@ -1186,6 +1186,8 @@
     "source_removed": "Çavkanî hat rakirin.",
     "recommended": "PÊŞNIYARKIRÎ",
     "installed_sources": "ÇAVKANIYÊN SAZKIRÎ",
+    "installed_extensions": "پاشکەرە دامەزراوەکان",
+    "remove_extension_confirm": "ئەمە تەنها ئەم پاشکەرە لە ئەپەکە دەسڕێتەوە؛ کۆگاکە و پاشکەرەکانی دیکە دەمێننەوە.",
     "source_settings": "MÎHENGÊN ÇAVKANIYÊ",
     "no_sources": "Hîn çavkanî tune",
     "show_nsfw": "Çavkaniyên mezinan",

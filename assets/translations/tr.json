@@ -1186,6 +1186,8 @@
     "source_removed": "Kaynak kaldırıldı.",
     "recommended": "ÖNERİLEN",
     "installed_sources": "KURULU KAYNAKLAR",
+    "installed_extensions": "YÜKLÜ UZANTILAR",
+    "remove_extension_confirm": "Bu işlem yalnızca bu uzantıyı uygulamadan kaldırır. Depo ve diğer uzantılar yüklü kalır.",
     "source_settings": "KAYNAK AYARLARI",
     "no_sources": "Henüz kaynak yok",
     "show_nsfw": "Yetişkin kaynakları",

@@ -1186,6 +1186,8 @@
     "source_removed": "Sumber dihapus.",
     "recommended": "DISARANKAN",
     "installed_sources": "SUMBER TERPASANG",
+    "installed_extensions": "EKSTENSI TERPASANG",
+    "remove_extension_confirm": "Ini hanya menghapus ekstensi ini dari aplikasi. Repositori dan ekstensi lainnya akan tetap terpasang.",
     "source_settings": "PENGATURAN SUMBER",
     "no_sources": "Belum ada sumber",
     "show_nsfw": "Sumber dewasa",

@@ -66,6 +66,21 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+      # The Android job previously exhausted the hosted runner's disk while
+      # Gradle was resolving native artifacts. These image/toolchain bundles are
+      # not used by an APK build; keep the Android SDK/NDK and reclaim only the
+      # large unrelated payloads before restoring Gradle's cache.
+      - name: Reclaim runner disk space
+        run: |
+          set -euo pipefail
+          df -h /
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/boost \
+            /usr/local/lib/android/sdk/system-images \
+            /usr/local/lib/android/sdk/emulator
+          df -h /
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

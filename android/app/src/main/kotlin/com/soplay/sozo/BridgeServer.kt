@@ -168,6 +168,7 @@ class BridgeServer(
                 "listRepos" -> mnRepo().listReposJson()
                 "addRepo" -> mnRepo().addRepo(p("url")) { _, _ -> }.toString()
                 "removeRepo" -> mnRepo().removeRepo(p("url"))
+                "removeExtension" -> mnRepo().removeExtension(p("pkg"))
                 "getGenres" -> mn().getGenresJson(p("provider"))
                 "getMainPage" -> mn().getMainPageJson(p("provider"), pi("page"))
                 "getSection" -> mn().getSectionJson(p("provider"), p("data"), pi("page"))

@@ -1186,6 +1186,8 @@
     "source_removed": "Manba o'chirildi.",
     "recommended": "TAVSIYA ETILGAN",
     "installed_sources": "O'RNATILGAN MANBALAR",
+    "installed_extensions": "O‘RNATILGAN KENGAYTMALAR",
+    "remove_extension_confirm": "Bu faqat ushbu kengaytmani ilovadan olib tashlaydi. Ombor va boshqa kengaytmalar o‘rnatilgan holda qoladi.",
     "source_settings": "MANBA SOZLAMALARI",
     "no_sources": "Hozircha manba yo'q",
     "show_nsfw": "Kattalar uchun manbalar",

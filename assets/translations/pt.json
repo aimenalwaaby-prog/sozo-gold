@@ -1186,6 +1186,8 @@
     "source_removed": "Fonte removida.",
     "recommended": "RECOMENDADO",
     "installed_sources": "FONTES INSTALADAS",
+    "installed_extensions": "EXTENSÕES INSTALADAS",
+    "remove_extension_confirm": "Isto remove apenas esta extensão da aplicação. O repositório e as outras extensões permanecerão instalados.",
     "source_settings": "CONFIGURAÇÕES DA FONTE",
     "no_sources": "Ainda sem fontes",
     "show_nsfw": "Fontes adultas",

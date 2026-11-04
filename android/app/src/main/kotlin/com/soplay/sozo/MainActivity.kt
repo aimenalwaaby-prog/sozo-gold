@@ -710,6 +710,10 @@ class MainActivity : FlutterFragmentActivity() {
                     val url = call.argument<String>("url").orEmpty()
                     csAsync(result) { mangaRepoManager.removeRepo(url) }
                 }
+                "removeExtension" -> {
+                    val pkg = call.argument<String>("pkg").orEmpty()
+                    csAsync(result) { mangaRepoManager.removeExtension(pkg) }
+                }
                 "addRepo" -> {
                     val url = call.argument<String>("url").orEmpty()
                     csAsync(result) {

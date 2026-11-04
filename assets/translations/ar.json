@@ -1186,6 +1186,8 @@
     "source_removed": "أُزيل المصدر.",
     "recommended": "مُوصى به",
     "installed_sources": "المصادر المثبَّتة",
+    "installed_extensions": "الإضافات المثبَّتة",
+    "remove_extension_confirm": "سيُحذف هذا الامتداد من التطبيق فقط. سيبقى المستودع وبقية إضافاته مثبّتة.",
     "source_settings": "إعدادات المصدر",
     "no_sources": "لا توجد مصادر بعد",
     "show_nsfw": "مصادر للبالغين",

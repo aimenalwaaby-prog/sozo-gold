@@ -173,6 +173,7 @@ class MangaHost(private val context: Context) {
                 put("icon", s.iconUrl)
                 put("nsfw", s.nsfw)
                 put("repo", s.repoName)
+                put("pkg", s.pkg)
                 put("mode", "client")
                 put("group", "manga")
             })
