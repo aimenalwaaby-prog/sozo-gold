@@ -17,7 +17,6 @@ import 'package:soplay/core/storage/hive_service.dart';
 import 'package:soplay/core/network/http_headers.dart';
 import 'package:soplay/core/system/desktop_window.dart';
 import 'package:soplay/core/system/responsive.dart';
-import 'package:soplay/core/system/platform_utils.dart' show isTvPlatform;
 import 'package:soplay/core/system/system_controls.dart';
 import 'package:soplay/features/anilist/data/anilist_tracker.dart';
 import 'package:soplay/features/detail/domain/playback/wakelock_holds.dart';

@@ -740,8 +740,6 @@ class PreviewDiskCache {
     return out;
   }
 
-  static final Set<String> _pruned = {};
-
   static Future<void> save(String key, int bucket, Uint8List bytes) async {
     try {
       final root = await _root();
@@ -749,7 +747,7 @@ class PreviewDiskCache {
       if (!await dir.exists()) {
         await dir.create(recursive: true);
         await _touch(dir);
-        if (_pruned.add(key)) unawaited(_prune(root));
+        await _prune(root);
       }
       await File('${dir.path}/$bucket.jpg').writeAsBytes(bytes, flush: false);
     } catch (_) {}

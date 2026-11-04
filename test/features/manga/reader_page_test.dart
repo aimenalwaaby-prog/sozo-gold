@@ -25,13 +25,19 @@ class Settings implements HiveService {
   final bool spread;
   final String mode;
   String layout;
+  bool volumePageKeys;
   Settings({
     this.spread = false,
     this.mode = 'horizontal',
     this.layout = 'scroll',
+    this.volumePageKeys = false,
   });
   @override
   bool get readerSpread => spread;
+  @override
+  bool get readerVolumeKeys => volumePageKeys;
+  @override
+  Future<void> setReaderVolumeKeys(bool value) async => volumePageKeys = value;
   @override
   String getReaderMode(String url) => mode;
   @override
