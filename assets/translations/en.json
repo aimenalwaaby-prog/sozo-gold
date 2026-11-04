@@ -421,7 +421,7 @@
     "auto_translate": "Auto-translate",
     "auto_translate_desc": "When the source has no subtitle in your language, translate it with AI",
     "translate_to": "Translate to",
-    "translate_note": "Translation is machine-made and may be wrong. A daily limit applies.",
+    "translate_note": "Machine translation may be inaccurate. Sozo’s daily limit applies unless a Google key is set; Google billing and limits may apply when it is used.",
     "translate_ai": "AI translate",
     "translating_subtitle": "Translating…",
     "translate_failed": "Could not translate",
@@ -743,7 +743,17 @@
     "library_update": "Check for new episodes",
     "library_update_desc": "Looks at the titles you follow and notifies you when a new one is out",
     "library_update_every": "Every {} hours",
-    "library_update_daily": "Once a day"
+    "library_update_daily": "Once a day",
+
+    "google_translate_key_title": "Google Cloud Translation API key",
+    "google_translate_key_hint": "Enable Cloud Translation API v2 in Google Cloud. Your key is stored securely on this device; subtitle text is sent directly to Google. Google billing and usage limits may apply.",
+    "google_translate_key_loading": "Loading key…",
+    "google_translate_key_placeholder": "Paste API key",
+    "google_translate_key_save": "Save key",
+    "google_translate_key_remove": "Remove key",
+    "google_translate_key_saved": "Google key saved securely.",
+    "google_translate_key_removed": "Google key removed.",
+    "google_translate_key_error": "Could not save the key to secure storage."
   },
   "appearance": {
     "title": "Appearance",
@@ -1187,6 +1197,8 @@
     "recommended": "RECOMMENDED",
     "installed_sources": "INSTALLED SOURCES",
     "installed_extensions": "INSTALLED EXTENSIONS",
+    "volume_page_keys": "Turn pages with volume buttons",
+    "volume_page_keys_hint": "While reading, Volume Up goes forward and Volume Down goes back. Volume control works normally outside the reader.",
     "remove_extension_confirm": "This removes only this extension from the app. Its repository and other extensions will stay installed.",
     "source_settings": "SOURCE SETTINGS",
     "no_sources": "No sources yet",

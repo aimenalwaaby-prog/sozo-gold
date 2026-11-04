@@ -407,7 +407,7 @@
     "auto_translate": "Avtomatik tarjima",
     "auto_translate_desc": "Manbada tilingizdagi subtitr bo'lmasa, AI orqali tarjima qilinadi",
     "translate_to": "Qaysi tilga",
-    "translate_note": "Tarjima mashina tomonidan qilinadi va xato bo'lishi mumkin. Kuniga chegara bor.",
+    "translate_note": "Mashina tarjimasi xato bo‘lishi mumkin. Google kalitisiz Sozoʼning kunlik cheklovi amal qiladi; kalit ishlatilganda Google to‘lovlari va cheklovlari qo‘llanishi mumkin.",
     "translate_ai": "AI tarjima",
     "translating_subtitle": "Tarjima qilinmoqda…",
     "translate_failed": "Tarjima qilib bo'lmadi",
@@ -743,7 +743,17 @@
     "library_update": "Yangi qismlarni tekshirish",
     "library_update_desc": "Kuzatayotgan titullaringizni tekshirib, yangi qism chiqsa xabar beradi",
     "library_update_every": "Har {} soatda",
-    "library_update_daily": "Kuniga bir marta"
+    "library_update_daily": "Kuniga bir marta",
+
+    "google_translate_key_title": "Google Cloud Translation API kaliti",
+    "google_translate_key_hint": "Google Cloud’da Cloud Translation API v2ʼni yoqing. Kalit qurilmada xavfsiz saqlanadi; matn bevosita Googleʼga yuboriladi. Google to‘lovlari va foydalanish cheklovlari qo‘llanishi mumkin.",
+    "google_translate_key_loading": "Kalit yuklanmoqda…",
+    "google_translate_key_placeholder": "API kalitini kiriting",
+    "google_translate_key_save": "Kalitni saqlash",
+    "google_translate_key_remove": "Kalitni olib tashlash",
+    "google_translate_key_saved": "Google kaliti xavfsiz saqlandi.",
+    "google_translate_key_removed": "Google kaliti olib tashlandi.",
+    "google_translate_key_error": "Kalitni xavfsiz saqlab bo‘lmadi."
   },
   "appearance": {
     "title": "Ko'rinish",
@@ -1187,6 +1197,8 @@
     "recommended": "TAVSIYA ETILGAN",
     "installed_sources": "O'RNATILGAN MANBALAR",
     "installed_extensions": "O‘RNATILGAN KENGAYTMALAR",
+    "volume_page_keys": "Ovoz tugmalari bilan sahifa almashtirish",
+    "volume_page_keys_hint": "O‘qish paytida ovozni oshirish keyingi, pasaytirish oldingi sahifaga o‘tkazadi. O‘quvchidan tashqarida ovoz odatdagidek boshqariladi.",
     "remove_extension_confirm": "Bu faqat ushbu kengaytmani ilovadan olib tashlaydi. Ombor va boshqa kengaytmalar o‘rnatilgan holda qoladi.",
     "source_settings": "MANBA SOZLAMALARI",
     "no_sources": "Hozircha manba yo'q",

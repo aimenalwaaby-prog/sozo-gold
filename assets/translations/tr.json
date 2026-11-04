@@ -407,7 +407,7 @@
     "auto_translate": "Otomatik çevir",
     "auto_translate_desc": "Kaynakta senin dilinde altyazı yoksa yapay zekâ çevirir",
     "translate_to": "Şu dile çevir",
-    "translate_note": "Çeviri makine üretimidir ve hatalı olabilir. Günlük bir sınır uygulanır.",
+    "translate_note": "Makine çevirisi hatalı olabilir. Google anahtarı yoksa Sozo’nun günlük sınırı geçerlidir; anahtar kullanıldığında Google ücretleri ve sınırları uygulanabilir.",
     "translate_ai": "Yapay zekâ ile çevir",
     "translating_subtitle": "Çevriliyor…",
     "translate_failed": "Çevrilemedi",
@@ -743,7 +743,17 @@
     "library_update": "Yeni bölümleri denetle",
     "library_update_desc": "Takip ettiğin yapımları denetler, yenisi çıkınca haber verir",
     "library_update_every": "{} saatte bir",
-    "library_update_daily": "Günde bir"
+    "library_update_daily": "Günde bir",
+
+    "google_translate_key_title": "Google Cloud Translation API anahtarı",
+    "google_translate_key_hint": "Google Cloud’da Cloud Translation API v2’yi etkinleştirin. Anahtar cihazda güvenli saklanır; metin doğrudan Google’a gönderilir. Google ücretleri ve kullanım sınırları geçerli olabilir.",
+    "google_translate_key_loading": "Anahtar yükleniyor…",
+    "google_translate_key_placeholder": "API anahtarını yapıştırın",
+    "google_translate_key_save": "Anahtarı kaydet",
+    "google_translate_key_remove": "Anahtarı kaldır",
+    "google_translate_key_saved": "Google anahtarı güvenle kaydedildi.",
+    "google_translate_key_removed": "Google anahtarı kaldırıldı.",
+    "google_translate_key_error": "Anahtar güvenli depolamaya kaydedilemedi."
   },
   "appearance": {
     "title": "Görünüm",
@@ -1187,6 +1197,8 @@
     "recommended": "ÖNERİLEN",
     "installed_sources": "KURULU KAYNAKLAR",
     "installed_extensions": "YÜKLÜ UZANTILAR",
+    "volume_page_keys": "Ses tuşlarıyla sayfa çevirme",
+    "volume_page_keys_hint": "Okurken ses açma sonraki, ses kısma önceki sayfaya geçer. Okuyucudan çıkınca ses kontrolü normal çalışır.",
     "remove_extension_confirm": "Bu işlem yalnızca bu uzantıyı uygulamadan kaldırır. Depo ve diğer uzantılar yüklü kalır.",
     "source_settings": "KAYNAK AYARLARI",
     "no_sources": "Henüz kaynak yok",

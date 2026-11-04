@@ -407,7 +407,7 @@
     "auto_translate": "Automatisch vertalen",
     "auto_translate_desc": "Heeft de bron geen ondertitel in jouw taal, dan vertaalt de AI hem",
     "translate_to": "Vertalen naar",
-    "translate_note": "De vertaling is machinaal en kan fout zijn. Er geldt een daglimiet.",
+    "translate_note": "Machinevertalingen kunnen onjuist zijn. Zonder Google-sleutel geldt de dagelijkse Sozo-limiet; met sleutel kunnen Google-kosten en -limieten gelden.",
     "translate_ai": "AI-vertaling",
     "translating_subtitle": "Vertalen…",
     "translate_failed": "Vertalen mislukt",
@@ -743,7 +743,17 @@
     "library_update": "Zoeken naar nieuwe afleveringen",
     "library_update_desc": "Controleert de titels die je volgt en meldt nieuwe afleveringen",
     "library_update_every": "Elke {} uur",
-    "library_update_daily": "Eén keer per dag"
+    "library_update_daily": "Eén keer per dag",
+
+    "google_translate_key_title": "Google Cloud Translation API-sleutel",
+    "google_translate_key_hint": "Schakel Cloud Translation API v2 in Google Cloud in. Je sleutel blijft veilig op dit apparaat; tekst wordt rechtstreeks naar Google gestuurd. Google-kosten en gebruikslimieten kunnen gelden.",
+    "google_translate_key_loading": "Sleutel laden…",
+    "google_translate_key_placeholder": "Plak API-sleutel",
+    "google_translate_key_save": "Sleutel opslaan",
+    "google_translate_key_remove": "Sleutel verwijderen",
+    "google_translate_key_saved": "Google-sleutel veilig opgeslagen.",
+    "google_translate_key_removed": "Google-sleutel verwijderd.",
+    "google_translate_key_error": "De sleutel kon niet veilig worden opgeslagen."
   },
   "appearance": {
     "title": "Weergave",
@@ -1187,6 +1197,8 @@
     "recommended": "AANBEVOLEN",
     "installed_sources": "GEÏNSTALLEERDE BRONNEN",
     "installed_extensions": "GEÏNSTALLEERDE EXTENSIES",
+    "volume_page_keys": "Pagina’s omslaan met volumeknoppen",
+    "volume_page_keys_hint": "Tijdens het lezen gaat Volume omhoog naar de volgende pagina en Volume omlaag terug. Buiten de lezer werkt het volume normaal.",
     "remove_extension_confirm": "Hiermee wordt alleen deze extensie uit de app verwijderd. De repository en overige extensies blijven geïnstalleerd.",
     "source_settings": "BRONINSTELLINGEN",
     "no_sources": "Nog geen bronnen",

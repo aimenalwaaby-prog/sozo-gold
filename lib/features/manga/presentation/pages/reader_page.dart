@@ -17,6 +17,7 @@ import 'package:soplay/core/storage/hive_service.dart';
 import 'package:soplay/core/network/http_headers.dart';
 import 'package:soplay/core/system/desktop_window.dart';
 import 'package:soplay/core/system/responsive.dart';
+import 'package:soplay/core/system/platform_utils.dart' show isTvPlatform;
 import 'package:soplay/core/system/system_controls.dart';
 import 'package:soplay/features/anilist/data/anilist_tracker.dart';
 import 'package:soplay/features/detail/domain/playback/wakelock_holds.dart';
@@ -112,6 +113,9 @@ class _ReaderPageState extends State<ReaderPage> {
   String? _error;
 
   late String _mode;
+  static const MethodChannel _readerKeysChannel =
+      MethodChannel('soplay/reader_keys');
+  late bool _volumePageKeys;
 
   /// Whether the reader pairs pages in landscape. See [_spread].
   late bool _spreadPref;
@@ -246,6 +250,7 @@ class _ReaderPageState extends State<ReaderPage> {
       widget.args.chapters.length - 1,
     );
     _mode = _hive.getReaderMode(widget.args.contentUrl);
+    _volumePageKeys = _hive.readerVolumeKeys;
     _spreadPref = _hive.readerSpread;
     _rtl = _hive.getReaderRtl(widget.args.contentUrl);
     _bgPref = _hive.getReaderBackground();
@@ -260,6 +265,13 @@ class _ReaderPageState extends State<ReaderPage> {
     _page.addListener(_maybePrefetchNextChapter);
     _novelProgress.addListener(_maybePrefetchNextChapter);
     _novelScrollController.addListener(_onNovelScroll);
+    if (Platform.isAndroid && !isTvPlatform) {
+      _readerKeysChannel.setMethodCallHandler(_onReaderKeyCall);
+      unawaited(_readerKeysChannel.invokeMethod<void>('setReaderState', {
+        'active': true,
+        'enabled': _volumePageKeys,
+      }));
+    }
     if (!isDesktopPlatform) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     }
@@ -330,6 +342,13 @@ class _ReaderPageState extends State<ReaderPage> {
     // Reading stops with the reader: nothing else on screen shows what is
     // being read or offers a way to stop it.
     _ttsLifecycle?.dispose();
+    if (Platform.isAndroid && !isTvPlatform) {
+      _readerKeysChannel.setMethodCallHandler(null);
+      unawaited(_readerKeysChannel.invokeMethod<void>('setReaderState', {
+        'active': false,
+        'enabled': false,
+      }));
+    }
     _tts?.removeListener(_onTtsChanged);
     _tts?.dispose();
     _spreadController.dispose();
@@ -358,6 +377,31 @@ class _ReaderPageState extends State<ReaderPage> {
       WakelockHolds.acquire(this);
     } else {
       WakelockHolds.release(this);
+    }
+  }
+
+  Future<void> _onReaderKeyCall(MethodCall call) async {
+    if (call.method != 'page' || !_volumePageKeys || _loading || _error != null) {
+      return;
+    }
+    final args = call.arguments;
+    final direction = args is Map ? (args['direction'] as num?)?.toInt() : null;
+    if (direction == null) return;
+    if (direction > 0) {
+      _goNextPage();
+    } else {
+      _goPrevPage();
+    }
+  }
+
+  Future<void> _setVolumePageKeys(bool enabled) async {
+    setState(() => _volumePageKeys = enabled);
+    await _hive.setReaderVolumeKeys(enabled);
+    if (Platform.isAndroid && !isTvPlatform) {
+      await _readerKeysChannel.invokeMethod<void>('setReaderState', {
+        'active': true,
+        'enabled': enabled,
+      });
     }
   }
 
@@ -2575,6 +2619,20 @@ class _ReaderPageState extends State<ReaderPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (Platform.isAndroid && !isTvPlatform) ...[
+                  SwitchListTile.adaptive(
+                    contentPadding: EdgeInsets.zero,
+                    value: _volumePageKeys,
+                    activeThumbColor: _accent,
+                    title: Text('manga.volume_page_keys'.tr()),
+                    subtitle: Text('manga.volume_page_keys_hint'.tr()),
+                    onChanged: (value) async {
+                      await _setVolumePageKeys(value);
+                      if (context.mounted) setSheet(() {});
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 if (_html == null) ...[
                   Text(
                     'manga.reading_mode'.tr(),

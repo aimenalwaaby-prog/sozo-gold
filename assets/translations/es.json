@@ -407,7 +407,7 @@
     "auto_translate": "Traducir automáticamente",
     "auto_translate_desc": "Cuando la fuente no tiene subtítulo en tu idioma, la IA lo traduce",
     "translate_to": "Traducir a",
-    "translate_note": "La traducción es automática y puede fallar. Se aplica un límite diario.",
+    "translate_note": "La traducción automática puede contener errores. Se aplica el límite diario de Sozo salvo que configures una clave de Google; con ella pueden aplicarse cargos y límites de Google.",
     "translate_ai": "Traducir con IA",
     "translating_subtitle": "Traduciendo…",
     "translate_failed": "No se pudo traducir",
@@ -743,7 +743,17 @@
     "library_update": "Buscar episodios nuevos",
     "library_update_desc": "Revisa los títulos que sigues y te avisa cuando sale uno nuevo",
     "library_update_every": "Cada {} horas",
-    "library_update_daily": "Una vez al día"
+    "library_update_daily": "Una vez al día",
+
+    "google_translate_key_title": "Clave de Google Cloud Translation API",
+    "google_translate_key_hint": "Activa Cloud Translation API v2 en Google Cloud. La clave se guarda de forma segura en este dispositivo; el texto se envía directamente a Google. Pueden aplicarse cargos y límites de uso de Google.",
+    "google_translate_key_loading": "Cargando clave…",
+    "google_translate_key_placeholder": "Pega la clave API",
+    "google_translate_key_save": "Guardar clave",
+    "google_translate_key_remove": "Eliminar clave",
+    "google_translate_key_saved": "Clave de Google guardada de forma segura.",
+    "google_translate_key_removed": "Clave de Google eliminada.",
+    "google_translate_key_error": "No se pudo guardar la clave de forma segura."
   },
   "appearance": {
     "title": "Apariencia",
@@ -1187,6 +1197,8 @@
     "recommended": "RECOMENDADO",
     "installed_sources": "FUENTES INSTALADAS",
     "installed_extensions": "EXTENSIONES INSTALADAS",
+    "volume_page_keys": "Pasar páginas con los botones de volumen",
+    "volume_page_keys_hint": "Durante la lectura, subir volumen avanza y bajar volumen retrocede. Fuera del lector, el volumen funciona normalmente.",
     "remove_extension_confirm": "Esto solo elimina esta extensión de la aplicación. El repositorio y sus demás extensiones seguirán instalados.",
     "source_settings": "AJUSTES DE LA FUENTE",
     "no_sources": "Todavía no hay fuentes",

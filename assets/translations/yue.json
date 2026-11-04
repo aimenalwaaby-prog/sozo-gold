@@ -421,7 +421,7 @@
     "auto_translate": "自動翻譯",
     "auto_translate_desc": "當來源冇你語言嘅字幕時，用 AI 翻譯",
     "translate_to": "翻譯成",
-    "translate_note": "翻譯係機器做嘅，可能有錯。每日有次數上限。",
+    "translate_note": "機器翻譯可能唔準確。未設定 Google 金鑰時會套用 Sozo 每日上限；使用金鑰時可能受 Google 收費及限制約束。",
     "translate_ai": "AI 翻譯",
     "translating_subtitle": "翻譯緊…",
     "translate_failed": "翻譯唔到",
@@ -743,7 +743,17 @@
     "library_update": "檢查新集數",
     "library_update_desc": "檢查你追緊嘅作品，有新集就通知你",
     "library_update_every": "每 {} 小時",
-    "library_update_daily": "每日一次"
+    "library_update_daily": "每日一次",
+
+    "google_translate_key_title": "Google Cloud Translation API 金鑰",
+    "google_translate_key_hint": "請喺 Google Cloud 啟用 Cloud Translation API v2。金鑰會安全儲存喺呢部裝置；字幕文字會直接傳送畀 Google。Google 收費及使用限制可能適用。",
+    "google_translate_key_loading": "正在載入金鑰…",
+    "google_translate_key_placeholder": "貼上 API 金鑰",
+    "google_translate_key_save": "儲存金鑰",
+    "google_translate_key_remove": "移除金鑰",
+    "google_translate_key_saved": "Google 金鑰已安全儲存。",
+    "google_translate_key_removed": "Google 金鑰已移除。",
+    "google_translate_key_error": "無法安全儲存金鑰。"
   },
   "appearance": {
     "title": "外觀",
@@ -1187,6 +1197,8 @@
     "recommended": "推薦",
     "installed_sources": "已安裝來源",
     "installed_extensions": "已安裝嘅擴充功能",
+    "volume_page_keys": "用音量鍵翻頁",
+    "volume_page_keys_hint": "閱讀時按音量加會去下一頁，按音量減會返上一頁。離開閱讀器後，音量鍵會照常控制音量。",
     "remove_extension_confirm": "呢個操作只會喺應用程式移除呢個擴充功能，來源庫同其他擴充功能會保留。",
     "source_settings": "來源設定",
     "no_sources": "仲未有來源",

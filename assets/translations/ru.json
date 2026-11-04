@@ -407,7 +407,7 @@
     "auto_translate": "Автоперевод",
     "auto_translate_desc": "Если в источнике нет субтитров на вашем языке — переведём через ИИ",
     "translate_to": "На какой язык",
-    "translate_note": "Перевод машинный и может содержать ошибки. Есть дневной лимит.",
+    "translate_note": "Машинный перевод может быть неточным. Без ключа действует дневной лимит Sozo; с ключом могут применяться тарифы и ограничения Google.",
     "translate_ai": "ИИ перевод",
     "translating_subtitle": "Переводим…",
     "translate_failed": "Не удалось перевести",
@@ -743,7 +743,17 @@
     "library_update": "Проверять новые серии",
     "library_update_desc": "Проверяет отслеживаемые тайтлы и сообщает о новых сериях",
     "library_update_every": "Каждые {} ч",
-    "library_update_daily": "Раз в день"
+    "library_update_daily": "Раз в день",
+
+    "google_translate_key_title": "Ключ Google Cloud Translation API",
+    "google_translate_key_hint": "Включите Cloud Translation API v2 в Google Cloud. Ключ хранится на устройстве; текст отправляется напрямую в Google. Могут применяться тарифы и ограничения Google.",
+    "google_translate_key_loading": "Загрузка ключа…",
+    "google_translate_key_placeholder": "Вставьте ключ API",
+    "google_translate_key_save": "Сохранить ключ",
+    "google_translate_key_remove": "Удалить ключ",
+    "google_translate_key_saved": "Ключ Google сохранён безопасно.",
+    "google_translate_key_removed": "Ключ Google удалён.",
+    "google_translate_key_error": "Не удалось безопасно сохранить ключ."
   },
   "appearance": {
     "title": "Внешний вид",
@@ -1187,6 +1197,8 @@
     "recommended": "РЕКОМЕНДУЕМЫЕ",
     "installed_sources": "УСТАНОВЛЕННЫЕ ИСТОЧНИКИ",
     "installed_extensions": "УСТАНОВЛЕННЫЕ РАСШИРЕНИЯ",
+    "volume_page_keys": "Перелистывание кнопками громкости",
+    "volume_page_keys_hint": "Во время чтения увеличение громкости открывает следующую страницу, уменьшение — предыдущую. Вне читалки громкость работает обычно.",
     "remove_extension_confirm": "Это удалит только данное расширение из приложения. Репозиторий и остальные расширения останутся установленными.",
     "source_settings": "НАСТРОЙКИ ИСТОЧНИКА",
     "no_sources": "Источников пока нет",

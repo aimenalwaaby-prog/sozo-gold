@@ -407,7 +407,7 @@
     "auto_translate": "Traduzir automaticamente",
     "auto_translate_desc": "Quando a fonte não tem legenda no seu idioma, a IA traduz",
     "translate_to": "Traduzir para",
-    "translate_note": "A tradução é feita por máquina e pode errar. Há um limite diário.",
+    "translate_note": "A tradução automática pode estar errada. O limite diário da Sozo aplica-se sem chave Google; com a chave, podem aplicar-se custos e limites da Google.",
     "translate_ai": "Traduzir com IA",
     "translating_subtitle": "Traduzindo…",
     "translate_failed": "Não foi possível traduzir",
@@ -743,7 +743,17 @@
     "library_update": "Procurar novos episódios",
     "library_update_desc": "Verifica os títulos que você segue e avisa quando sai um novo",
     "library_update_every": "A cada {} horas",
-    "library_update_daily": "Uma vez por dia"
+    "library_update_daily": "Uma vez por dia",
+
+    "google_translate_key_title": "Chave da Google Cloud Translation API",
+    "google_translate_key_hint": "Ative a Cloud Translation API v2 no Google Cloud. A chave fica guardada com segurança neste dispositivo; o texto é enviado diretamente à Google. Podem aplicar-se custos e limites de utilização da Google.",
+    "google_translate_key_loading": "A carregar a chave…",
+    "google_translate_key_placeholder": "Cole a chave API",
+    "google_translate_key_save": "Guardar chave",
+    "google_translate_key_remove": "Remover chave",
+    "google_translate_key_saved": "Chave da Google guardada em segurança.",
+    "google_translate_key_removed": "Chave da Google removida.",
+    "google_translate_key_error": "Não foi possível guardar a chave em segurança."
   },
   "appearance": {
     "title": "Aparência",
@@ -1187,6 +1197,8 @@
     "recommended": "RECOMENDADO",
     "installed_sources": "FONTES INSTALADAS",
     "installed_extensions": "EXTENSÕES INSTALADAS",
+    "volume_page_keys": "Avançar páginas com os botões de volume",
+    "volume_page_keys_hint": "Durante a leitura, aumentar o volume avança e diminuir volta. Fora do leitor, o volume funciona normalmente.",
     "remove_extension_confirm": "Isto remove apenas esta extensão da aplicação. O repositório e as outras extensões permanecerão instalados.",
     "source_settings": "CONFIGURAÇÕES DA FONTE",
     "no_sources": "Ainda sem fontes",

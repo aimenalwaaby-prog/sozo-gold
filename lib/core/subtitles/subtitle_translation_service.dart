@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:soplay/core/di/injection.dart';
 
 /// Result of asking the backend to translate a subtitle.
@@ -64,6 +65,25 @@ class SubtitleDailyLimitReached implements Exception {
 class SubtitleTranslationService {
   const SubtitleTranslationService();
 
+  static const String _googleKeyName = 'google_cloud_translation_api_key';
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    mOptions: MacOsOptions(useDataProtectionKeyChain: false),
+  );
+
+  Future<String?> readGoogleApiKey() =>
+      _secureStorage.read(key: _googleKeyName);
+
+  Future<void> saveGoogleApiKey(String value) async {
+    final key = value.trim();
+    if (key.isEmpty) {
+      await _secureStorage.delete(key: _googleKeyName);
+    } else {
+      await _secureStorage.write(key: _googleKeyName, value: key);
+    }
+  }
+
   /// Translations already made for this title/episode, across languages.
   Future<List<ReadySubtitle>> fetchReady({
     required String tmdbId,
@@ -99,7 +119,8 @@ class SubtitleTranslationService {
   }
 
   /// Publishes a finished translation so other viewers can load it directly.
-  /// Best-effort — a failure here never blocks playback.
+  /// Best-effort — a failure here never blocks playback. A translation made
+  /// with the user's Google key stays on-device and is not uploaded to Sozo.
   Future<void> publishReady({
     required String tmdbId,
     required String type,
@@ -109,6 +130,8 @@ class SubtitleTranslationService {
     required String srt,
   }) async {
     try {
+      final googleKey = await readGoogleApiKey();
+      if (googleKey != null && googleKey.trim().isNotEmpty) return;
       await getIt<Dio>().post(
         '/contents/subtitles/ready',
         data: {
@@ -153,6 +176,43 @@ class SubtitleTranslationService {
     bool count = false,
   }) async {
     try {
+      String? googleKey;
+      try {
+        googleKey = await readGoogleApiKey();
+      } catch (_) {
+        // A platform keyring may be unavailable (for example, a Linux session
+        // without Secret Service). The existing Sozo provider remains usable.
+      }
+      if (googleKey != null && googleKey.trim().isNotEmpty) {
+        final response = await Dio(
+          BaseOptions(
+            baseUrl: 'https://translation.googleapis.com',
+            connectTimeout: const Duration(seconds: 20),
+            receiveTimeout: const Duration(seconds: 60),
+          ),
+        ).post(
+          '/language/translate/v2',
+          data: {
+            'q': lines,
+            'target': targetLang,
+            'format': 'text',
+            if (from != null && from.isNotEmpty) 'source': from,
+          },
+          options: Options(headers: {'x-goog-api-key': googleKey}),
+        );
+        final data = response.data as Map<String, dynamic>;
+        final translations = (data['data'] as Map?)?['translations'] as List?;
+        final out = translations
+            ?.map((item) => (item as Map)['translatedText'].toString())
+            .toList();
+        if (out == null || out.length != lines.length) {
+          throw const FormatException(
+            'Google returned an incomplete translation',
+          );
+        }
+        return out;
+      }
+
       final response = await getIt<Dio>().post(
         '/contents/subtitles/translate/lines',
         data: {
@@ -220,6 +280,10 @@ class SubtitleTranslationService {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {
       return data['message'] as String;
+    }
+    if (data is Map && data['error'] is Map) {
+      final message = (data['error'] as Map)['message'];
+      if (message is String) return message;
     }
     return e.message ?? 'Tarjima qilib bo\'lmadi';
   }

@@ -421,7 +421,7 @@
     "auto_translate": "Wergera otomatîk",
     "auto_translate_desc": "Dema ku di çavkaniyê de binnivîs bi zimanê te tune be, wê bi AI wergerîne",
     "translate_to": "Wergerîne bo",
-    "translate_note": "Werger ji aliyê makîneyê ve tê kirin û dibe ku şaş be. Sînorekî rojane heye.",
+    "translate_note": "وەرگێڕانی ماشینی ڕەنگە هەڵە بێت. ئەگەر کلیلی Google دانەنرێت، سنووری ڕۆژانەی Sozo جێبەجێ دەبێت؛ بە کلیلی Google ڕەنگە کرێ و سنووری Google جێبەجێ بکرێت.",
     "translate_ai": "Wergera AI",
     "translating_subtitle": "Tê wergerandin…",
     "translate_failed": "Nehat wergerandin",
@@ -743,7 +743,17 @@
     "library_update": "Li beşên nû kontrol bike",
     "library_update_desc": "Li sernavên ku tu dişopînî dinêre û dema yekî nû derkeve te agahdar dike",
     "library_update_every": "Her {} saetan",
-    "library_update_daily": "Rojê carekê"
+    "library_update_daily": "Rojê carekê",
+
+    "google_translate_key_title": "کلیلی API ـی Google Cloud Translation",
+    "google_translate_key_hint": "Cloud Translation API v2 لە Google Cloud چالاک بکە. کلیلیەکە بە پارێزراوی لەسەر ئامێرەکەت هەڵدەگیرێت و دەقی وەرگێڕان ڕاستەوخۆ بۆ Google دەنێردرێت؛ ڕەنگە کرێ و سنووری بەکارهێنانی Google جێبەجێ بکرێت.",
+    "google_translate_key_loading": "کلیلیەکە بار دەکرێت…",
+    "google_translate_key_placeholder": "کلیلی API دابنێ",
+    "google_translate_key_save": "پاشەکەوتکردنی کلیلی",
+    "google_translate_key_remove": "سڕینەوەی کلیلی",
+    "google_translate_key_saved": "کلیلی Google بە پارێزراوی پاشەکەوت کرا.",
+    "google_translate_key_removed": "کلیلی Google سڕایەوە.",
+    "google_translate_key_error": "پاشەکەوتکردنی کلیلی لە بیرگەی پارێزراو سەرکەوتوو نەبوو."
   },
   "appearance": {
     "title": "Xuyang",
@@ -1187,6 +1197,8 @@
     "recommended": "PÊŞNIYARKIRÎ",
     "installed_sources": "ÇAVKANIYÊN SAZKIRÎ",
     "installed_extensions": "پاشکەرە دامەزراوەکان",
+    "volume_page_keys": "گۆڕینی پەڕە بە دوگمەکانی دەنگ",
+    "volume_page_keys_hint": "لە کاتی خوێندنەوەدا دەنگ بەرز بکە بۆ پەڕەی دواتر و نزم بکە بۆ پەڕەی پێشوو. لە دەرەوەی خوێنەر دەنگ ئاسایی دەمێنێتەوە.",
     "remove_extension_confirm": "ئەمە تەنها ئەم پاشکەرە لە ئەپەکە دەسڕێتەوە؛ کۆگاکە و پاشکەرەکانی دیکە دەمێننەوە.",
     "source_settings": "MÎHENGÊN ÇAVKANIYÊ",
     "no_sources": "Hîn çavkanî tune",

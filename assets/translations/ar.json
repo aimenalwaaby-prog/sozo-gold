@@ -407,7 +407,7 @@
     "auto_translate": "الترجمة التلقائية",
     "auto_translate_desc": "عندما لا يوفّر المصدر ترجمة بلغتك، تُترجَم بالذكاء الاصطناعي",
     "translate_to": "الترجمة إلى",
-    "translate_note": "الترجمة آلية وقد تحتوي على أخطاء. يُطبَّق حدّ يومي.",
+    "translate_note": "الترجمة آلية وقد لا تكون دقيقة. يسري الحد اليومي في Sozo ما لم يُضف مفتاح Google؛ وقد تنطبق رسوم Google وحدودها.",
     "translate_ai": "ترجمة بالذكاء الاصطناعي",
     "translating_subtitle": "جارٍ الترجمة…",
     "translate_failed": "تعذّرت الترجمة",
@@ -743,7 +743,17 @@
     "library_update": "التحقق من الحلقات الجديدة",
     "library_update_desc": "يتفقد العناوين التي تتابعها ويُعلمك عند صدور جديد",
     "library_update_every": "كل {} ساعات",
-    "library_update_daily": "مرة يوميًا"
+    "library_update_daily": "مرة يوميًا",
+
+    "google_translate_key_title": "مفتاح Google Cloud Translation API",
+    "google_translate_key_hint": "فعّل Cloud Translation API v2 في Google Cloud. يُحفظ المفتاح في التخزين الآمن على جهازك، ويُرسل نص الترجمة مباشرةً إلى Google. قد تنطبق رسوم Google وحدود الاستخدام لديها.",
+    "google_translate_key_loading": "جارٍ تحميل المفتاح…",
+    "google_translate_key_placeholder": "ألصق مفتاح API",
+    "google_translate_key_save": "حفظ المفتاح",
+    "google_translate_key_remove": "حذف المفتاح",
+    "google_translate_key_saved": "تم حفظ مفتاح Google بأمان.",
+    "google_translate_key_removed": "تم حذف مفتاح Google.",
+    "google_translate_key_error": "تعذّر حفظ المفتاح في التخزين الآمن."
   },
   "appearance": {
     "title": "المظهر",
@@ -1187,6 +1197,8 @@
     "recommended": "مُوصى به",
     "installed_sources": "المصادر المثبَّتة",
     "installed_extensions": "الإضافات المثبَّتة",
+    "volume_page_keys": "التنقل بالصفحات بأزرار الصوت",
+    "volume_page_keys_hint": "رفع الصوت للصفحة التالية وخفضه للسابقة أثناء القراءة. يبقى مستوى الصوت طبيعياً خارج القارئ.",
     "remove_extension_confirm": "سيُحذف هذا الامتداد من التطبيق فقط. سيبقى المستودع وبقية إضافاته مثبّتة.",
     "source_settings": "إعدادات المصدر",
     "no_sources": "لا توجد مصادر بعد",

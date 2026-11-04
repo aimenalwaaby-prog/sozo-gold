@@ -58,12 +58,16 @@ class MainActivity : FlutterFragmentActivity() {
     private val deeplinkSettingsChannelName = "soplay/deeplink_settings"
     private val actionBroadcastName = "com.soplay.sozo.PIP_ACTION"
     private val actionExtraId = "action_id"
+    private val readerKeysChannelName = "soplay/reader_keys"
 
     private var methodChannel: MethodChannel? = null
     private var platformChannel: MethodChannel? = null
     private var downloadChannel: MethodChannel? = null
     private var systemControlsChannel: MethodChannel? = null
     private var deeplinkSettingsChannel: MethodChannel? = null
+    private var readerKeysChannel: MethodChannel? = null
+    @Volatile private var readerPageActive = false
+    @Volatile private var readerVolumeKeysEnabled = false
     private var pipReceiver: BroadcastReceiver? = null
     private var notificationPermissionResult: MethodChannel.Result? = null
 
@@ -150,6 +154,20 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        readerKeysChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            readerKeysChannelName,
+        ).apply {
+            setMethodCallHandler { call, result ->
+                if (call.method == "setReaderState") {
+                    readerPageActive = call.argument<Boolean>("active") ?: false
+                    readerVolumeKeysEnabled = call.argument<Boolean>("enabled") ?: false
+                    result.success(true)
+                } else {
+                    result.notImplemented()
+                }
+            }
+        }
         // Home screen widgets: the app sends a snapshot to draw, and hears
         // about taps that opened it.
         homeWidgetChannel = MethodChannel(
@@ -1325,6 +1343,21 @@ class MainActivity : FlutterFragmentActivity() {
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         notificationPermissionResult?.success(granted)
         notificationPermissionResult = null
+    }
+
+    override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
+        val isVolumeKey = event.keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP ||
+            event.keyCode == android.view.KeyEvent.KEYCODE_VOLUME_DOWN
+        if (isVolumeKey && readerPageActive && readerVolumeKeysEnabled) {
+            if (event.action == android.view.KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+                val direction = if (event.keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP) 1 else -1
+                readerKeysChannel?.invokeMethod("page", mapOf("direction" to direction))
+            }
+            // Consume both edges only while the opted-in reader is on screen;
+            // elsewhere Android's normal system-volume behavior is untouched.
+            return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

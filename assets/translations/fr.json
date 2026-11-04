@@ -407,7 +407,7 @@
     "auto_translate": "Traduction automatique",
     "auto_translate_desc": "Si la source n’a pas de sous-titre dans ta langue, l’IA le traduit",
     "translate_to": "Traduire en",
-    "translate_note": "La traduction est automatique et peut se tromper. Une limite quotidienne s’applique.",
+    "translate_note": "La traduction automatique peut être inexacte. La limite quotidienne de Sozo s’applique sans clé Google ; avec celle-ci, les frais et limites Google peuvent s’appliquer.",
     "translate_ai": "Traduire par IA",
     "translating_subtitle": "Traduction…",
     "translate_failed": "Traduction impossible",
@@ -743,7 +743,17 @@
     "library_update": "Vérifier les nouveaux épisodes",
     "library_update_desc": "Vérifie les titres suivis et vous prévient à chaque nouveauté",
     "library_update_every": "Toutes les {} heures",
-    "library_update_daily": "Une fois par jour"
+    "library_update_daily": "Une fois par jour",
+
+    "google_translate_key_title": "Clé Google Cloud Translation API",
+    "google_translate_key_hint": "Activez Cloud Translation API v2 dans Google Cloud. La clé reste sécurisée sur cet appareil ; le texte est envoyé directement à Google. Des frais et limites d’utilisation Google peuvent s’appliquer.",
+    "google_translate_key_loading": "Chargement de la clé…",
+    "google_translate_key_placeholder": "Collez la clé API",
+    "google_translate_key_save": "Enregistrer la clé",
+    "google_translate_key_remove": "Supprimer la clé",
+    "google_translate_key_saved": "Clé Google enregistrée en sécurité.",
+    "google_translate_key_removed": "Clé Google supprimée.",
+    "google_translate_key_error": "Impossible d’enregistrer la clé de façon sécurisée."
   },
   "appearance": {
     "title": "Apparence",
@@ -1187,6 +1197,8 @@
     "recommended": "RECOMMANDÉ",
     "installed_sources": "SOURCES INSTALLÉES",
     "installed_extensions": "EXTENSIONS INSTALLÉES",
+    "volume_page_keys": "Tourner les pages avec les boutons de volume",
+    "volume_page_keys_hint": "Pendant la lecture, Volume + avance et Volume − revient en arrière. Le volume fonctionne normalement hors du lecteur.",
     "remove_extension_confirm": "Cette opération supprime uniquement cette extension de l’application. Le dépôt et ses autres extensions resteront installés.",
     "source_settings": "RÉGLAGES DE LA SOURCE",
     "no_sources": "Aucune source pour l’instant",

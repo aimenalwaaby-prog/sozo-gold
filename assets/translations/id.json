@@ -407,7 +407,7 @@
     "auto_translate": "Terjemahkan otomatis",
     "auto_translate_desc": "Kalau sumbernya tidak punya subtitle dalam bahasamu, AI menerjemahkannya",
     "translate_to": "Terjemahkan ke",
-    "translate_note": "Terjemahan dibuat mesin dan bisa salah. Ada batas harian.",
+    "translate_note": "Terjemahan mesin mungkin tidak akurat. Batas harian Sozo berlaku tanpa kunci Google; dengan kunci, biaya dan batas Google mungkin berlaku.",
     "translate_ai": "Terjemahkan dengan AI",
     "translating_subtitle": "Menerjemahkan…",
     "translate_failed": "Tidak bisa diterjemahkan",
@@ -743,7 +743,17 @@
     "library_update": "Periksa episode baru",
     "library_update_desc": "Memeriksa judul yang kamu ikuti dan memberi tahu saat ada yang baru",
     "library_update_every": "Setiap {} jam",
-    "library_update_daily": "Sekali sehari"
+    "library_update_daily": "Sekali sehari",
+
+    "google_translate_key_title": "Kunci Google Cloud Translation API",
+    "google_translate_key_hint": "Aktifkan Cloud Translation API v2 di Google Cloud. Kunci disimpan dengan aman di perangkat ini; teks dikirim langsung ke Google. Biaya dan batas penggunaan Google mungkin berlaku.",
+    "google_translate_key_loading": "Memuat kunci…",
+    "google_translate_key_placeholder": "Tempel kunci API",
+    "google_translate_key_save": "Simpan kunci",
+    "google_translate_key_remove": "Hapus kunci",
+    "google_translate_key_saved": "Kunci Google tersimpan dengan aman.",
+    "google_translate_key_removed": "Kunci Google dihapus.",
+    "google_translate_key_error": "Kunci tidak dapat disimpan dengan aman."
   },
   "appearance": {
     "title": "Tampilan",
@@ -1187,6 +1197,8 @@
     "recommended": "DISARANKAN",
     "installed_sources": "SUMBER TERPASANG",
     "installed_extensions": "EKSTENSI TERPASANG",
+    "volume_page_keys": "Ganti halaman dengan tombol volume",
+    "volume_page_keys_hint": "Saat membaca, Volume Naik menuju halaman berikutnya dan Volume Turun kembali. Di luar pembaca, volume tetap berfungsi normal.",
     "remove_extension_confirm": "Ini hanya menghapus ekstensi ini dari aplikasi. Repositori dan ekstensi lainnya akan tetap terpasang.",
     "source_settings": "PENGATURAN SUMBER",
     "no_sources": "Belum ada sumber",

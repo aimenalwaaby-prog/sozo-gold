@@ -13,6 +13,7 @@ import 'package:soplay/core/player/quality_preference.dart';
 import 'package:soplay/core/storage/hive_service.dart';
 import 'package:soplay/core/theme/app_colors.dart';
 import 'package:soplay/core/subtitles/subtitle_languages.dart';
+import 'package:soplay/core/subtitles/subtitle_translation_service.dart';
 import 'package:soplay/features/detail/domain/entities/subtitle_style.dart';
 import 'package:soplay/features/detail/presentation/widgets/player_engine_sheet.dart';
 import 'package:soplay/features/detail/presentation/widgets/subtitle_size_control.dart';
@@ -64,6 +65,9 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   late SubtitleStyle _subtitle;
   late bool _autoTranslate;
   late String _translateLang;
+  final TextEditingController _googleApiKeyController = TextEditingController();
+  bool _googleApiKeyLoading = true;
+  bool _googleApiKeySaved = false;
 
   static const List<double> _speedChoices = [
     0.5,
@@ -105,6 +109,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
     _subtitle = _hive.getSubtitleStyle();
     _autoTranslate = _hive.getSubtitleAutoTranslate();
     _translateLang = _hive.getSubtitleTranslateLang();
+    unawaited(_loadGoogleApiKey());
     if (kDebugMode) {
       final readMs = _openWatch.elapsedMilliseconds;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -113,6 +118,52 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
           'first frame ${_openWatch.elapsedMilliseconds}ms',
         );
       });
+    }
+  }
+
+  @override
+  void dispose() {
+    _googleApiKeyController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadGoogleApiKey() async {
+    try {
+      final key = await const SubtitleTranslationService().readGoogleApiKey();
+      if (!mounted) return;
+      _googleApiKeyController.text = key ?? '';
+      setState(() {
+        _googleApiKeySaved = key != null && key.isNotEmpty;
+        _googleApiKeyLoading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _googleApiKeyLoading = false);
+    }
+  }
+
+  Future<void> _saveGoogleApiKey({bool remove = false}) async {
+    try {
+      await const SubtitleTranslationService().saveGoogleApiKey(
+        remove ? '' : _googleApiKeyController.text,
+      );
+      if (!mounted) return;
+      if (remove) _googleApiKeyController.clear();
+      setState(() => _googleApiKeySaved = !remove);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            (remove
+                    ? 'profile.google_translate_key_removed'
+                    : 'profile.google_translate_key_saved')
+                .tr(),
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('profile.google_translate_key_error'.tr())),
+      );
     }
   }
 
@@ -430,6 +481,73 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                   setState(() => _translateLang = v);
                   _hive.setSubtitleTranslateLang(v);
                 },
+              ),
+              const SettingsDivider(),
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'profile.google_translate_key_title'.tr(),
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'profile.google_translate_key_hint'.tr(),
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _googleApiKeyController,
+                      enabled: !_googleApiKeyLoading,
+                      onChanged: (_) => setState(() {}),
+                      obscureText: true,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.key_rounded),
+                        labelText: 'profile.google_translate_key_title'.tr(),
+                        hintText: _googleApiKeyLoading
+                            ? 'profile.google_translate_key_loading'.tr()
+                            : 'profile.google_translate_key_placeholder'.tr(),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: _googleApiKeyLoading ||
+                                  _googleApiKeyController.text.trim().isEmpty
+                              ? null
+                              : () => _saveGoogleApiKey(),
+                          icon: const Icon(Icons.save_rounded, size: 18),
+                          label: Text('profile.google_translate_key_save'.tr()),
+                        ),
+                        if (_googleApiKeySaved)
+                          TextButton.icon(
+                            onPressed: _googleApiKeyLoading
+                                ? null
+                                : () => _saveGoogleApiKey(remove: true),
+                            icon: const Icon(Icons.delete_outline_rounded),
+                            label: Text(
+                              'profile.google_translate_key_remove'.tr(),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

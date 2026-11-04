@@ -421,7 +421,7 @@
     "auto_translate": "وەرگێڕانی خۆکار",
     "auto_translate_desc": "کاتێک سەرچاوەکە ژێرنووسی بە زمانەکەی تۆ نییە، بە AI وەریبگێڕە",
     "translate_to": "وەرگێڕان بۆ",
-    "translate_note": "وەرگێڕان بە ئامێر کراوە و لەوانەیە هەڵە بێت. سنووری ڕۆژانە هەیە.",
+    "translate_note": "وەرگێڕانی ماشینی ڕەنگە هەڵە بێت. ئەگەر کلیلی Google دانەنرێت، سنووری ڕۆژانەی Sozo جێبەجێ دەبێت؛ بە کلیلی Google ڕەنگە کرێ و سنووری Google جێبەجێ بکرێت.",
     "translate_ai": "وەرگێڕان بە AI",
     "translating_subtitle": "وەرگێڕان…",
     "translate_failed": "نەتوانرا وەربگێڕدرێت",
@@ -743,7 +743,17 @@
     "library_update": "پشکنین بۆ ئەڵقە نوێکان",
     "library_update_desc": "سەیری ئەو ناونیشانانە دەکات کە بەدوایاندا دەچیت و کاتێک نوێیەک دەرچوو ئاگادارت دەکاتەوە",
     "library_update_every": "هەر {} کاتژمێر جارێک",
-    "library_update_daily": "ڕۆژی یەک جار"
+    "library_update_daily": "ڕۆژی یەک جار",
+
+    "google_translate_key_title": "کلیلی API ـی Google Cloud Translation",
+    "google_translate_key_hint": "Cloud Translation API v2 لە Google Cloud چالاک بکە. کلیلیەکە بە پارێزراوی لەسەر ئامێرەکەت هەڵدەگیرێت و دەقی وەرگێڕان ڕاستەوخۆ بۆ Google دەنێردرێت؛ ڕەنگە کرێ و سنووری بەکارهێنانی Google جێبەجێ بکرێت.",
+    "google_translate_key_loading": "کلیلیەکە بار دەکرێت…",
+    "google_translate_key_placeholder": "کلیلی API دابنێ",
+    "google_translate_key_save": "پاشەکەوتکردنی کلیلی",
+    "google_translate_key_remove": "سڕینەوەی کلیلی",
+    "google_translate_key_saved": "کلیلی Google بە پارێزراوی پاشەکەوت کرا.",
+    "google_translate_key_removed": "کلیلی Google سڕایەوە.",
+    "google_translate_key_error": "پاشەکەوتکردنی کلیلی لە بیرگەی پارێزراو سەرکەوتوو نەبوو."
   },
   "appearance": {
     "title": "ڕووکار",
@@ -1187,6 +1197,8 @@
     "recommended": "پێشنیارکراو",
     "installed_sources": "سەرچاوە دامەزراوەکان",
     "installed_extensions": "پاشکراوە دامەزراوەکان",
+    "volume_page_keys": "گۆڕینی پەڕە بە دوگمەکانی دەنگ",
+    "volume_page_keys_hint": "لە کاتی خوێندنەوەدا دەنگ بەرز بکە بۆ پەڕەی دواتر و نزم بکە بۆ پەڕەی پێشوو. لە دەرەوەی خوێنەر دەنگ ئاسایی دەمێنێتەوە.",
     "remove_extension_confirm": "ئەم پاشکراوە تەنها لە ئەپەکە دەسڕدرێتەوە؛ کۆگاکە و پاشکراوەکانی دیکە دەمێننەوە.",
     "source_settings": "ڕێکخستنەکانی سەرچاوە",
     "no_sources": "هێشتا هیچ سەرچاوەیەک نییە",

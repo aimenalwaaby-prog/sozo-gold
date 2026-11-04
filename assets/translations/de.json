@@ -407,7 +407,7 @@
     "auto_translate": "Automatisch übersetzen",
     "auto_translate_desc": "Hat die Quelle keinen Untertitel in deiner Sprache, übersetzt die KI ihn",
     "translate_to": "Übersetzen nach",
-    "translate_note": "Die Übersetzung ist maschinell und kann falsch sein. Es gilt ein Tageslimit.",
+    "translate_note": "Maschinelle Übersetzungen können fehlerhaft sein. Ohne Google-Schlüssel gilt das tägliche Sozo-Limit; mit Schlüssel können Google-Gebühren und -Limits gelten.",
     "translate_ai": "KI-Übersetzung",
     "translating_subtitle": "Wird übersetzt …",
     "translate_failed": "Übersetzung fehlgeschlagen",
@@ -743,7 +743,17 @@
     "library_update": "Nach neuen Folgen suchen",
     "library_update_desc": "Prüft deine gefolgten Titel und meldet neue Folgen",
     "library_update_every": "Alle {} Stunden",
-    "library_update_daily": "Einmal täglich"
+    "library_update_daily": "Einmal täglich",
+
+    "google_translate_key_title": "Google Cloud Translation API-Schlüssel",
+    "google_translate_key_hint": "Aktiviere Cloud Translation API v2 in Google Cloud. Der Schlüssel bleibt sicher auf diesem Gerät; Untertiteltext geht direkt an Google. Es können Google-Gebühren und Nutzungslimits gelten.",
+    "google_translate_key_loading": "Schlüssel wird geladen…",
+    "google_translate_key_placeholder": "API-Schlüssel einfügen",
+    "google_translate_key_save": "Schlüssel speichern",
+    "google_translate_key_remove": "Schlüssel entfernen",
+    "google_translate_key_saved": "Google-Schlüssel sicher gespeichert.",
+    "google_translate_key_removed": "Google-Schlüssel entfernt.",
+    "google_translate_key_error": "Der Schlüssel konnte nicht sicher gespeichert werden."
   },
   "appearance": {
     "title": "Darstellung",
@@ -1187,6 +1197,8 @@
     "recommended": "EMPFOHLEN",
     "installed_sources": "INSTALLIERTE QUELLEN",
     "installed_extensions": "INSTALLIERTE ERWEITERUNGEN",
+    "volume_page_keys": "Seiten mit Lautstärketasten wechseln",
+    "volume_page_keys_hint": "Während des Lesens erhöht Lauter die nächste und Leiser die vorherige Seite. Außerhalb des Readers bleibt die Lautstärke normal.",
     "remove_extension_confirm": "Diese Erweiterung wird nur aus der App entfernt. Das Repository und seine übrigen Erweiterungen bleiben installiert.",
     "source_settings": "QUELLENEINSTELLUNGEN",
     "no_sources": "Noch keine Quellen",

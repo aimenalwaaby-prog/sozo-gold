@@ -1249,6 +1249,12 @@ class HiveService {
   Future<void> setReaderSpread(bool value) async =>
       _settingsBox.put(AppConstants.readerSpreadKey, value);
 
+  bool get readerVolumeKeys =>
+      _settingsBox.get('reader_volume_keys', defaultValue: false) == true;
+
+  Future<void> setReaderVolumeKeys(bool value) async =>
+      _settingsBox.put('reader_volume_keys', value);
+
   String getReaderMode(String contentUrl) {
     return _settingsBox.get(
       'reader_mode::$contentUrl',
