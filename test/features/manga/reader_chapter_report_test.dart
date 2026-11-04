@@ -33,6 +33,8 @@ class Settings implements HiveService {
   @override
   bool get readerSpread => spread;
   @override
+  bool get readerVolumeKeys => false;
+  @override
   String getReaderMode(String url) => mode;
   @override
   bool getReaderRtl(String url) => false;
