@@ -190,6 +190,50 @@ void main() {
     },
   );
 
+  test(
+    'removing one source keeps its repository and sibling sources after restart',
+    () async {
+      responses['/repo.json'] = [
+        source('keep', 'keep.js'),
+        source('remove', 'remove.js'),
+      ];
+      await store.addRepo('$base/repo.json');
+      await store.setSourceFavorite('keep', true);
+      await store.setSourceEnabled('keep', false);
+      await store.removeSource('remove');
+
+      expect(store.repos(), ['$base/repo.json']);
+      expect(store.sourceById('remove'), isNull);
+      expect(store.sourceById('keep')!.isFavorite, isTrue);
+      expect(store.sourceById('keep')!.isEnabled, isFalse);
+
+      // A new store instance models a process restart. The state must come from
+      // Hive, not from MangayomiRepoStore's in-memory cache.
+      final restarted = MangayomiRepoStore(dio: Dio());
+      expect(restarted.repos(), ['$base/repo.json']);
+      expect(restarted.sourceById('remove'), isNull);
+      expect(restarted.sourceById('keep')!.isFavorite, isTrue);
+      expect(restarted.sourceById('keep')!.isEnabled, isFalse);
+    },
+  );
+
+  test('refresh preserves disabled and favorite state for each source', () async {
+    responses['/repo.json'] = [source('one', 'one.js'), source('two', 'two.js')];
+    await store.addRepo('$base/repo.json');
+    await store.setSourceEnabled('one', false);
+    await store.setSourceFavorite('two', true);
+    responses['/repo.json'] = [
+      {...source('one', 'one-v2.js'), 'version': '2.0.0'},
+      {...source('two', 'two-v2.js'), 'version': '2.0.0'},
+    ];
+
+    await store.checkUpdates();
+
+    expect(store.sourceById('one')!.isEnabled, isFalse);
+    expect(store.sourceById('two')!.isFavorite, isTrue);
+    expect(store.sourceById('one')!.sourceCodeUrl, '$base/one-v2.js');
+  });
+
   test('failed refresh preserves the previous repository snapshot', () async {
     responses['/repo.json'] = [source('kept', 'a.js')];
     await store.addRepo('$base/repo.json');

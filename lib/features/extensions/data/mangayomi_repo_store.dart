@@ -161,7 +161,14 @@ class MangayomiRepoStore {
         continue;
       }
       if (!oldIds.contains(src.id)) added++;
-      byId[src.id] = src;
+      final previous = byId[src.id];
+      // A refresh changes metadata, not the user's source-level choices.
+      byId[src.id] = previous == null
+          ? src
+          : src.copyWith(
+              isEnabled: previous.isEnabled,
+              isFavorite: previous.isFavorite,
+            );
     }
 
     if (decoded.isNotEmpty && validEntries == 0) {
@@ -184,12 +191,51 @@ class MangayomiRepoStore {
 
   Future<void> removeRepo(String indexUrl) async {
     final url = indexUrl.trim();
+    final removed = sources().where((s) => s.repoUrl == url).toList();
     final kept = sources().where((s) => s.repoUrl != url).toList();
     await _saveSources(kept);
     await _saveRepos(repos().where((r) => r != url).toList());
-    // Cached extension code for the dropped sources is left behind on purpose:
-    // it is a few KB per source and re-adding the repo is instant with it warm.
-    // It is cleaned up by [clearCode] when the user asks explicitly.
+    for (final source in removed) {
+      await clearCode(source.id);
+      await _box.delete('$_prefsPrefix${source.id}');
+    }
+  }
+
+  /// Removes one source while deliberately keeping its repository and siblings.
+  ///
+  /// The deletion is persisted before the code and preference caches are
+  /// cleared, so a restart cannot resurrect the source from stale memory.
+  Future<void> removeSource(String sourceId) async {
+    final id = sourceId.startsWith('my:')
+        ? sourceId.substring(3)
+        : sourceId;
+    final current = sources();
+    if (!current.any((source) => source.id == id)) return;
+    await _saveSources(current.where((source) => source.id != id).toList());
+    await clearCode(id);
+    await _box.delete('$_prefsPrefix$id');
+  }
+
+  Future<void> setSourceEnabled(String sourceId, bool enabled) async {
+    await _updateSource(sourceId, (source) => source.copyWith(isEnabled: enabled));
+  }
+
+  Future<void> setSourceFavorite(String sourceId, bool favorite) async {
+    await _updateSource(sourceId, (source) => source.copyWith(isFavorite: favorite));
+  }
+
+  Future<void> _updateSource(
+    String sourceId,
+    MangayomiSource Function(MangayomiSource) update,
+  ) async {
+    final id = sourceId.startsWith('my:')
+        ? sourceId.substring(3)
+        : sourceId;
+    final current = sources();
+    final index = current.indexWhere((source) => source.id == id);
+    if (index < 0) return;
+    current[index] = update(current[index]);
+    await _saveSources(current);
   }
 
   /// Re-fetches every installed repo index, replacing the stored metadata and

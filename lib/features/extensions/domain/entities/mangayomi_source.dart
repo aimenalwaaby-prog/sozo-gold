@@ -45,6 +45,8 @@ class MangayomiSource {
     this.hasCloudflare = false,
     this.isJavaScript = true,
     this.repoUrl = '',
+    this.isEnabled = true,
+    this.isFavorite = false,
   });
 
   final String id;
@@ -61,8 +63,13 @@ class MangayomiSource {
   final bool hasCloudflare;
   final bool isJavaScript;
 
-  /// The index this entry came from, so the source can be removed with its repo.
+  /// The index this source came from, so the source can be removed with its repo.
   final String repoUrl;
+
+  /// User-managed state. These flags live with the source row, not the repo, so
+  /// removing or refreshing one source cannot reset its siblings.
+  final bool isEnabled;
+  final bool isFavorite;
 
   /// Provider id used across the app. `my:` keeps it distinct from the Android
   /// hosts (`cs:` / `an:` / `mn:`) so dispatch stays a prefix check.
@@ -87,6 +94,28 @@ class MangayomiSource {
   String get runtimeIdentity =>
       '$version\u0000$sourceCodeUrl\u0000$repoUrl\u0000'
       '$baseUrl\u0000$apiUrl\u0000$lang\u0000${itemType.code}';
+
+  MangayomiSource copyWith({
+    bool? isEnabled,
+    bool? isFavorite,
+  }) => MangayomiSource(
+    id: id,
+    name: name,
+    baseUrl: baseUrl,
+    apiUrl: apiUrl,
+    lang: lang,
+    iconUrl: iconUrl,
+    typeSource: typeSource,
+    sourceCodeUrl: sourceCodeUrl,
+    version: version,
+    itemType: itemType,
+    isNsfw: isNsfw,
+    hasCloudflare: hasCloudflare,
+    isJavaScript: isJavaScript,
+    repoUrl: repoUrl,
+    isEnabled: isEnabled ?? this.isEnabled,
+    isFavorite: isFavorite ?? this.isFavorite,
+  );
 
   /// The metadata object handed to the extension as `this.source`. Field names
   /// are upstream's — extensions read `this.source.baseUrl` and friends.
@@ -118,6 +147,8 @@ class MangayomiSource {
     'hasCloudflare': hasCloudflare,
     'isJavaScript': isJavaScript,
     'repoUrl': repoUrl,
+    'isEnabled': isEnabled,
+    'isFavorite': isFavorite,
   };
 
   static MangayomiSource? fromIndexJson(
@@ -215,7 +246,9 @@ class MangayomiSource {
     itemType: MangayomiItemType.fromCode((json['itemType'] as num?)?.toInt()),
     isNsfw: json['isNsfw'] == true,
     hasCloudflare: json['hasCloudflare'] == true,
-    isJavaScript: json['isJavaScript'] != false,
-    repoUrl: json['repoUrl'] as String? ?? '',
-  );
+      isJavaScript: json['isJavaScript'] != false,
+      repoUrl: json['repoUrl'] as String? ?? '',
+      isEnabled: json['isEnabled'] != false,
+      isFavorite: json['isFavorite'] == true,
+    );
 }

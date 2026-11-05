@@ -75,6 +75,7 @@ class MangayomiBridge {
     final preferred = getIt<HiveService>().getProviderLanguages();
     final picked = <String, MangayomiSource>{};
     for (final s in store.sources()) {
+      if (!s.isEnabled) continue;
       if (s.isNsfw && !includeNsfw) continue;
       // Languages the user asked for do not compete for a name — they are all
       // kept, each under its own key, and the picker labels them apart. Only
@@ -119,7 +120,10 @@ class MangayomiBridge {
     return Uri.tryParse(url)?.host ?? 'Mangayomi';
   }
 
-  MangayomiSource? _source(String id) => store.sourceById(id);
+  MangayomiSource? _source(String id) {
+    final source = store.sourceById(id);
+    return source?.isEnabled == true ? source : null;
+  }
 
   // --- list shapes ---------------------------------------------------------
 

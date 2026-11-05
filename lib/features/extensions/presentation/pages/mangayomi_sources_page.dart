@@ -128,6 +128,48 @@ class _MangayomiSourcesPageState extends State<MangayomiSourcesPage> {
     });
   }
 
+  Future<void> _removeSource(MangayomiSource source) async {
+    if (_busy) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('general.remove'.tr()),
+        content: Text(source.name),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('general.cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('general.remove'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await _store.removeSource(source.id);
+    if (!mounted) return;
+    _reloadProviders();
+    setState(() {
+      _statusError = false;
+      _status = 'ext.repo_removed'.tr();
+    });
+  }
+
+  Future<void> _toggleSource(MangayomiSource source) async {
+    await _store.setSourceEnabled(source.id, !source.isEnabled);
+    if (!mounted) return;
+    _reloadProviders();
+    setState(() {});
+  }
+
+  Future<void> _toggleFavorite(MangayomiSource source) async {
+    await _store.setSourceFavorite(source.id, !source.isFavorite);
+    if (!mounted) return;
+    setState(() {});
+  }
+
   Future<void> _checkUpdates() async {
     if (_busy) return;
     setState(() {
@@ -481,6 +523,33 @@ class _MangayomiSourcesPageState extends State<MangayomiSourcesPage> {
                 icon: const Icon(Icons.tune_rounded,
                     size: 19, color: Colors.white70),
                 onPressed: () => SourceSettingsSheet.show(context, s),
+              ),
+              IconButton(
+                tooltip: s.isEnabled ? 'Disable source' : 'Enable source',
+                visualDensity: VisualDensity.compact,
+                icon: Icon(
+                  s.isEnabled ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  size: 19,
+                  color: s.isEnabled ? Colors.white70 : Colors.orangeAccent,
+                ),
+                onPressed: _busy ? null : () => _toggleSource(s),
+              ),
+              IconButton(
+                tooltip: 'Favorite source',
+                visualDensity: VisualDensity.compact,
+                icon: Icon(
+                  s.isFavorite ? Icons.star : Icons.star_border,
+                  size: 19,
+                  color: s.isFavorite ? Colors.amber : Colors.white70,
+                ),
+                onPressed: _busy ? null : () => _toggleFavorite(s),
+              ),
+              IconButton(
+                tooltip: 'general.delete'.tr(),
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.delete_outline,
+                    size: 19, color: Colors.redAccent),
+                onPressed: _busy ? null : () => _removeSource(s),
               ),
             ],
           ),
