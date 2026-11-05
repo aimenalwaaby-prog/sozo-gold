@@ -9,6 +9,7 @@ name: CI
 # stale runs so parallel builds do not waste runner time.
 
 on:
+  workflow_dispatch:
   push:
     branches: [master, gold-development, gold-stable]
     tags-ignore: ['v*']      # a tag push is a release; release.yml owns that
