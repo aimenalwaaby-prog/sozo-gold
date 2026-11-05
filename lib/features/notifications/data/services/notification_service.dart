@@ -135,6 +135,7 @@ class NotificationService {
   }
 
   Future<void>? _initializing;
+  bool _pushAvailable = false;
 
   /// Shared by concurrent callers: two initialisations would each read the
   /// launch details and open a tapped notification twice.
@@ -151,8 +152,16 @@ class NotificationService {
     }
     // Push is Android-only here, but the LOCAL plugin is what schedules airing
     // reminders — so iOS initialises it even though it never registers for FCM.
-    if (Platform.isAndroid && Firebase.apps.isEmpty) {
-      await Firebase.initializeApp();
+    if (Platform.isAndroid) {
+      try {
+        if (Firebase.apps.isEmpty) await Firebase.initializeApp();
+        _pushAvailable = Firebase.apps.isNotEmpty;
+      } catch (_) {
+        // Gold may be built before its Firebase client is provisioned. Local
+        // reminders still work; FCM must simply remain unavailable instead of
+        // breaking notification initialization or the rest of the app.
+        _pushAvailable = false;
+      }
     }
     tz.initializeTimeZones();
     // Scheduling is done in the device's own zone: an airing time converted to
@@ -395,7 +404,7 @@ class NotificationService {
     // Every platform initialises: the local plugin is what schedules airing
     // reminders, and this is the only startup call that reaches it.
     await ensureInitialized();
-    if (!Platform.isAndroid) return;
+    if (!Platform.isAndroid || !_pushAvailable) return;
 
     final token = await FirebaseMessaging.instance.getToken();
     if (token != null) {
@@ -426,7 +435,7 @@ class NotificationService {
   /// in; the server now unlinks the row and keeps it, so broadcasts continue
   /// and only that account's personal notifications stop.
   Future<void> unregister() async {
-    if (!Platform.isAndroid) return;
+    if (!Platform.isAndroid || !_pushAvailable) return;
     final token = _registeredToken ??
         await FirebaseMessaging.instance.getToken();
     if (token == null || token.isEmpty) return;
