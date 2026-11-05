@@ -47,6 +47,7 @@ import 'package:soplay/core/network/provider_interceptor.dart';
 import 'package:soplay/core/player/local_hls_proxy.dart';
 import 'package:soplay/core/player/webview_stream_extractor.dart';
 import 'package:soplay/core/storage/hive_service.dart';
+import 'package:soplay/core/constants/app_constants.dart';
 import 'package:soplay/core/discord/discord_presence_service.dart';
 import 'package:soplay/core/trailer/trailer_service.dart';
 import 'package:soplay/core/theme/theme_controller.dart';
@@ -134,6 +135,8 @@ import 'package:soplay/features/jellyfin/data/jellyfin_bridge.dart';
 import 'package:soplay/features/jellyfin/data/jellyfin_reporter.dart';
 import 'package:soplay/features/jellyfin/data/jellyfin_server_store.dart';
 import 'package:soplay/features/extensions/data/mangayomi_repo_store.dart';
+import 'package:soplay/features/stremio/data/stremio_addon_client.dart';
+import 'package:soplay/features/stremio/data/stremio_addon_store.dart';
 import 'package:soplay/features/sources/data/source_browse_repository.dart';
 import 'package:soplay/features/sources/data/source_check_store.dart';
 import 'package:soplay/features/sources/domain/source_check_service.dart';
@@ -603,6 +606,15 @@ Future<void> configureDependencies() async {
     () => MangayomiBridge(
       runtime: getIt<MangayomiRuntime>(),
       store: getIt<MangayomiRepoStore>(),
+    ),
+  );
+  getIt.registerLazySingleton<StremioAddonStore>(
+    () => StremioAddonStore(Hive.box(AppConstants.settingsBox)),
+  );
+  getIt.registerLazySingleton<StremioAddonClient>(
+    () => StremioAddonClient(
+      dio: getIt<Dio>(),
+      store: getIt<StremioAddonStore>(),
     ),
   );
   getIt.registerLazySingleton<JellyfinServerStore>(JellyfinServerStore.new);

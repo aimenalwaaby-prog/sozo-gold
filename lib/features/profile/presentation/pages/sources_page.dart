@@ -17,6 +17,7 @@ import 'package:soplay/features/extensions/presentation/pages/source_catalog_pag
 import 'package:soplay/features/jellyfin/data/jellyfin_bridge.dart';
 import 'package:soplay/features/jellyfin/presentation/pages/jellyfin_servers_page.dart';
 import 'package:soplay/features/manga/presentation/pages/manga_sources_page.dart';
+import 'package:soplay/features/stremio/presentation/pages/stremio_addons_page.dart';
 import 'package:soplay/features/profile/presentation/widgets/provider_quick_switch.dart';
 import 'package:soplay/features/profile/presentation/bloc/provider_bloc.dart';
 import 'package:soplay/features/profile/presentation/bloc/provider_state.dart';
@@ -89,6 +90,14 @@ class SourcesPage extends StatelessWidget {
           MaterialPageRoute(builder: (_) => const MangayomiSourcesPage()),
         ),
       ),
+    SettingsNavTile(
+      icon: Icons.live_tv_outlined,
+      title: 'Stremio addons',
+      subtitle: 'Addons, catalogs and manifest management',
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const StremioAddonsPage()),
+      ),
+    ),
     // Talks to the server directly, so it works on every platform.
     SettingsNavTile(
       leading: const SettingsTileLogo(
