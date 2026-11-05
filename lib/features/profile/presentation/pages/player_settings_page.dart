@@ -66,8 +66,12 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   late bool _autoTranslate;
   late String _translateLang;
   final TextEditingController _googleApiKeyController = TextEditingController();
+  final TextEditingController _openAiApiKeyController = TextEditingController();
   bool _googleApiKeyLoading = true;
+  bool _googleApiKeyChecking = false;
   bool _googleApiKeySaved = false;
+  bool _openAiApiKeySaved = false;
+  bool _openAiApiKeyChecking = false;
 
   static const List<double> _speedChoices = [
     0.5,
@@ -124,16 +128,23 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   @override
   void dispose() {
     _googleApiKeyController.dispose();
+    _openAiApiKeyController.dispose();
     super.dispose();
   }
 
   Future<void> _loadGoogleApiKey() async {
     try {
-      final key = await const SubtitleTranslationService().readGoogleApiKey();
+      const service = SubtitleTranslationService();
+      final keys = await Future.wait([
+        service.readGoogleApiKey(),
+        service.readOpenAiApiKey(),
+      ]);
       if (!mounted) return;
-      _googleApiKeyController.text = key ?? '';
+      _googleApiKeyController.text = keys[0] ?? '';
+      _openAiApiKeyController.text = keys[1] ?? '';
       setState(() {
-        _googleApiKeySaved = key != null && key.isNotEmpty;
+        _googleApiKeySaved = keys[0] != null && keys[0]!.isNotEmpty;
+        _openAiApiKeySaved = keys[1] != null && keys[1]!.isNotEmpty;
         _googleApiKeyLoading = false;
       });
     } catch (_) {
@@ -142,8 +153,14 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   }
 
   Future<void> _saveGoogleApiKey({bool remove = false}) async {
+    if (_googleApiKeyChecking) return;
+    setState(() => _googleApiKeyChecking = true);
     try {
-      await const SubtitleTranslationService().saveGoogleApiKey(
+      const service = SubtitleTranslationService();
+      if (!remove) {
+        await service.validateGoogleApiKey(_googleApiKeyController.text);
+      }
+      await service.saveGoogleApiKey(
         remove ? '' : _googleApiKeyController.text,
       );
       if (!mounted) return;
@@ -159,11 +176,30 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
           ),
         ),
       );
+    } on GoogleTranslationKeyException catch (error) {
+      if (!mounted) return;
+      final key = switch (error.failure) {
+        GoogleTranslationKeyFailure.invalid =>
+          'profile.google_translate_key_invalid',
+        GoogleTranslationKeyFailure.apiDisabled =>
+          'profile.google_translate_key_api_disabled',
+        GoogleTranslationKeyFailure.quota =>
+          'profile.google_translate_key_quota',
+        GoogleTranslationKeyFailure.network =>
+          'profile.google_translate_key_network',
+        GoogleTranslationKeyFailure.unexpected =>
+          'profile.google_translate_key_test_failed',
+      };
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(key.tr())));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('profile.google_translate_key_error'.tr())),
       );
+    } finally {
+      if (mounted) setState(() => _googleApiKeyChecking = false);
     }
   }
 
@@ -175,6 +211,52 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   int get _seekValue => _seekChoices.contains(_seekSeconds) ? _seekSeconds : 10;
   double get _boostValue => _boostChoices.contains(_boost) ? _boost : 2.0;
   String get _fitValue => _fitChoices.contains(_fit) ? _fit : 'contain';
+
+  Future<void> _saveOpenAiApiKey({bool remove = false}) async {
+    if (_openAiApiKeyChecking) return;
+    setState(() => _openAiApiKeyChecking = true);
+    try {
+      const service = SubtitleTranslationService();
+      if (!remove) {
+        await service.validateOpenAiApiKey(_openAiApiKeyController.text);
+      }
+      await service.saveOpenAiApiKey(
+        remove ? '' : _openAiApiKeyController.text,
+      );
+      if (!mounted) return;
+      if (remove) _openAiApiKeyController.clear();
+      setState(() => _openAiApiKeySaved = !remove);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            (remove
+                    ? 'profile.openai_translate_key_removed'
+                    : 'profile.openai_translate_key_saved')
+                .tr(),
+          ),
+        ),
+      );
+    } on OpenAiKeyException catch (error) {
+      if (!mounted) return;
+      final key = switch (error.failure) {
+        OpenAiKeyFailure.invalid => 'profile.openai_translate_key_invalid',
+        OpenAiKeyFailure.quota => 'profile.openai_translate_key_quota',
+        OpenAiKeyFailure.network => 'profile.openai_translate_key_network',
+        OpenAiKeyFailure.unexpected =>
+          'profile.openai_translate_key_test_failed',
+      };
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(key.tr())));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('profile.openai_translate_key_error'.tr())),
+      );
+    } finally {
+      if (mounted) setState(() => _openAiApiKeyChecking = false);
+    }
+  }
 
   void _saveSubtitle(SubtitleStyle next) {
     setState(() => _subtitle = next);
@@ -507,7 +589,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _googleApiKeyController,
-                      enabled: !_googleApiKeyLoading,
+                      enabled: !_googleApiKeyLoading && !_googleApiKeyChecking,
                       onChanged: (_) => setState(() {}),
                       obscureText: true,
                       autocorrect: false,
@@ -527,21 +609,109 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                       runSpacing: 8,
                       children: [
                         FilledButton.icon(
-                          onPressed: _googleApiKeyLoading ||
+                          onPressed:
+                              _googleApiKeyLoading ||
+                                  _googleApiKeyChecking ||
                                   _googleApiKeyController.text.trim().isEmpty
                               ? null
                               : () => _saveGoogleApiKey(),
-                          icon: const Icon(Icons.save_rounded, size: 18),
-                          label: Text('profile.google_translate_key_save'.tr()),
+                          icon: _googleApiKeyChecking
+                              ? const SizedBox.square(
+                                  dimension: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.save_rounded, size: 18),
+                          label: Text(
+                            _googleApiKeyChecking
+                                ? 'profile.google_translate_key_testing'.tr()
+                                : 'profile.google_translate_key_save'.tr(),
+                          ),
                         ),
                         if (_googleApiKeySaved)
                           TextButton.icon(
-                            onPressed: _googleApiKeyLoading
+                            onPressed:
+                                _googleApiKeyLoading || _googleApiKeyChecking
                                 ? null
                                 : () => _saveGoogleApiKey(remove: true),
                             icon: const Icon(Icons.delete_outline_rounded),
                             label: Text(
                               'profile.google_translate_key_remove'.tr(),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    Text(
+                      'profile.openai_translate_key_title'.tr(),
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'profile.openai_translate_key_hint'.tr(),
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _openAiApiKeyController,
+                      enabled: !_googleApiKeyLoading && !_openAiApiKeyChecking,
+                      onChanged: (_) => setState(() {}),
+                      obscureText: true,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.key_rounded),
+                        labelText: 'profile.openai_translate_key_title'.tr(),
+                        hintText: 'profile.openai_translate_key_placeholder'
+                            .tr(),
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
+                      children: [
+                        FilledButton.icon(
+                          onPressed:
+                              _googleApiKeyLoading ||
+                                  _openAiApiKeyChecking ||
+                                  _openAiApiKeyController.text.trim().isEmpty
+                              ? null
+                              : _saveOpenAiApiKey,
+                          icon: _openAiApiKeyChecking
+                              ? const SizedBox.square(
+                                  dimension: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.save_rounded, size: 18),
+                          label: Text(
+                            _openAiApiKeyChecking
+                                ? 'profile.google_translate_key_testing'.tr()
+                                : 'profile.openai_translate_key_save'.tr(),
+                          ),
+                        ),
+                        if (_openAiApiKeySaved)
+                          TextButton.icon(
+                            onPressed:
+                                _googleApiKeyLoading || _openAiApiKeyChecking
+                                ? null
+                                : () => _saveOpenAiApiKey(remove: true),
+                            icon: const Icon(Icons.delete_outline_rounded),
+                            label: Text(
+                              'profile.openai_translate_key_remove'.tr(),
                             ),
                           ),
                       ],

@@ -22,6 +22,9 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
   String? _selectedFilter;
   String? _message;
   bool _busy = true;
+  int _page = 0;
+  bool _hasMorePages = false;
+  bool _loadingNextPage = false;
 
   @override
   void initState() {
@@ -51,16 +54,27 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
     }
   }
 
-  String? _filterOf(dynamic item) => item is Map ? item['filter']?.toString() : null;
+  String? _filterOf(dynamic item) =>
+      item is Map ? item['filter']?.toString() : null;
   String _titleOf(dynamic item) => item is Map
       ? item['title']?.toString() ?? item['name']?.toString() ?? 'Catalog'
       : 'Catalog';
 
-  Future<void> _loadPosts() async {
+  Future<void> _loadPosts({bool nextPage = false}) async {
     final filter = _selectedFilter;
-    if (filter == null) return;
+    if (filter == null || (nextPage && (!_hasMorePages || _loadingNextPage))) {
+      return;
+    }
+    final requestedPage = nextPage ? _page + 1 : 1;
     setState(() {
-      _busy = true;
+      if (nextPage) {
+        _loadingNextPage = true;
+      } else {
+        _busy = true;
+        _page = 0;
+        _hasMorePages = false;
+        _posts = const [];
+      }
       _message = null;
     });
     try {
@@ -68,17 +82,42 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
         provider: widget.provider,
         module: 'posts',
         method: 'getPosts',
-        args: {'filter': filter, 'page': 1},
+        args: {'filter': filter, 'page': requestedPage},
       );
-      if (mounted) setState(() => _posts = value is List ? value : const []);
+      if (mounted) {
+        final batch = value is List ? value : const <dynamic>[];
+        setState(() {
+          if (!nextPage) {
+            _posts = batch;
+          } else {
+            final keys = _posts.map(_postKey).toSet();
+            _posts = [
+              ..._posts,
+              for (final post in batch)
+                if (keys.add(_postKey(post))) post,
+            ];
+          }
+          _hasMorePages = batch.isNotEmpty;
+          if (batch.isNotEmpty) _page = requestedPage;
+        });
+      }
     } catch (error) {
       if (mounted) setState(() => _message = error.toString());
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _loadingNextPage = false;
+        });
+      }
     }
   }
 
-  String? _value(dynamic item, String key) => item is Map ? item[key]?.toString() : null;
+  String _postKey(dynamic post) =>
+      _value(post, 'link') ?? _value(post, 'title') ?? post.toString();
+
+  String? _value(dynamic item, String key) =>
+      item is Map ? item[key]?.toString() : null;
 
   Future<void> _openPost(dynamic post) async {
     final link = _value(post, 'link');
@@ -107,26 +146,36 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
         if (item is! Map) continue;
         final url = item['link']?.toString();
         if (url == null || url.isEmpty) continue;
-        sources.add(VideoSourceEntity(
-          quality: item['quality']?.toString() ?? item['server']?.toString() ?? 'Vega',
-          videoUrl: url,
-          isDefault: sources.isEmpty,
-          accessible: true,
-          rawLabel: item['title']?.toString(),
-        ));
+        sources.add(
+          VideoSourceEntity(
+            quality:
+                item['quality']?.toString() ??
+                item['server']?.toString() ??
+                'Vega',
+            videoUrl: url,
+            isDefault: sources.isEmpty,
+            accessible: true,
+            rawLabel: item['title']?.toString(),
+          ),
+        );
       }
-      if (sources.isEmpty) throw StateError('Provider returned no playable streams.');
+      if (sources.isEmpty) {
+        throw StateError('Provider returned no playable streams.');
+      }
       if (!mounted) return;
-      context.push('/player', extra: PlayerArgs(
-        title: meta['title']?.toString() ?? _value(post, 'title') ?? 'Vega',
-        provider: 'vega:${widget.provider.value}',
-        contentUrl: link,
-        movieUrl: link,
-        type: meta['type']?.toString(),
-        headers: const {},
-        showDownloadAction: false,
-        videoSources: sources,
-      ));
+      context.push(
+        '/player',
+        extra: PlayerArgs(
+          title: meta['title']?.toString() ?? _value(post, 'title') ?? 'Vega',
+          provider: 'vega:${widget.provider.value}',
+          contentUrl: link,
+          movieUrl: link,
+          type: meta['type']?.toString(),
+          headers: const {},
+          showDownloadAction: false,
+          videoSources: sources,
+        ),
+      );
     } catch (error) {
       if (mounted) setState(() => _message = error.toString());
     } finally {
@@ -143,14 +192,22 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
         children: [
           if (_catalog.isNotEmpty)
             DropdownButtonFormField<String>(
-              value: _selectedFilter,
+              initialValue: _selectedFilter,
               decoration: const InputDecoration(labelText: 'Catalog'),
               items: [
                 for (final item in _catalog)
-                  DropdownMenuItem(value: _filterOf(item), child: Text(_titleOf(item))),
+                  DropdownMenuItem(
+                    value: _filterOf(item),
+                    child: Text(_titleOf(item)),
+                  ),
               ],
               onChanged: (value) {
-                setState(() => _selectedFilter = value);
+                setState(() {
+                  _selectedFilter = value;
+                  _posts = const [];
+                  _page = 0;
+                  _hasMorePages = false;
+                });
                 _loadPosts();
               },
             ),
@@ -173,11 +230,31 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
               child: ListTile(
                 leading: _value(post, 'image') == null
                     ? const Icon(Icons.movie_outlined)
-                    : Image.network(_value(post, 'image')!, width: 48, fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const Icon(Icons.movie_outlined)),
+                    : Image.network(
+                        _value(post, 'image')!,
+                        width: 48,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) =>
+                            const Icon(Icons.movie_outlined),
+                      ),
                 title: Text(_value(post, 'title') ?? 'Untitled'),
                 subtitle: Text(_value(post, 'link') ?? ''),
                 onTap: () => _openPost(post),
+              ),
+            ),
+          if (_hasMorePages || _loadingNextPage)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Center(
+                child: _loadingNextPage
+                    ? const CircularProgressIndicator()
+                    : OutlinedButton.icon(
+                        onPressed: _busy
+                            ? null
+                            : () => _loadPosts(nextPage: true),
+                        icon: const Icon(Icons.expand_more),
+                        label: const Text('Load more'),
+                      ),
               ),
             ),
         ],
