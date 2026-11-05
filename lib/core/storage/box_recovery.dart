@@ -61,24 +61,31 @@ class BoxRecovery {
   /// box opens in memory instead; that is the shape a test wants, never
   /// production.
   static Future<Box<dynamic>> open(String name, {String? directory}) async {
+    // A null directory is the explicit in-memory/test mode. Do not probe the
+    // configured Hive path first: even a failed open can acquire the file and
+    // let Hive's recovery machinery rewrite a damaged file before we reach the
+    // bytes-backed fallback below. Opening from bytes directly keeps the file
+    // completely out of this path and makes the no-preservation guarantee real.
+    if (directory == null) {
+      return Hive.openBox(name, bytes: Uint8List(0));
+    }
+
     // Recovery off: a bad checksum is reported instead of being written over.
     final clean = await _attempt(name, recovery: false);
     if (clean != null) return clean;
     await _close(name);
-    if (directory != null) {
-      final kept = await preserve(name, directory);
-      if (kept) _damaged.add(name);
-      // Now that the original is safe, let Hive keep what it can.
-      final recovered = await _attempt(name, recovery: true);
-      if (recovered != null) return recovered;
-      await _close(name);
-      // Nothing readable in it at all. Start from empty rather than not at all —
-      // the copy above is what makes that affordable.
-      if (kept) {
-        await _remove(name, directory);
-        final fresh = await _attempt(name, recovery: true);
-        if (fresh != null) return fresh;
-      }
+    final kept = await preserve(name, directory);
+    if (kept) _damaged.add(name);
+    // Now that the original is safe, let Hive keep what it can.
+    final recovered = await _attempt(name, recovery: true);
+    if (recovered != null) return recovered;
+    await _close(name);
+    // Nothing readable in it at all. Start from empty rather than not at all —
+    // the copy above is what makes that affordable.
+    if (kept) {
+      await _remove(name, directory);
+      final fresh = await _attempt(name, recovery: true);
+      if (fresh != null) return fresh;
     }
     await _close(name);
     return Hive.openBox(name, bytes: Uint8List(0));
