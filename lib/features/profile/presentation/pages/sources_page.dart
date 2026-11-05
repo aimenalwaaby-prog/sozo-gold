@@ -99,14 +99,15 @@ class SourcesPage extends StatelessWidget {
         MaterialPageRoute(builder: (_) => const StremioAddonsPage()),
       ),
     ),
-    SettingsNavTile(
-      icon: Icons.javascript_outlined,
-      title: 'Vega sources',
-      subtitle: 'Repositories and providers; JavaScript execution unavailable',
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const VegaSourcesPage()),
+    if (MangayomiRuntime.isSupported)
+      SettingsNavTile(
+        icon: Icons.javascript_outlined,
+        title: 'Vega sources',
+        subtitle: 'Browse providers and play returned streams',
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const VegaSourcesPage()),
+        ),
       ),
-    ),
     // Talks to the server directly, so it works on every platform.
     SettingsNavTile(
       leading: const SettingsTileLogo(

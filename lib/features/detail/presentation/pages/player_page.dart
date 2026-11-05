@@ -716,6 +716,7 @@ class _PlayerPageState extends State<PlayerPage>
     _longPressBoost = _hive.getLongPressBoost();
     _brightnessGestureEnabled = _hive.brightnessGestureEnabled;
     _volumeGestureEnabled = _hive.volumeGestureEnabled;
+    _subtitles = List<SubtitleEntity>.of(widget.args.initialSubtitles);
     _window = _window.at(
       widget.args.initialEpisodeIndex.clamp(
         0,

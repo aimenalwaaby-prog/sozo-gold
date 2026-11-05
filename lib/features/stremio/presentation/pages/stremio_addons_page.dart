@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:soplay/features/detail/domain/entities/player_args.dart';
+import 'package:soplay/features/detail/domain/entities/subtitle_entity.dart';
 import 'package:soplay/features/detail/domain/entities/video_source_entity.dart';
 import 'package:soplay/features/stremio/data/stremio_addon_client.dart';
 import 'package:soplay/features/stremio/data/stremio_addon_models.dart';
@@ -132,6 +133,21 @@ class _StremioAddonsPageState extends State<StremioAddonsPage> {
     });
     try {
       final result = await _client.streams(addon.url, type, id);
+      final subtitles = <SubtitleEntity>[];
+      try {
+        final subtitleResult = await _client.subtitles(addon.url, type, id);
+        for (final subtitle in subtitleResult.subtitles) {
+          final url = subtitle.url;
+          if (url == null || url.isEmpty) continue;
+          subtitles.add(SubtitleEntity(
+            label: subtitle.lang ?? 'Stremio subtitle',
+            file: url,
+          ));
+        }
+      } on StremioAddonException {
+        // The subtitle resource is optional in the Addon Protocol. Streams
+        // remain playable when an addon does not implement it.
+      }
       if (!mounted) return;
       if (result.streams.isEmpty) {
         setState(() {
@@ -174,6 +190,7 @@ class _StremioAddonsPageState extends State<StremioAddonsPage> {
           type: type,
           headers: const {},
           showDownloadAction: false,
+          initialSubtitles: subtitles,
           videoSources: [
             VideoSourceEntity(
               quality: stream.title ?? stream.name ?? 'Stremio',

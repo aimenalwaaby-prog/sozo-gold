@@ -13,6 +13,7 @@ import 'package:soplay/core/system/webview_env.dart';
 import 'package:soplay/features/extensions/data/mangayomi_repo_store.dart';
 import 'package:soplay/features/extensions/data/mangayomi_epub.dart';
 import 'package:soplay/features/extensions/domain/entities/mangayomi_source.dart';
+import 'package:soplay/features/vega/data/vega_repo_store.dart';
 
 /// Runs Mangayomi JavaScript extensions in a headless WebView.
 ///
@@ -436,6 +437,101 @@ class MangayomiRuntime {
         return value;
       }
     }
+    return value;
+  }
+
+  /// Executes one bundled Vega module in the same sandbox used by the
+  /// JavaScript extension runtime. Vega bundles are CommonJS and receive the
+  /// official providerContext shape (axios, cheerio and commonHeaders).
+  ///
+  /// This deliberately takes the cached module from [provider], never code
+  /// typed into the UI. HTTP still crosses [DartFetch], so cookies, rate
+  /// limits, private-address blocking and Cloudflare handling remain active.
+  Future<dynamic> callVega({
+    required VegaProvider provider,
+    required String module,
+    required String method,
+    required Map<String, dynamic> args,
+  }) async {
+    if (!isSupported) return null;
+    final code = provider.modules[module];
+    if (code == null || code.isEmpty) {
+      throw StateError('${provider.displayName}: missing $module module');
+    }
+    final key = '${provider.repoId}/${provider.value}/$module';
+    final result = await _locked(() async {
+      await ensureReady().timeout(kJsCallTimeout);
+      return _controller!.callAsyncJavaScript(
+        functionBody: r'''
+          const key = moduleKey;
+          const registry = globalThis.__sozoVegaModules ||
+              (globalThis.__sozoVegaModules = {});
+          const request = async (url, options = {}) => {
+            const raw = await window.flutter_inappwebview.callHandler('dartFetch', {
+              url: String(url), method: options.method || 'GET',
+              headers: options.headers || {},
+              body: options.body == null ? null :
+                (typeof options.body === 'string' ? options.body : JSON.stringify(options.body))
+            });
+            const headers = raw.headers || {};
+            return {
+              data: raw.data, status: raw.status || 0, headers,
+              config: {url: String(url)},
+              ok: (raw.status || 0) >= 200 && (raw.status || 0) < 300,
+              json: async () => raw.data,
+              text: async () => typeof raw.data === 'string' ? raw.data : JSON.stringify(raw.data)
+            };
+          };
+          const axios = {
+            get: (url, options = {}) => request(url, {...options, method: 'GET'}),
+            post: (url, body, options = {}) => request(url, {...options, method: 'POST', body}),
+            request: (options = {}) => request(options.url, options)
+          };
+          const fetch = request;
+          const providerContext = {
+            axios, cheerio: (globalThis.__lnDeps || {}).cheerio,
+            commonHeaders: {'User-Agent': 'Mozilla/5.0'}
+          };
+          if (!registry[key]) {
+            const moduleObject = {exports: {}};
+            const exports = moduleObject.exports;
+            const providerGlobal = globalThis;
+            try {
+              eval(code);
+            } catch (error) {
+              throw new Error('Vega module load failed: ' + error.message);
+            }
+            registry[key] = moduleObject.exports;
+          }
+          const loaded = registry[key];
+          let output;
+          if (moduleName === 'catalog' && methodName === 'catalog') {
+            output = loaded.catalog || [];
+          } else {
+            const fn = loaded[methodName];
+            if (typeof fn !== 'function') {
+              throw new Error('Vega module does not export ' + methodName);
+            }
+            output = await fn({...callArgs, providerContext,
+              providerValue: providerValue, signal: new AbortController().signal});
+          }
+          return output == null ? null : JSON.stringify(output);
+        ''',
+        arguments: {
+          'code': code,
+          'moduleKey': key,
+          'moduleName': module,
+          'methodName': method,
+          'providerValue': provider.value,
+          'callArgs': args,
+        },
+      ).timeout(kJsCallTimeout);
+    });
+    final error = result?.error;
+    if (error != null && error.isNotEmpty) throw Exception(error);
+    final value = result?.value;
+    if (value == null) return null;
+    if (value is String) return jsonDecode(value);
     return value;
   }
 

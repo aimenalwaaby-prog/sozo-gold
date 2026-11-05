@@ -2,6 +2,7 @@ import 'episode_entity.dart';
 import 'extractor_config_entity.dart';
 import 'thumbnails_entity.dart';
 import 'video_source_entity.dart';
+import 'subtitle_entity.dart';
 
 class PlayerArgs {
   final String title;
@@ -11,6 +12,7 @@ class PlayerArgs {
   final String? movieUrl;
   final String? type;
   final List<VideoSourceEntity> videoSources;
+  final List<SubtitleEntity> initialSubtitles;
   final Map<String, String> headers;
   final List<EpisodeEntity> episodes;
   final int initialEpisodeIndex;
@@ -99,6 +101,7 @@ class PlayerArgs {
     this.movieUrl,
     this.type,
     this.videoSources = const [],
+    this.initialSubtitles = const [],
     this.episodes = const [],
     this.initialEpisodeIndex = 0,
     this.initialLang,

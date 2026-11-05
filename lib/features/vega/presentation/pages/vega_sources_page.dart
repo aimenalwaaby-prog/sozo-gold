@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:soplay/features/vega/data/vega_repo_store.dart';
+import 'package:soplay/features/vega/presentation/pages/vega_provider_page.dart';
 
 /// Vega repository/provider management.
 ///
-/// Vega JavaScript execution is intentionally not exposed here: the data layer
-/// downloads and validates source modules, but no compatible isolated runtime
-/// has been proven safe yet.
+/// Providers are downloaded and validated by [VegaRepoStore], then executed by
+/// the shared sandbox runtime on platforms that support a headless WebView.
 class VegaSourcesPage extends StatefulWidget {
   const VegaSourcesPage({super.key});
 
@@ -99,7 +99,7 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
             child: Padding(
               padding: EdgeInsets.all(14),
               child: Text(
-                'Vega repositories and providers can be managed here. JavaScript execution is not supported until a compatible isolated runtime is verified.',
+                'Add a repository, enable a provider, then tap it to browse and play its sources.',
               ),
             ),
           ),
@@ -176,6 +176,12 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
                   leading: const Icon(Icons.extension_outlined),
                   title: Text(provider.displayName),
                   subtitle: Text('${provider.repoId} · ${provider.version}'),
+                  enabled: provider.installed,
+                  onTap: provider.installed
+                      ? () => Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => VegaProviderPage(provider: provider),
+                          ))
+                      : null,
                   trailing: PopupMenuButton<String>(
                     onSelected: (action) {
                       if (action == 'install') {
