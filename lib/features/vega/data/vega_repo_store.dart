@@ -132,6 +132,17 @@ class VegaRepoStore {
     }
     final result = await _fetchAndMerge(repo);
     if (result.errors['manifest'] != null) return result;
+    // A first install is atomic: do not leave a repository containing only
+    // the providers whose modules happened to download successfully. That
+    // state is misleading in the UI and makes a later refresh look like a
+    // provider was intentionally omitted. Existing repositories keep their
+    // cached complete providers during a partial refresh.
+    if (result.errors.isNotEmpty) {
+      await _writeProviders(
+        providers.where((VegaProvider p) => p.repoId != repo.id).toList(),
+      );
+      return result;
+    }
     await _writeRepos(<VegaRepo>[...repositories, repo.copyRefreshed()]);
     return result;
   }

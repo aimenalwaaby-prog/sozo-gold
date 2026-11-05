@@ -63,6 +63,7 @@ jobs:
   # file, a missing native symbol or a plugin that fails to build — and those
   # are exactly what a dependency bump breaks.
   build-android:
+    needs: analyze
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -135,6 +136,7 @@ jobs:
   # GitHub sells. If Windows-only breakage ever actually reaches a release,
   # that is the evidence for adding the job — not this comment.
   build-linux:
+    needs: build-android
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
