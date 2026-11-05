@@ -37,6 +37,12 @@ class StremioMeta {
   String? get type => json['type'] as String?;
   String? get name => json['name'] as String?;
   String? get poster => json['poster'] as String?;
+  String? get background => json['background'] as String?;
+  String? get description => json['description'] as String?;
+  String? get year => json['year']?.toString();
+  String? get genre => json['genre'] is List
+      ? (json['genre'] as List).whereType<String>().join(', ')
+      : json['genre'] as String?;
 }
 
 class StremioStreamResponse {

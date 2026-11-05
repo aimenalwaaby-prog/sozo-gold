@@ -138,6 +138,7 @@ import 'package:soplay/features/jellyfin/data/jellyfin_server_store.dart';
 import 'package:soplay/features/extensions/data/mangayomi_repo_store.dart';
 import 'package:soplay/features/stremio/data/stremio_addon_client.dart';
 import 'package:soplay/features/stremio/data/stremio_addon_store.dart';
+import 'package:soplay/features/vega/data/vega_repo_store.dart';
 import 'package:soplay/features/sources/data/source_browse_repository.dart';
 import 'package:soplay/features/sources/data/source_check_store.dart';
 import 'package:soplay/features/sources/domain/source_check_service.dart';
@@ -616,6 +617,12 @@ Future<void> configureDependencies() async {
     () => StremioAddonClient(
       dio: getIt<Dio>(),
       store: getIt<StremioAddonStore>(),
+    ),
+  );
+  getIt.registerLazySingleton<VegaRepoStore>(
+    () => VegaRepoStore(
+      dio: getIt<Dio>(),
+      persistence: HiveVegaRepoPersistence(Hive.box(AppConstants.settingsBox)),
     ),
   );
   getIt.registerLazySingleton<JellyfinServerStore>(JellyfinServerStore.new);

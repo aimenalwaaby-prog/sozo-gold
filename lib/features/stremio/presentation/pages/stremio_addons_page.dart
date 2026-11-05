@@ -197,6 +197,64 @@ class _StremioAddonsPageState extends State<StremioAddonsPage> {
     }
   }
 
+  Future<void> _openMeta(_AddonRecord addon, StremioMeta catalogMeta) async {
+    final type = catalogMeta.type;
+    final id = catalogMeta.id;
+    if (type == null || id == null || type.isEmpty || id.isEmpty) return;
+    setState(() {
+      _busy = true;
+      _message = 'Loading details…';
+      _error = false;
+    });
+    try {
+      final meta = await _client.meta(addon.url, type, id);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(meta.name ?? catalogMeta.name ?? id),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (meta.poster != null)
+                  Center(child: Image.network(meta.poster!, height: 220,
+                      fit: BoxFit.contain)),
+                const SizedBox(height: 12),
+                Text([meta.type, meta.year, meta.genre]
+                    .whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
+                if (meta.description?.isNotEmpty == true) ...[
+                  const SizedBox(height: 12),
+                  Text(meta.description!),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close')),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _openStreams(addon, meta);
+              },
+              child: const Text('View streams'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = true;
+          _message = e.toString();
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Widget _metaTile(_AddonRecord addon, StremioMeta meta) => ListTile(
         leading: meta.poster == null
             ? const Icon(Icons.movie_outlined)
@@ -204,7 +262,7 @@ class _StremioAddonsPageState extends State<StremioAddonsPage> {
                 errorBuilder: (_, _, _) => const Icon(Icons.broken_image_outlined)),
         title: Text(meta.name ?? meta.id ?? 'Untitled'),
         subtitle: Text([meta.type, meta.id].whereType<String>().join(' · ')),
-        onTap: () => _openStreams(addon, meta),
+        onTap: () => _openMeta(addon, meta),
       );
 
   @override

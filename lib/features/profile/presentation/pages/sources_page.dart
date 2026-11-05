@@ -18,6 +18,7 @@ import 'package:soplay/features/jellyfin/data/jellyfin_bridge.dart';
 import 'package:soplay/features/jellyfin/presentation/pages/jellyfin_servers_page.dart';
 import 'package:soplay/features/manga/presentation/pages/manga_sources_page.dart';
 import 'package:soplay/features/stremio/presentation/pages/stremio_addons_page.dart';
+import 'package:soplay/features/vega/presentation/pages/vega_sources_page.dart';
 import 'package:soplay/features/profile/presentation/widgets/provider_quick_switch.dart';
 import 'package:soplay/features/profile/presentation/bloc/provider_bloc.dart';
 import 'package:soplay/features/profile/presentation/bloc/provider_state.dart';
@@ -96,6 +97,14 @@ class SourcesPage extends StatelessWidget {
       subtitle: 'Addons, catalogs and manifest management',
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const StremioAddonsPage()),
+      ),
+    ),
+    SettingsNavTile(
+      icon: Icons.javascript_outlined,
+      title: 'Vega sources',
+      subtitle: 'Repositories and providers; JavaScript execution unavailable',
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const VegaSourcesPage()),
       ),
     ),
     // Talks to the server directly, so it works on every platform.
