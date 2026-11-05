@@ -77,20 +77,51 @@ class StremioAddonClient {
 
   /// Fetch catalog entries: /catalog/{type}/{id}[/{extra...}].json
   Future<StremioCatalogResponse> catalog(String baseUrl, String type, String id,
-      {List<String> extra = const []}) async => StremioCatalogResponse.fromJson(
-        await _getJson(_resourceUri(baseUrl, ['catalog', type, id, ...extra], jsonSuffix: true)));
+      {List<String> extra = const []}) async {
+    final json = await _getJson(
+      _resourceUri(baseUrl, ['catalog', type, id, ...extra], jsonSuffix: true),
+    );
+    _validateObjectList(json, 'metas');
+    return StremioCatalogResponse.fromJson(json);
+  }
 
   /// Fetch metadata: /meta/{type}/{id}.json
-  Future<StremioMeta> meta(String baseUrl, String type, String id) async =>
-      StremioMeta.fromJson(await _getJson(_resourceUri(baseUrl, ['meta', type, id], jsonSuffix: true)));
+  Future<StremioMeta> meta(String baseUrl, String type, String id) async {
+    final json = await _getJson(
+      _resourceUri(baseUrl, ['meta', type, id], jsonSuffix: true),
+    );
+    final value = json['meta'];
+    if (value is! Map) {
+      throw const StremioAddonException('Invalid meta response: expected an object in "meta".');
+    }
+    return StremioMeta.fromJson(Map<String, dynamic>.from(value));
+  }
 
   /// Fetch streams: /stream/{type}/{id}.json
-  Future<StremioStreamResponse> streams(String baseUrl, String type, String id) async =>
-      StremioStreamResponse.fromJson(await _getJson(_resourceUri(baseUrl, ['stream', type, id], jsonSuffix: true)));
+  Future<StremioStreamResponse> streams(String baseUrl, String type, String id) async {
+    final json = await _getJson(
+      _resourceUri(baseUrl, ['stream', type, id], jsonSuffix: true),
+    );
+    _validateObjectList(json, 'streams');
+    return StremioStreamResponse.fromJson(json);
+  }
 
   /// Fetch subtitles: /subtitles/{type}/{id}.json
-  Future<StremioSubtitleResponse> subtitles(String baseUrl, String type, String id) async =>
-      StremioSubtitleResponse.fromJson(await _getJson(_resourceUri(baseUrl, ['subtitles', type, id], jsonSuffix: true)));
+  Future<StremioSubtitleResponse> subtitles(String baseUrl, String type, String id) async {
+    final json = await _getJson(
+      _resourceUri(baseUrl, ['subtitles', type, id], jsonSuffix: true),
+    );
+    _validateObjectList(json, 'subtitles');
+    return StremioSubtitleResponse.fromJson(json);
+  }
+
+  void _validateObjectList(Map<String, dynamic> json, String field) {
+    final value = json[field];
+    if (value == null) return;
+    if (value is! List || value.any((item) => item is! Map)) {
+      throw StremioAddonException('Invalid response: "$field" must be an array of objects.');
+    }
+  }
 
   Uri _resourceUri(String baseUrl, List<String> parts, {required bool jsonSuffix}) {
     final manifest = normalizeManifestUrl(baseUrl);
@@ -106,10 +137,15 @@ class StremioAddonClient {
   }
 
   Future<Map<String, dynamic>> _getJson(Uri uri) async {
-    final response = await _dio.getUri<Object?>(uri,
-      options: Options(responseType: ResponseType.bytes, followRedirects: false,
-        receiveDataWhenStatusError: false, connectTimeout: connectTimeout,
-        receiveTimeout: receiveTimeout));
+    late final Response<Object?> response;
+    try {
+      response = await _dio.getUri<Object?>(uri,
+        options: Options(responseType: ResponseType.bytes, followRedirects: false,
+          receiveDataWhenStatusError: false, connectTimeout: connectTimeout,
+          receiveTimeout: receiveTimeout, validateStatus: (_) => true));
+    } on DioException catch (error) {
+      throw StremioAddonException('Addon request failed (${error.type.name}).');
+    }
     final data = response.data;
     if (data is! List<int> || data.length > maxResponseBytes) {
       throw const StremioAddonException('Response is not bytes or exceeds size limit.');
