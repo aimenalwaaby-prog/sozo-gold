@@ -22,6 +22,7 @@ import 'package:soplay/features/watch_services/domain/usecase/watch_services_use
 import 'package:soplay/features/watch_services/presentation/bloc/watch_services/watch_services_bloc.dart';
 import 'package:soplay/features/detail/domain/services/catalogue_resolver.dart';
 import 'package:dio/dio.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soplay/features/tracker/data/follow_sync_remote_data_source.dart';
 import 'package:soplay/features/tracker/data/follow_sync_service.dart';
 import 'package:soplay/features/tracker/data/release_feed_store.dart';
