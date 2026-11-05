@@ -106,6 +106,16 @@ jobs:
 
       - run: touch .env
       - run: flutter pub get
+      - name: Verify Release fails closed without signing key
+        run: |
+          set -euo pipefail
+          log=/tmp/release-signing-guard.log
+          if flutter build apk --release >"$log" 2>&1; then
+            echo "::error::Release build succeeded without the signing keystore."
+            exit 1
+          fi
+          cat "$log"
+          grep -q "Release signing is required" "$log"
       # Debug, not release: this proves the tree compiles. Signing a release
       # needs secrets a fork's pull request cannot have, and gating CI on them
       # would mean no outside contribution could ever go green.

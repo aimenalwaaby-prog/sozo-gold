@@ -17,6 +17,19 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+// Gradle configures Release variants even during some Debug builds. Keep that
+// configuration possible, but never execute a Release task graph without the
+// real signing file; otherwise the fallback below could ship an ephemeral
+// Debug certificate as though it were a production signature.
+gradle.taskGraph.whenReady {
+    val includesReleaseTasks = allTasks.any { it.name.contains("Release", ignoreCase = true) }
+    if (includesReleaseTasks && !keystorePropertiesFile.isFile) {
+        throw GradleException(
+            "Release signing is required. Configure android/app/key.properties and the matching keystore; refusing Debug signing.",
+        )
+    }
+}
+
 android {
     namespace = "com.soplay.sozo"
     compileSdk = flutter.compileSdkVersion
@@ -92,7 +105,9 @@ android {
 
     buildTypes {
         release {
-            // 3. Debug imzosini "release" imzosiga almashtirish (imzo mavjud bo'lsa).
+            // This fallback permits Gradle variant configuration. The task-graph
+            // guard above makes every actual Release build fail closed without
+            // the production key instead of silently shipping a Debug signature.
             signingConfig = signingConfigs.findByName("release")
                 ?: signingConfigs.getByName("debug")
 
