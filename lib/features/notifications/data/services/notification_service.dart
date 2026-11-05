@@ -575,7 +575,7 @@ class NotificationService {
     }
     await _local.show(
       0x7E57,
-      'Sozo',
+      'Sozo Gold',
       'release_notify.test_body'.tr(),
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -626,7 +626,7 @@ class NotificationService {
     final l = labels();
     await _local.show(
       n?.hashCode ?? msg.messageId.hashCode,
-      title ?? 'Sozo',
+      title ?? 'Sozo Gold',
       body ?? '',
       NotificationDetails(
         android: AndroidNotificationDetails(

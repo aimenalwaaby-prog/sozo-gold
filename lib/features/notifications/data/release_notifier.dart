@@ -232,7 +232,9 @@ class ReleaseNotifier {
   static const String quietChannel = 'sozo_quiet';
   static const String group = 'sozo.releases';
   static const String smallIcon = '@drawable/ic_stat_sozo';
-  static const ui.Color accent = ui.Color(0xFFE50914);
+  /// Gold is the system-facing identity; red remains an in-app secondary
+  /// accent and is intentionally not used for Android notification chrome.
+  static const ui.Color accent = ui.Color(0xFFD4A72C);
 
   static const int summaryId = 0x50E0;
   static const String actionOpen = 'open';

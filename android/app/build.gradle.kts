@@ -6,8 +6,18 @@ plugins {
     id("kotlin-android")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+}
+
+// Gold has its own install identity. Firebase is applied only when a client
+// registered for this exact package is supplied; the checked-in config still
+// contains the original Sozo clients, so cloning one would be misleading.
+val goldApplicationId = "com.aimenalwaaby.sozogold"
+val firebaseConfigFile = rootProject.file("app/google-services.json")
+val hasGoldFirebaseClient = firebaseConfigFile.isFile &&
+    firebaseConfigFile.readText().contains("\"package_name\": \"$goldApplicationId\"")
+if (hasGoldFirebaseClient) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 // 1. Keystore ma'lumotlarini yuklash
@@ -55,7 +65,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.soplay.sozo"
+        applicationId = goldApplicationId
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
