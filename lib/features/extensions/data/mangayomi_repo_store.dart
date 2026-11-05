@@ -134,6 +134,7 @@ class MangayomiRepoStore {
     if (decoded is! List) throw Exception('Unexpected index format');
 
     final existing = sources();
+    final existingById = {for (final source in existing) source.id: source};
     // Replace this repository's snapshot; a successful refresh can retire IDs.
     // Keep other repositories until their own index has been fetched successfully.
     final byId = {
@@ -161,7 +162,7 @@ class MangayomiRepoStore {
         continue;
       }
       if (!oldIds.contains(src.id)) added++;
-      final previous = byId[src.id];
+      final previous = existingById[src.id];
       // A refresh changes metadata, not the user's source-level choices.
       byId[src.id] = previous == null
           ? src
