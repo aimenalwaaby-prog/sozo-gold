@@ -176,8 +176,9 @@ class _ResponseAdapter implements HttpClientAdapter {
   _ResponseAdapter(this.payload, {this.statusCode = 200})
       : _rawBody = null;
 
-  _ResponseAdapter.raw(String body, {this.statusCode = 200})
+  _ResponseAdapter.raw(String body)
       : payload = null,
+        statusCode = 200,
         _rawBody = body;
 
   final Object? payload;
