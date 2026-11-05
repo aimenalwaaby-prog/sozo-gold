@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:soplay/features/detail/domain/entities/player_args.dart';
+import 'package:soplay/features/detail/domain/entities/video_source_entity.dart';
 import 'package:soplay/features/stremio/data/stremio_addon_client.dart';
 import 'package:soplay/features/stremio/data/stremio_addon_models.dart';
 
@@ -101,7 +104,7 @@ class _StremioAddonsPageState extends State<StremioAddonsPage> {
               if (result.metas.isEmpty)
                 const Text('The addon returned an empty catalog.')
               else
-                for (final meta in result.metas) _metaTile(meta),
+                for (final meta in result.metas) _metaTile(addon, meta),
             ],
           ),
         ),
@@ -118,13 +121,90 @@ class _StremioAddonsPageState extends State<StremioAddonsPage> {
     }
   }
 
-  Widget _metaTile(StremioMeta meta) => ListTile(
+  Future<void> _openStreams(_AddonRecord addon, StremioMeta meta) async {
+    final type = meta.type;
+    final id = meta.id;
+    if (type == null || id == null || type.isEmpty || id.isEmpty) return;
+    setState(() {
+      _busy = true;
+      _message = 'Loading streams…';
+      _error = false;
+    });
+    try {
+      final result = await _client.streams(addon.url, type, id);
+      if (!mounted) return;
+      if (result.streams.isEmpty) {
+        setState(() {
+          _error = true;
+          _message = 'The addon returned no playable streams.';
+        });
+        return;
+      }
+      final stream = await showModalBottomSheet<StremioStream>(
+        context: context,
+        builder: (_) => SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(meta.name ?? id,
+                    style: Theme.of(context).textTheme.titleLarge),
+              ),
+              for (final candidate in result.streams)
+                ListTile(
+                  leading: const Icon(Icons.play_circle_outline),
+                  title: Text(candidate.name ?? 'Stremio stream'),
+                  subtitle: Text(candidate.title ?? candidate.url ?? ''),
+                  enabled: candidate.url?.isNotEmpty == true,
+                  onTap: () => Navigator.of(context).pop(candidate),
+                ),
+            ],
+          ),
+        ),
+      );
+      if (!mounted || stream?.url == null || stream!.url!.isEmpty) return;
+      context.push(
+        '/player',
+        extra: PlayerArgs(
+          title: meta.name ?? id,
+          provider: 'stremio:${addon.manifest.id}',
+          contentUrl: id,
+          movieUrl: id,
+          type: type,
+          headers: const {},
+          showDownloadAction: false,
+          videoSources: [
+            VideoSourceEntity(
+              quality: stream.title ?? stream.name ?? 'Stremio',
+              videoUrl: stream.url!,
+              isDefault: true,
+              accessible: true,
+              rawLabel: stream.title,
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = true;
+          _message = e.toString();
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Widget _metaTile(_AddonRecord addon, StremioMeta meta) => ListTile(
         leading: meta.poster == null
             ? const Icon(Icons.movie_outlined)
             : Image.network(meta.poster!, width: 42, height: 62, fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => const Icon(Icons.broken_image_outlined)),
         title: Text(meta.name ?? meta.id ?? 'Untitled'),
         subtitle: Text([meta.type, meta.id].whereType<String>().join(' · ')),
+        onTap: () => _openStreams(addon, meta),
       );
 
   @override
