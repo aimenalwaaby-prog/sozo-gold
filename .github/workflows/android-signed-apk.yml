@@ -58,8 +58,10 @@ jobs:
       - name: Fetch dependencies
         run: flutter pub get
 
-      - name: Build universal release APK
-        run: flutter build apk --release
+      - name: Build ABI-split release APKs
+        # The universal APK bundled every native video/torrent library for
+        # every CPU. Users now download only the ABI their phone needs.
+        run: flutter build apk --release --split-per-abi
 
       - name: Verify release certificate
         env:
@@ -67,17 +69,19 @@ jobs:
         run: |
           set -euo pipefail
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)"
-          APK=build/app/outputs/flutter-apk/app-release.apk
-          CERT="$($APKSIGNER verify --print-certs "$APK")"
-          echo "$CERT"
-          echo "$CERT" | grep -q 'CN=Sozo Gold'
-          ACTUAL="$(echo "$CERT" | sed -nE 's/.*SHA-256 digest: ([0-9a-f]+).*/\1/p')"
-          test "$ACTUAL" = "$EXPECTED_SHA256"
+          for APK in build/app/outputs/flutter-apk/app-*-release.apk; do
+            CERT="$($APKSIGNER verify --print-certs "$APK")"
+            echo "$APK"
+            echo "$CERT"
+            echo "$CERT" | grep -q 'CN=Sozo Gold'
+            ACTUAL="$(echo "$CERT" | sed -nE 's/.*SHA-256 digest: ([0-9a-f]+).*/\1/p')"
+            test "$ACTUAL" = "$EXPECTED_SHA256"
+          done
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: Sozo-Gold-signed-universal
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: Sozo-Gold-signed-abi-split
+          path: build/app/outputs/flutter-apk/app-*-release.apk
           if-no-files-found: error
           retention-days: 30

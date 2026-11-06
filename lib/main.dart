@@ -83,18 +83,23 @@ void main(List<String> args) async {
   try {
     await dotenv.load(fileName: '.env');
   } catch (_) {}
-  await Future.wait([
-    EasyLocalization.ensureInitialized(),
-    _initHive(),
-    // Adopt the device's own WebView User-Agent before anything makes a
-    // request. A Cloudflare managed challenge compares the header against the
-    // engine behind it, so a hard-coded version that does not match this
-    // device's WebView is a mismatch the challenge never clears.
-    initSozoUserAgent(),
-  ]);
-  // After Hive, before the first frame: it reads and may stamp a settings key,
-  // and a first run must be stamped before anything can be called new.
-  await WhatsNew.init();
+  try {
+    await Future.wait([
+      EasyLocalization.ensureInitialized(),
+      _initHive(),
+      // Adopt the device's own WebView User-Agent before anything makes a
+      // request. A Cloudflare managed challenge compares the header against
+      // the engine behind it, so a hard-coded version that does not match this
+      // device's WebView is a mismatch the challenge never clears.
+      initSozoUserAgent(),
+    ]);
+    // After Hive, before the first frame: it reads and may stamp a settings key,
+    // and a first run must be stamped before anything can be called new.
+    await WhatsNew.init();
+  } catch (error, stack) {
+    _runStartupFailure(error, stack, 'storage/localization');
+    return;
+  }
   if (isDesktopPlatform) {
     final native =
         Hive.box(
@@ -118,7 +123,12 @@ void main(List<String> args) async {
 
   PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
   await _initFirebaseSafely();
-  await configureDependencies();
+  try {
+    await configureDependencies();
+  } catch (error, stack) {
+    _runStartupFailure(error, stack, 'dependency setup');
+    return;
+  }
   // Before anything can navigate — the deep-link and push handlers below, and
   // the first frame — so every way in lands under the lock.
   getIt<AppLockGate>().start();
@@ -243,7 +253,11 @@ void main(List<String> args) async {
   // `main`, so by here it has usually finished. Not awaited, exactly one
   // launch per install — the cold one everybody's first impression is made
   // of — would fall back to a flat logo.
-  await brand;
+  // Branding is cosmetic. A slow/corrupt artwork decode must not keep Android
+  // on the window's white surface forever; the regular app UI is authoritative.
+  try {
+    await brand.timeout(const Duration(seconds: 3));
+  } catch (_) {}
 
   runApp(root);
 
@@ -266,6 +280,33 @@ void main(List<String> args) async {
     // was opened with leaves the user in the app rather than on a blank stack.
     if (launchFile != null) AppRouter.router.push('/player', extra: launchFile);
   });
+}
+
+/// A pre-run failure used to leave Android showing only a white surface.
+/// This path is intentionally outside the normal UI and is only reachable when
+/// storage or dependency setup is genuinely broken; normal launches still use
+/// the existing router and screens unchanged.
+void _runStartupFailure(Object error, StackTrace stack, String phase) {
+  debugPrint('[startup] $phase failed: $error\n$stack');
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(useMaterial3: true),
+      home: Scaffold(
+        backgroundColor: const Color(0xFF0D0B08),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Text(
+              'Sozo Gold\n\nتعذر تجهيز التطبيق. أعد فتحه بعد لحظات.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70, fontSize: 18),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Container formats libmpv plays and the OS is likely to hand us.
