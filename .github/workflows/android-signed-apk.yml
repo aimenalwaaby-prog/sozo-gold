@@ -40,8 +40,15 @@ jobs:
           DOTENV: ${{ secrets.DOTENV }}
         run: |
           set -euo pipefail
-          test -n "$DOTENV" || { echo '::error::DOTENV secret is missing'; exit 1; }
-          printf '%s' "$DOTENV" > .env
+          # Runtime integrations already degrade safely when optional keys are
+          # absent. A missing build-only secret must not prevent the APK from
+          # being produced; never commit or print its value.
+          if [ -n "$DOTENV" ]; then
+            printf '%s' "$DOTENV" > .env
+          else
+            : > .env
+            echo '::warning::DOTENV secret is not configured; building with an empty optional .env'
+          fi
 
       - name: Restore signing key
         env:
