@@ -122,6 +122,10 @@ class AppTheme {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(kFieldRadius),
+        side: BorderSide(
+          color: AppColors.primary.withValues(alpha: 0.09),
+          width: 1,
+        ),
       ),
     ),
     // ── The one button shape ────────────────────────────────────────

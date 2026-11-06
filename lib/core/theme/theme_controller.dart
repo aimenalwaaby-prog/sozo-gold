@@ -217,7 +217,7 @@ class ThemeController extends ChangeNotifier {
     await setAccent(presets[next < 0 ? next + presets.length : next]);
   }
 
-  /// Back to the shipped look: default red, ordinary dark greys.
+  /// Back to the shipped look: Sozo Gold, ordinary dark greys.
   Future<void> reset() async {
     if (isDefault) return;
     _accent = AppAccent.fallback;

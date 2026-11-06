@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:soplay/core/theme/app_colors.dart';
 
 import 'package:soplay/features/vega/data/vega_repo_store.dart';
 import 'package:soplay/features/vega/presentation/pages/vega_provider_page.dart';
@@ -17,15 +18,26 @@ class VegaSourcesPage extends StatefulWidget {
 
 class _VegaSourcesPageState extends State<VegaSourcesPage> {
   final _url = TextEditingController();
+  final _search = TextEditingController();
   late final VegaRepoStore _store = GetIt.I<VegaRepoStore>();
   bool _busy = false;
   String? _message;
   bool _error = false;
+  String _query = '';
+  String _language = 'all';
 
   @override
   void dispose() {
     _url.dispose();
+    _search.dispose();
     super.dispose();
+  }
+
+  bool _matches(VegaProvider provider) {
+    final haystack = '${provider.displayName} ${provider.value} ${provider.type}'.toLowerCase();
+    final query = _query.trim().toLowerCase();
+    if (query.isNotEmpty && !haystack.contains(query)) return false;
+    return _language == 'all' || haystack.contains(_language);
   }
 
   Future<void> _addRepository() async {
@@ -76,11 +88,6 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
     if (mounted) setState(() => _message = 'Repository removed.');
   }
 
-  Future<void> _removeProvider(VegaProvider provider) async {
-    await _store.removeProvider(provider.repoId, provider.value);
-    if (mounted) setState(() => _message = 'Provider removed.');
-  }
-
   Future<void> _setInstalled(VegaProvider provider, bool installed) async {
     await _store.setInstalled(provider.repoId, provider.value, installed);
     if (mounted) setState(() {});
@@ -89,17 +96,41 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
   @override
   Widget build(BuildContext context) {
     final repositories = _store.repositories;
-    final providers = _store.providers;
+    final providers = _store.providers.where(_matches).toList(growable: false);
     return Scaffold(
-      appBar: AppBar(title: const Text('Vega Sources')),
+      appBar: AppBar(
+        title: const Text('Vega Sources'),
+        actions: [
+          IconButton(
+            tooltip: 'Clear filters',
+            onPressed: _query.isEmpty && _language == 'all'
+                ? null
+                : () => setState(() {
+                    _query = '';
+                    _language = 'all';
+                    _search.clear();
+                  }),
+            icon: const Icon(Icons.filter_alt_off_outlined),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(14),
-              child: Text(
-                'Add a repository, enable a provider, then tap it to browse and play its sources.',
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.auto_awesome, color: AppColors.primaryLight),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Add a repository, filter providers by name or language, enable the ones you want, then tap an enabled provider to browse and play its sources.',
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -131,10 +162,31 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
             const SizedBox(height: 10),
             Text(
               _message!,
-              style: TextStyle(color: _error ? Colors.red : Colors.green),
+              style: TextStyle(color: _error ? AppColors.error : AppColors.success),
             ),
           ],
           const SizedBox(height: 20),
+          TextField(
+            controller: _search,
+            onChanged: (value) => setState(() => _query = value),
+            decoration: const InputDecoration(
+              labelText: 'Search providers',
+              prefixIcon: Icon(Icons.search),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final code in const ['all', 'ar', 'en', 'fr', 'es', 'tr', 'de', 'ja'])
+                FilterChip(
+                  selected: _language == code,
+                  label: Text(code == 'all' ? 'All languages' : code.toUpperCase()),
+                  onSelected: (_) => setState(() => _language = code),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
           Text('Repositories (${repositories.length})',
               style: Theme.of(context).textTheme.titleMedium),
           if (repositories.isEmpty)
@@ -162,18 +214,34 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
                 ),
               ),
           const SizedBox(height: 20),
-          Text('Providers (${providers.length})',
-              style: Theme.of(context).textTheme.titleMedium),
+          Row(
+            children: [
+              Expanded(
+                child: Text('Providers (${providers.length})',
+                    style: Theme.of(context).textTheme.titleMedium),
+              ),
+              if (_store.providers.length != providers.length)
+                Text('${_store.providers.length} total',
+                    style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
           if (providers.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text('No Vega providers loaded.'),
+              child: Text('No providers match the current filters.'),
             )
           else
             for (final provider in providers)
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.extension_outlined),
+                  leading: Icon(
+                    provider.installed
+                        ? Icons.check_circle
+                        : Icons.extension_outlined,
+                    color: provider.installed
+                        ? AppColors.primaryLight
+                        : AppColors.textSecondary,
+                  ),
                   title: Text(provider.displayName),
                   subtitle: Text('${provider.repoId} · ${provider.version}'),
                   enabled: provider.installed,
@@ -182,23 +250,9 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
                             builder: (_) => VegaProviderPage(provider: provider),
                           ))
                       : null,
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (action) {
-                      if (action == 'install') {
-                        _setInstalled(provider, !provider.installed);
-                      }
-                      if (action == 'remove') _removeProvider(provider);
-                    },
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        value: 'install',
-                        child: Text(provider.installed ? 'Disable' : 'Enable'),
-                      ),
-                      const PopupMenuItem(
-                        value: 'remove',
-                        child: Text('Remove provider'),
-                      ),
-                    ],
+                  trailing: Switch(
+                    value: provider.installed,
+                    onChanged: (value) => _setInstalled(provider, value),
                   ),
                 ),
               ),
