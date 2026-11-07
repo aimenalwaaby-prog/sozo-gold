@@ -82,7 +82,11 @@ void main(List<String> args) async {
   }
   try {
     await dotenv.load(fileName: '.env');
-  } catch (_) {}
+  } catch (error) {
+    // All entries are optional; a build without a private .env must still
+    // start, but make the fallback visible for diagnosis.
+    debugPrint('[config] .env unavailable; using optional defaults: $error');
+  }
   try {
     await Future.wait([
       EasyLocalization.ensureInitialized(),

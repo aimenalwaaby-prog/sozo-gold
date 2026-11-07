@@ -8,6 +8,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// `.env` is a Flutter asset, but is intentionally ignored by Git because it
+// may contain private keys. Keep clean checkouts buildable without credentials:
+// use the documented defaults only when no local/CI environment file exists.
+// Never overwrite a real environment file supplied by the developer or CI.
+val dotenvFile = rootProject.file("../.env")
+val dotenvExampleFile = rootProject.file("../.env.example")
+if (!dotenvFile.exists() && dotenvExampleFile.isFile) {
+    dotenvExampleFile.copyTo(dotenvFile)
+}
+
 // Gold has its own install identity. Firebase is applied only when a client
 // registered for this exact package is supplied; the checked-in config still
 // contains the original Sozo clients, so cloning one would be misleading.
