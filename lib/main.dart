@@ -509,7 +509,7 @@ Future<void> _restoreAnilistAndReminders() async {
 
 void _fireAndForget(Future<void> future, String tag) {
   future.catchError((Object e) {
-    if (kDebugMode) debugPrint('[$tag] background init failed: $e');
+    debugPrint('[$tag] background init failed: $e');
   });
 }
 
@@ -536,7 +536,10 @@ Future<void> _initFirebaseSafely() async {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
-  } catch (e) {
-    if (kDebugMode) debugPrint('[Firebase] init failed: $e');
+  } catch (e, stack) {
+    // Firebase is optional for this Gold package unless its matching client is
+    // configured. Keep the app usable, but retain enough diagnostics to fix a
+    // broken Firebase setup instead of silently disguising it as success.
+    debugPrint('[Firebase] initialization/Crashlytics setup failed: $e\n$stack');
   }
 }

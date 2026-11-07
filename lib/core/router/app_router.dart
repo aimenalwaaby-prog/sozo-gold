@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:soplay/features/notifications/presentation/pages/notification_settings_page.dart';
 import 'package:soplay/features/tracker/presentation/pages/release_feed_page.dart';
 import 'package:soplay/features/trakt/presentation/trakt_hub_page.dart';
@@ -168,6 +169,32 @@ Page<void> _bloomPage(GoRouterState state, Widget child) {
 class AppRouter {
   AppRouter._();
 
+  /// Analytics is an optional observer, not an application prerequisite.
+  /// Gold may be built without a Firebase client registered for its package;
+  /// in that case even reading `FirebaseAnalytics.instance` throws before the
+  /// first route can be built. Check initialization first and keep navigation
+  /// alive if the plugin/service is unavailable.
+  static List<NavigatorObserver> _analyticsObservers() {
+    if (!Platform.isAndroid) return const [];
+    if (Firebase.apps.isEmpty) {
+      debugPrint(
+        '[Firebase Analytics] Firebase is not initialized; observer disabled',
+      );
+      return const [];
+    }
+    try {
+      return [
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      ];
+    } catch (error, stack) {
+      debugPrint(
+        '[Firebase Analytics] observer unavailable; continuing without it: '
+        '$error\n$stack',
+      );
+      return const [];
+    }
+  }
+
   static bool dismissTopmost() {
     final nav = router.routerDelegate.navigatorKey.currentState;
     if (nav != null && nav.canPop()) {
@@ -190,9 +217,7 @@ class AppRouter {
       debugPrint('[Router] no route for ${state.uri} — falling back to /main');
       router.go('/main');
     },
-    observers: Platform.isAndroid
-        ? [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)]
-        : [],
+    observers: _analyticsObservers(),
     routes: [
       GoRoute(
         path: '/view-all',
