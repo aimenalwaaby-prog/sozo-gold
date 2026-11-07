@@ -176,13 +176,13 @@ class AppRouter {
   /// alive if the plugin/service is unavailable.
   static List<NavigatorObserver> _analyticsObservers() {
     if (!Platform.isAndroid) return const [];
-    if (Firebase.apps.isEmpty) {
-      debugPrint(
-        '[Firebase Analytics] Firebase is not initialized; observer disabled',
-      );
-      return const [];
-    }
     try {
+      if (Firebase.apps.isEmpty) {
+        debugPrint(
+          '[Firebase Analytics] Firebase is not initialized; observer disabled',
+        );
+        return const [];
+      }
       return [
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
       ];
