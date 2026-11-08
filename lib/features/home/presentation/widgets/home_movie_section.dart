@@ -207,15 +207,37 @@ class _MovieCardState extends State<_MovieCard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          color: AppColors.background.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.24),
+            width: 0.7,
+          ),
+          // A restrained lower shadow gives the poster a lifted, dimensional
+          // edge without reducing the available artwork area.
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.5),
+              blurRadius: 11,
+              offset: const Offset(0, 5),
+            ),
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.055),
+              blurRadius: 10,
+              offset: const Offset(0, -1),
+            ),
+          ],
+        ),
         // foregroundDecoration paints the hover ring OVER the poster, so the
         // image stays full-bleed (no permanent inset gap) when not hovered.
         foregroundDecoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius),
           border: Border.all(
             color: desktop && _hover
-                ? AppColors.textPrimary
-                : Colors.transparent,
-            width: 2.5,
+                ? AppColors.primaryLight
+                : AppColors.primary.withValues(alpha: 0.3),
+            width: desktop && _hover ? 1.2 : 0.65,
           ),
         ),
         child: ClipRRect(

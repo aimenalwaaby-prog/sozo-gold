@@ -25,7 +25,9 @@ import 'package:soplay/features/watch_services/presentation/bloc/watch_services/
 /// It carries its own way off Home, because a band that can only be removed
 /// from a settings screen somewhere else is a band people put up with.
 class HomeWatchServicesSection extends StatefulWidget {
-  const HomeWatchServicesSection({super.key});
+  const HomeWatchServicesSection({super.key, this.scope});
+
+  final String? scope;
 
   @override
   State<HomeWatchServicesSection> createState() =>
@@ -56,7 +58,7 @@ class _HomeWatchServicesSectionState extends State<HomeWatchServicesSection> {
 
     Future<void> remove() async {
       final hive = getIt<HiveService>();
-      await hive.hideHomeRail(HomeRail.watchServices.id);
+      await hive.hideHomeRail(HomeRail.watchServices.id, scope: widget.scope);
       getIt<Analytics>().track(
         AnalyticsEvent.homeRailRemoved,
         props: {'rail': HomeRail.watchServices.id},
@@ -183,6 +185,7 @@ class HomeSuggestionCard extends StatefulWidget {
   const HomeSuggestionCard({
     super.key,
     required this.rail,
+    this.scope,
     required this.title,
     required this.body,
     required this.icon,
@@ -191,6 +194,7 @@ class HomeSuggestionCard extends StatefulWidget {
   });
 
   final HomeRail rail;
+  final String? scope;
 
   /// The band this card was shown under. A yes puts the new band here, so it
   /// appears where it was offered rather than wherever the default order has
@@ -231,6 +235,7 @@ class _HomeSuggestionCardState extends State<HomeSuggestionCard> {
       widget.rail.id,
       accepted: accepted,
       after: widget.follows.id,
+      scope: widget.scope,
     );
     getIt<Analytics>().track(
       accepted

@@ -7,6 +7,9 @@ import '../player/quality_preference.dart';
 import 'profile_scope.dart';
 import '../subtitles/subtitle_languages.dart';
 import '../../features/auth/data/models/user_model.dart';
+import '../../features/home/domain/home_banner_style.dart';
+import '../../features/home/domain/entities/home_section_entity.dart';
+import '../../features/home/domain/home_section_layout.dart';
 import '../../features/home/domain/home_rail.dart';
 import '../../features/onboarding/domain/taste_profile.dart';
 import '../../features/detail/domain/entities/subtitle_style.dart';
@@ -346,10 +349,65 @@ class HiveService {
   /// tomorrow — resetting to video on every launch would make the mode a thing
   /// you set rather than a thing you are in.
   /// The home bands, repaired on the way out — see [sanitizeRailOrder].
-  List<String> getHomeRailOrder() {
-    final raw = _settingsBox.get(
-      ProfileScope.key(AppConstants.homeRailOrderKey),
+  String _homeRailPreferenceKey(String key, String? scope) =>
+      ProfileScope.key(scope == null ? key : '$key.$scope');
+
+  dynamic _readHomeRailPreference(String key, String? scope) {
+    final scoped = _settingsBox.get(_homeRailPreferenceKey(key, scope));
+    if (scoped != null || scope == null) return scoped;
+    // A scoped layout inherits the former shared preference until the viewer
+    // saves that interface. This is a read-only migration: existing values are
+    // never moved or deleted, and changing one interface cannot rewrite the
+    // others.
+    return _settingsBox.get(_homeRailPreferenceKey(key, null));
+  }
+
+  String getHomeBannerStyle({String? scope}) {
+    final raw = _readHomeRailPreference('home_banner_style', scope);
+    return HomeBannerStyle.fromId(raw is String ? raw : null).id;
+  }
+
+  Future<void> saveHomeBannerStyle(String style, {String? scope}) async {
+    if (!HomeBannerStyle.values.any((value) => value.id == style)) return;
+    await _settingsBox.put(
+      _homeRailPreferenceKey('home_banner_style', scope),
+      style,
     );
+    homeRailsChanged.value = !homeRailsChanged.value;
+  }
+
+  String _homeSectionLayoutKey(String scope, String providerId) =>
+      ProfileScope.key('home_sections.$scope.$providerId');
+
+  List<String> getHomeSectionLayout({
+    required String scope,
+    required String providerId,
+    required List<HomeSectionEntity> sections,
+  }) {
+    final raw = _settingsBox.get(_homeSectionLayoutKey(scope, providerId));
+    final stored = raw is List
+        ? raw.map((value) => value.toString()).toList()
+        : const <String>[];
+    return [
+      for (final entry in sanitizeHomeSectionLayout(stored, sections))
+        entry.encode(),
+    ];
+  }
+
+  Future<void> saveHomeSectionLayout({
+    required String scope,
+    required String providerId,
+    required List<String> entries,
+  }) async {
+    await _settingsBox.put(
+      _homeSectionLayoutKey(scope, providerId),
+      entries,
+    );
+    homeRailsChanged.value = !homeRailsChanged.value;
+  }
+
+  List<String> getHomeRailOrder({String? scope}) {
+    final raw = _readHomeRailPreference(AppConstants.homeRailOrderKey, scope);
     if (raw is! List) return const [];
     return raw.map((e) => e.toString()).toList();
   }
@@ -360,16 +418,14 @@ class HiveService {
   /// added in a new version arrives in everybody's rail order, and an empty
   /// hidden set would mean every existing install found something new on Home
   /// that nobody asked for.
-  Set<String> getHomeRailHidden() {
-    final raw = _settingsBox.get(
-      ProfileScope.key(AppConstants.homeRailHiddenKey),
-    );
+  Set<String> getHomeRailHidden({String? scope}) {
+    final raw = _readHomeRailPreference(AppConstants.homeRailHiddenKey, scope);
     if (raw is! List) return HomeRail.optIn;
     final stored = raw.map((e) => e.toString()).toSet();
     // An opt-in band that predates this install's stored set has never been
     // answered, so it is still off. Once the question is answered the band's
     // id is written either way, which is what takes it out of this branch.
-    final answered = getAnsweredHomeSuggestions();
+    final answered = getAnsweredHomeSuggestions(scope: scope);
     return {
       ...stored,
       for (final id in HomeRail.optIn)
@@ -378,16 +434,17 @@ class HiveService {
   }
 
   /// Home suggestions that have been put to the viewer and answered.
-  Set<String> getAnsweredHomeSuggestions() {
-    final raw = _settingsBox.get(
-      ProfileScope.key(AppConstants.homeSuggestionsAnsweredKey),
+  Set<String> getAnsweredHomeSuggestions({String? scope}) {
+    final raw = _readHomeRailPreference(
+      AppConstants.homeSuggestionsAnsweredKey,
+      scope,
     );
     if (raw is! List) return const {};
     return raw.map((e) => e.toString()).toSet();
   }
 
-  bool hasAnsweredHomeSuggestion(String id) =>
-      getAnsweredHomeSuggestions().contains(id);
+  bool hasAnsweredHomeSuggestion(String id, {String? scope}) =>
+      getAnsweredHomeSuggestions(scope: scope).contains(id);
 
   /// Records the answer and applies it, in one write.
   ///
@@ -402,16 +459,19 @@ class HiveService {
     String id, {
     required bool accepted,
     String? after,
+    String? scope,
   }) async {
-    final answered = {...getAnsweredHomeSuggestions(), id};
+    final answered = {...getAnsweredHomeSuggestions(scope: scope), id};
     await _settingsBox.put(
-      ProfileScope.key(AppConstants.homeSuggestionsAnsweredKey),
+      _homeRailPreferenceKey(AppConstants.homeSuggestionsAnsweredKey, scope),
       answered.toList(),
     );
-    final hidden = getHomeRailHidden();
+    final hidden = getHomeRailHidden(scope: scope);
     // Sanitized first: nothing may be stored yet, and an order that does not
     // contain the band cannot have it moved within it.
-    var order = [for (final r in sanitizeRailOrder(getHomeRailOrder())) r.id];
+    var order = [
+      for (final r in sanitizeRailOrder(getHomeRailOrder(scope: scope))) r.id,
+    ];
     if (accepted && after != null) {
       order = placeRailAfter(order, id, after);
     }
@@ -419,33 +479,41 @@ class HiveService {
       for (final h in hidden)
         if (!(accepted && h == id)) h,
       if (!accepted) id,
-    });
+    }, scope: scope);
   }
 
   /// Switches a band off from the band itself, rather than from the customizer.
-  Future<void> hideHomeRail(String id) async {
-    await saveHomeRails(getHomeRailOrder(), {...getHomeRailHidden(), id});
+  Future<void> hideHomeRail(String id, {String? scope}) async {
+    await saveHomeRails(
+      getHomeRailOrder(scope: scope),
+      {...getHomeRailHidden(scope: scope), id},
+      scope: scope,
+    );
   }
 
   Future<void> saveHomeRails(
     List<String> order,
     Set<String> hidden, {
     bool fromCustomizer = false,
+    String? scope,
   }) async {
     // Saving the editor is an explicit choice for every optional rail. Without
     // acknowledging it, getHomeRailHidden would hide a newly enabled rail again.
     if (fromCustomizer) {
       await _settingsBox.put(
-        ProfileScope.key(AppConstants.homeSuggestionsAnsweredKey),
-        {...getAnsweredHomeSuggestions(), ...HomeRail.optIn}.toList(),
+        _homeRailPreferenceKey(AppConstants.homeSuggestionsAnsweredKey, scope),
+        {
+          ...getAnsweredHomeSuggestions(scope: scope),
+          ...HomeRail.optIn,
+        }.toList(),
       );
     }
     await _settingsBox.put(
-      ProfileScope.key(AppConstants.homeRailOrderKey),
+      _homeRailPreferenceKey(AppConstants.homeRailOrderKey, scope),
       order,
     );
     await _settingsBox.put(
-      ProfileScope.key(AppConstants.homeRailHiddenKey),
+      _homeRailPreferenceKey(AppConstants.homeRailHiddenKey, scope),
       hidden.toList(),
     );
     homeRailsChanged.value = !homeRailsChanged.value;

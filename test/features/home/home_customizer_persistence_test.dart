@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:soplay/core/constants/app_constants.dart';
 import 'package:soplay/core/storage/hive_service.dart';
+import 'package:soplay/features/home/domain/entities/home_section_entity.dart';
+import 'package:soplay/features/home/domain/entities/view_all.dart';
 import 'package:soplay/features/home/domain/home_rail.dart';
 
 void main() {
@@ -42,5 +44,80 @@ void main() {
     expect(store.hasAnsweredHomeSuggestion('watch_services'), isFalse);
     await store.saveHomeRails(order, {'watch_services'}, fromCustomizer: true);
     expect(store.getHomeRailHidden(), contains('watch_services'));
+  });
+
+  test('each catalogue keeps its own home order and visibility', () async {
+    final defaults = HomeRail.defaults.map((r) => r.id).toList();
+    final animeOrder = [...defaults];
+    animeOrder.insert(0, animeOrder.removeAt(1));
+    await store.saveHomeRails(
+      animeOrder,
+      {'genres'},
+      scope: 'anilist',
+      fromCustomizer: true,
+    );
+    await store.saveHomeRails(
+      defaults,
+      {'live_tv'},
+      scope: 'tmdb',
+      fromCustomizer: true,
+    );
+
+    expect(store.getHomeRailOrder(scope: 'anilist'), animeOrder);
+    expect(store.getHomeRailHidden(scope: 'anilist'), contains('genres'));
+    expect(store.getHomeRailOrder(scope: 'tmdb'), defaults);
+    expect(store.getHomeRailHidden(scope: 'tmdb'), contains('live_tv'));
+    expect(store.getHomeRailHidden(scope: 'tmdb'), isNot(contains('genres')));
+    await store.saveHomeBannerStyle('panels', scope: 'anilist');
+    expect(store.getHomeBannerStyle(scope: 'anilist'), 'panels');
+    expect(store.getHomeBannerStyle(scope: 'tmdb'), 'edge');
+  });
+
+  test('scoped layouts inherit old shared preferences until individually saved',
+      () async {
+    final order = HomeRail.defaults.map((r) => r.id).toList();
+    await store.saveHomeRails(order.reversed.toList(), {'genres'});
+
+    expect(store.getHomeRailOrder(scope: 'anilist'), order.reversed.toList());
+    expect(store.getHomeRailHidden(scope: 'anilist'), contains('genres'));
+
+    await store.saveHomeRails(order, {}, scope: 'anilist');
+    expect(store.getHomeRailOrder(scope: 'anilist'), order);
+    expect(store.getHomeRailOrder(scope: 'tmdb'), order.reversed.toList());
+    expect(store.getHomeRailHidden(scope: 'tmdb'), contains('genres'));
+  });
+
+  test('catalogue section layouts persist by interface and source', () async {
+    final sections = [
+      for (final id in ['popular', 'trending'])
+        HomeSectionEntity(
+          key: id,
+          label: id,
+          viewAll: ViewAllEntity(type: 'catalogue', slug: id),
+          items: const [],
+        ),
+    ];
+    await store.saveHomeSectionLayout(
+      scope: 'anilist',
+      providerId: 'catalogue:anilist',
+      entries: ['section:trending', '!section:popular'],
+    );
+
+    expect(
+      store.getHomeSectionLayout(
+        scope: 'anilist',
+        providerId: 'catalogue:anilist',
+        sections: sections,
+      ),
+      ['section:trending', '!section:popular'],
+    );
+    expect(
+      store.getHomeSectionLayout(
+        scope: 'tmdb',
+        providerId: 'catalogue:tmdb',
+        sections: sections,
+      ),
+      ['section:popular', 'section:trending'],
+    );
   });
 }

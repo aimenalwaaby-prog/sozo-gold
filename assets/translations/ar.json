@@ -2159,7 +2159,17 @@
     "live_tv": "البث المباشر",
     "catalogue": "صفوف الفهرس",
     "services": "خدمات البث",
-    "watch_services": "خدمات البث"
+    "watch_services": "خدمات البث",
+    "banner_style": "نمط اللافتة المميّزة",
+    "banner_edge": "ملء العرض",
+    "banner_card": "بطاقة زجاجية",
+    "banner_panels": "لوحات",
+    "main_rows": "صفوف الصفحة الرئيسية",
+    "catalogue_sections": "أقسام الفهرس",
+    "layout_anime": "واجهة الأنمي",
+    "layout_manga": "واجهة المانغا",
+    "layout_novel": "واجهة الروايات",
+    "layout_movies": "واجهة الأفلام والمسلسلات"
   },
   "stats": {
     "title": "الإحصائيات",

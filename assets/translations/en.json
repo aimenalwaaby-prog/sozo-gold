@@ -2155,7 +2155,17 @@
     "live_tv": "Live TV",
     "catalogue": "Catalogue rows",
     "services": "Streaming services",
-    "watch_services": "Streaming services"
+    "watch_services": "Streaming services",
+    "banner_style": "Featured banner style",
+    "banner_edge": "Edge",
+    "banner_card": "Glass card",
+    "banner_panels": "Panels",
+    "main_rows": "Home rows",
+    "catalogue_sections": "Catalogue sections",
+    "layout_anime": "Anime interface",
+    "layout_manga": "Manga interface",
+    "layout_novel": "Novels interface",
+    "layout_movies": "Movies & series interface"
   },
   "stats": {
     "title": "Statistics",

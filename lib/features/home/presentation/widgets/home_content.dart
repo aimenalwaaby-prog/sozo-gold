@@ -32,10 +32,12 @@ import 'package:soplay/features/home/domain/entities/hero_slide.dart';
 import 'package:soplay/features/home/presentation/widgets/home_watch_services_section.dart';
 import 'package:soplay/features/home/presentation/widgets/home_picked_for_you_section.dart';
 import 'package:soplay/features/home/domain/entities/home_section_entity.dart';
+import 'package:soplay/features/home/domain/home_banner_style.dart';
+import 'package:soplay/features/home/domain/home_section_layout.dart';
 import 'package:soplay/features/home/presentation/bloc/home/home_bloc.dart';
 import 'package:soplay/features/home/presentation/bloc/home/home_event.dart';
 import 'package:soplay/features/home/domain/home_rail.dart';
-import 'package:soplay/features/home/presentation/widgets/home_banner.dart';
+import 'package:soplay/features/home/presentation/widgets/home_banner_variant.dart';
 import 'package:soplay/features/home/presentation/widgets/home_shared_widgets.dart';
 import 'package:soplay/features/home/presentation/widgets/home_history_section.dart';
 import 'package:soplay/features/home/presentation/widgets/home_live_tv_section.dart';
@@ -219,23 +221,57 @@ class _HomeContentBody extends StatelessWidget {
           final showHero = slides.isNotEmpty || bannersState.loading;
 
           final loaded = _loaded;
+          final hive = getIt<HiveService>();
+          final providerState = context.watch<ProviderBloc>().state;
+          final providerId = providerState is ProviderLoaded
+              ? providerState.currentProviderId
+              : hive.getCurrentProvider();
+          final contentMode = ContentMode.fromId(hive.getContentMode());
+          final medium = HomeContentKind.resolve(
+            providerId: providerId,
+            mode: contentMode,
+            category: providerState is ProviderLoaded
+                ? providerState.currentProvider?.category ?? ''
+                : '',
+          );
+          final catalogueHome = Catalogue.fromId(providerId);
+          // Video mode contains both anime and movies. Persist layout by the
+          // actual catalogue kind, then distinguish non-catalogue sources by id.
+          final railScope = medium?.catalogueKind ?? 'tmdb';
+          final sourceLayoutId = catalogueHome == null
+              ? 'source:$providerId'
+              : 'catalogue:$railScope';
+          final currentSections = loaded?.homeData.sections ?? const [];
+          final sectionLayout = sanitizeHomeSectionLayout(
+            loaded == null
+                ? const <String>[]
+                : hive.getHomeSectionLayout(
+                    scope: railScope,
+                    providerId: sourceLayoutId,
+                    sections: currentSections,
+                  ),
+            currentSections,
+          );
+          final orderedSections = orderedHomeSections(
+            currentSections,
+            sectionLayout,
+          );
           final sectionSlivers = <Widget>[
-            if (loaded != null)
-              for (final section in loaded.homeData.sections)
-                if (section.items.isNotEmpty)
-                  SliverToBoxAdapter(
-                    child: RepaintBoundary(
-                      child: MovieSection(
-                        title: section.label,
-                        movies: section.items,
-                        type: section.viewAll.type,
-                        slug: section.viewAll.slug,
-                        onSeeAll: _isMyListSection(section)
-                            ? () => getIt<NavController>().goToId(TabId.myList)
-                            : null,
-                      ),
+            for (final section in orderedSections)
+              if (section.items.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: RepaintBoundary(
+                    child: MovieSection(
+                      title: section.label,
+                      movies: section.items,
+                      type: section.viewAll.type,
+                      slug: section.viewAll.slug,
+                      onSeeAll: _isMyListSection(section)
+                          ? () => getIt<NavController>().goToId(TabId.myList)
+                          : null,
                     ),
                   ),
+                ),
           ];
 
           // Unchanged in meaning, with one addition: a FAILED catalogue is
@@ -284,26 +320,16 @@ class _HomeContentBody extends StatelessWidget {
           // decides for itself whether it has anything to show — reordering
           // never makes an empty rail appear, and hiding one is separate from
           // it being empty.
-          final hive = getIt<HiveService>();
-          final providerState = context.watch<ProviderBloc>().state;
-          final medium = HomeContentKind.resolve(
-            providerId: providerState is ProviderLoaded
-                ? providerState.currentProviderId
-                : hive.getCurrentProvider(),
-            mode: ContentMode.fromId(hive.getContentMode()),
-            category: providerState is ProviderLoaded
-                ? providerState.currentProvider?.category ?? ''
-                : '',
-          );
           final showServices = medium == HomeContentKind.movie;
-          final catalogueHome = Catalogue.fromId(
-            providerState is ProviderLoaded
-                ? providerState.currentProviderId
-                : hive.getCurrentProvider(),
+          // Video mode contains both anime and movies. Persist Home layout by
+          // the actual catalogue kind so each of the four interfaces can be
+          // arranged independently.
+          final bannerStyle = HomeBannerStyle.fromId(
+            hive.getHomeBannerStyle(scope: railScope),
           );
           final rails = visibleRails(
-            sanitizeRailOrder(hive.getHomeRailOrder()),
-            hive.getHomeRailHidden(),
+            sanitizeRailOrder(hive.getHomeRailOrder(scope: railScope)),
+            hive.getHomeRailHidden(scope: railScope),
           );
 
           Iterable<Widget> sliversFor(HomeRail rail) sync* {
@@ -311,7 +337,9 @@ class _HomeContentBody extends StatelessWidget {
               case HomeRail.hero:
                 if (showHero) {
                   yield SliverToBoxAdapter(
-                    child: HomeBanner(
+                    child: HomeBannerVariant(
+                      key: ValueKey('home-banner-${bannerStyle.id}'),
+                      style: bannerStyle,
                       slides: slides,
                       topPadding: topPad,
                       showSkeleton:
@@ -365,8 +393,10 @@ class _HomeContentBody extends StatelessWidget {
                 // [HomeRail.optIn], so it is off until the suggestion below is
                 // answered the other way.
                 if (showServices) {
-                  yield const SliverToBoxAdapter(
-                    child: RepaintBoundary(child: HomeWatchServicesSection()),
+                  yield SliverToBoxAdapter(
+                    child: RepaintBoundary(
+                      child: HomeWatchServicesSection(scope: railScope),
+                    ),
                   );
                 }
               case HomeRail.catalogue:
@@ -397,9 +427,12 @@ class _HomeContentBody extends StatelessWidget {
           // hero first there was no clearance at all and the strip drew behind
           // the logo and the source chip — the one band whose whole job is to
           // be read.
-          final suggesting =
+            final suggesting =
               showServices &&
-              !hive.hasAnsweredHomeSuggestion(HomeRail.watchServices.id);
+              !hive.hasAnsweredHomeSuggestion(
+                HomeRail.watchServices.id,
+                scope: railScope,
+              );
           final needsTopPad =
               catalogue is CatalogueFailed ||
               rails.first != HomeRail.hero ||
@@ -454,6 +487,7 @@ class _HomeContentBody extends StatelessWidget {
                   SliverToBoxAdapter(
                     child: HomeSuggestionCard(
                       rail: HomeRail.watchServices,
+                      scope: railScope,
                       title: 'home.suggest_services_title'.tr(),
                       body: 'home.suggest_services_body'.tr(),
                       icon: Icons.subscriptions_rounded,
@@ -470,7 +504,12 @@ class _HomeContentBody extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
                   child: Center(
                     child: TextButton.icon(
-                      onPressed: () => showHomeRailCustomizer(context),
+                      onPressed: () => showHomeRailCustomizer(
+                        context,
+                        scope: railScope,
+                        providerId: sourceLayoutId,
+                        sections: currentSections,
+                      ),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.textSecondary,
                         backgroundColor: AppColors.surface,
