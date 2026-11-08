@@ -21,6 +21,7 @@ import 'package:soplay/core/storage/hive_service.dart';
 import 'package:soplay/core/system/responsive.dart';
 import 'package:soplay/core/theme/app_colors.dart';
 import 'package:soplay/core/theme/app_theme.dart';
+import 'package:soplay/core/theme/gold_glass.dart';
 import 'package:soplay/core/tv/tv.dart';
 import 'package:soplay/features/banners/domain/entities/banner_item.dart';
 import 'package:soplay/features/banners/presentation/bloc/banners_bloc.dart';
@@ -208,7 +209,8 @@ class _HomeContentBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // No top bar here — HomePage mounts it once above this subtree.
-    return RefreshIndicator(
+    return GoldGlassBackdrop(
+      child: RefreshIndicator(
       color: AppColors.primary,
       backgroundColor: AppColors.surface,
       edgeOffset: topPad + 10,
@@ -542,6 +544,7 @@ class _HomeContentBody extends StatelessWidget {
             ],
           );
         },
+      ),
       ),
     );
   }

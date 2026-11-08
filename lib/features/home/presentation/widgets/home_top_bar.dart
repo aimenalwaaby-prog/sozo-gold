@@ -49,10 +49,13 @@ class HomeTopBar extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'SOZO GOLD',
+            compact ? 'SOZO' : 'SOZO GOLD',
             style: TextStyle(
-              color: AppColors.primary,
-              fontSize: compact ? 13 : 22,
+              foreground: Paint()
+                ..shader = LinearGradient(
+                  colors: [AppColors.primaryLight, AppColors.primary],
+                ).createShader(const Rect.fromLTWH(0, 0, 150, 28)),
+              fontSize: compact ? 18 : 22,
               fontWeight: FontWeight.w900,
               letterSpacing: compact ? 0.5 : 2.5,
               height: 1,
@@ -114,12 +117,23 @@ class _TopBarBackground extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 14 * progress, sigmaY: 14 * progress),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppColors.navBackground.withValues(alpha: 0.72 * progress),
+            color: AppColors.primaryDark.withValues(alpha: 0.22 * progress),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withValues(alpha: 0.07 * progress),
+                AppColors.primary.withValues(alpha: 0.18 * progress),
+                AppColors.navBackground.withValues(alpha: 0.74 * progress),
+              ],
+            ),
             border: progress > 0.05
                 ? Border(
                     bottom: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.07 * progress),
-                      width: 0.5,
+                      color: AppColors.primaryLight.withValues(
+                        alpha: 0.24 * progress,
+                      ),
+                      width: 0.8,
                     ),
                   )
                 : null,
@@ -152,11 +166,18 @@ class _ProviderSwitcher extends StatelessWidget {
                 constraints: const BoxConstraints(minHeight: 36, maxWidth: 180),
                 padding: const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: AppColors.primary.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: AppColors.primaryLight.withValues(alpha: 0.24),
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
