@@ -48,6 +48,7 @@ import 'package:soplay/core/storage/secure_boxes.dart';
 import 'package:soplay/features/jellyfin/data/jellyfin_server_store.dart';
 import 'package:soplay/features/profiles/data/profile_session.dart';
 import 'package:soplay/features/app_lock/presentation/app_lock_gate.dart';
+import 'package:soplay/features/sources/data/builtin_extension_sources.dart';
 import 'app.dart';
 
 /// [args] is what the OS handed the process, and on Windows and Linux that is
@@ -133,6 +134,10 @@ void main(List<String> args) async {
     _runStartupFailure(error, stack, 'dependency setup');
     return;
   }
+  _fireAndForget(
+    BuiltinExtensionSources.ensureDefaults(vega: getIt(), stremio: getIt()),
+    'built-in extension sources',
+  );
   // Before anything can navigate — the deep-link and push handlers below, and
   // the first frame — so every way in lands under the lock.
   getIt<AppLockGate>().start();
@@ -544,6 +549,8 @@ Future<void> _initFirebaseSafely() async {
     // Firebase is optional for this Gold package unless its matching client is
     // configured. Keep the app usable, but retain enough diagnostics to fix a
     // broken Firebase setup instead of silently disguising it as success.
-    debugPrint('[Firebase] initialization/Crashlytics setup failed: $e\n$stack');
+    debugPrint(
+      '[Firebase] initialization/Crashlytics setup failed: $e\n$stack',
+    );
   }
 }

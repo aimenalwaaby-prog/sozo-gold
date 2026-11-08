@@ -29,6 +29,12 @@ class _VegaProviderPageState extends State<VegaProviderPage> {
   @override
   void initState() {
     super.initState();
+    if (!MangayomiRuntime.isSupported) {
+      _busy = false;
+      _message =
+          'Vega execution requires the WebView runtime on this platform.';
+      return;
+    }
     _loadCatalog();
   }
 

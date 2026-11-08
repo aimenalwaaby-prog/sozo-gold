@@ -3285,12 +3285,13 @@ class _PageImageState extends State<_PageImage> {
 
   Future<void> _translatePage(BuildContext context) async {
     if (_translating || _translation != null) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final language = Localizations.localeOf(context).languageCode;
     setState(() {
       _translating = true;
       _translationError = null;
     });
     try {
-      final language = Localizations.localeOf(context).languageCode;
       final localPath = widget.page.imageUrl;
       if (!localPath.startsWith('http')) {
         final offline = await MangaPageTranslationService.readOffline(
@@ -3311,7 +3312,7 @@ class _PageImageState extends State<_PageImage> {
     } catch (error) {
       if (!mounted) return;
       setState(() => _translationError = error.toString());
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      messenger?.showSnackBar(
         SnackBar(
           content: Text(
             _translationError!.replaceFirst('Exception: ', ''),
