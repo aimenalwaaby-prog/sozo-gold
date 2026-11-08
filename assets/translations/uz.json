@@ -60,7 +60,9 @@
     "remove": "Olib tashlash",
     "show": "Ko‘rsatish",
     "hide": "Yashirish",
-    "installed": "O‘rnatilgan"
+    "installed": "O‘rnatilgan",
+    "download": "Download",
+    "downloaded": "Downloaded"
   },
   "auth": {
     "login": "Kirish",
@@ -770,7 +772,6 @@
     "library_update_desc": "Kuzatayotgan titullaringizni tekshirib, yangi qism chiqsa xabar beradi",
     "library_update_every": "Har {} soatda",
     "library_update_daily": "Kuniga bir marta",
-
     "google_translate_key_title": "Google Cloud Translation API kaliti",
     "google_translate_key_hint": "Google Cloud’da Cloud Translation API v2ʼni yoqing. Kalit qurilmada xavfsiz saqlanadi; matn bevosita Googleʼga yuboriladi. Google to‘lovlari va foydalanish cheklovlari qo‘llanishi mumkin.",
     "google_translate_key_loading": "Kalit yuklanmoqda…",
@@ -1340,7 +1341,15 @@
     "highlights": "Belgilanganlar",
     "remove_highlight": "Belgini olib tashlash",
     "highlight_note": "Izoh qo'shing (ixtiyoriy)",
-    "no_highlights": "Hali belgilanganlar yo'q. Matnni tanlang va «Belgilash»ni bosing."
+    "no_highlights": "Hali belgilanganlar yo'q. Matnni tanlang va «Belgilash»ni bosing.",
+    "download_title": "Download chapter",
+    "download_translation": "Download translation too",
+    "download_translation_desc": "Translate while online and keep it with the chapter for offline reading.",
+    "download_translation_hint": "Long-press to download the translation too",
+    "downloaded": "Downloaded",
+    "translate_page": "Translate page",
+    "translating_page": "Translating page…",
+    "translation_hold_original": "Hold to show original"
   },
   "cloudflare": {
     "title": "Siz odam ekanligingizni tasdiqlang",
@@ -2155,7 +2164,17 @@
     "live_tv": "Jonli TV",
     "catalogue": "Katalog bo‘limlari",
     "services": "Striming servislar",
-    "watch_services": "Striming servicelar"
+    "watch_services": "Striming servicelar",
+    "banner_card": "Glass card",
+    "banner_edge": "Edge",
+    "banner_panels": "Panels",
+    "banner_style": "Featured banner style",
+    "catalogue_sections": "Catalogue sections",
+    "layout_anime": "Anime interface",
+    "layout_manga": "Manga interface",
+    "layout_movies": "Movies & series interface",
+    "layout_novel": "Novels interface",
+    "main_rows": "Home rows"
   },
   "stats": {
     "title": "Statistika",

@@ -34,7 +34,9 @@
     "remove": "Retirer",
     "show": "Afficher",
     "hide": "Masquer",
-    "installed": "Installé"
+    "installed": "Installé",
+    "download": "Download",
+    "downloaded": "Downloaded"
   },
   "auth": {
     "login": "Connexion",
@@ -1313,7 +1315,15 @@
     "highlights": "Surlignages",
     "remove_highlight": "Retirer le surlignage",
     "highlight_note": "Ajouter une note (facultatif)",
-    "no_highlights": "Aucun surlignage pour l’instant. Sélectionnez du texte et choisissez Surligner."
+    "no_highlights": "Aucun surlignage pour l’instant. Sélectionnez du texte et choisissez Surligner.",
+    "download_title": "Download chapter",
+    "download_translation": "Download translation too",
+    "download_translation_desc": "Translate while online and keep it with the chapter for offline reading.",
+    "download_translation_hint": "Long-press to download the translation too",
+    "downloaded": "Downloaded",
+    "translate_page": "Translate page",
+    "translating_page": "Translating page…",
+    "translation_hold_original": "Hold to show original"
   },
   "cloudflare": {
     "title": "Confirme que tu es humain",
@@ -2128,7 +2138,17 @@
     "live_tv": "TV en direct",
     "catalogue": "Rangées du catalogue",
     "services": "Services de streaming",
-    "watch_services": "Services de streaming"
+    "watch_services": "Services de streaming",
+    "banner_card": "Glass card",
+    "banner_edge": "Edge",
+    "banner_panels": "Panels",
+    "banner_style": "Featured banner style",
+    "catalogue_sections": "Catalogue sections",
+    "layout_anime": "Anime interface",
+    "layout_manga": "Manga interface",
+    "layout_movies": "Movies & series interface",
+    "layout_novel": "Novels interface",
+    "main_rows": "Home rows"
   },
   "stats": {
     "title": "Statistiques",

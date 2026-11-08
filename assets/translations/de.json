@@ -34,7 +34,9 @@
     "remove": "Entfernen",
     "show": "Anzeigen",
     "hide": "Ausblenden",
-    "installed": "Installiert"
+    "installed": "Installiert",
+    "download": "Download",
+    "downloaded": "Downloaded"
   },
   "auth": {
     "login": "Anmelden",
@@ -1313,7 +1315,15 @@
     "highlights": "Markierungen",
     "remove_highlight": "Markierung entfernen",
     "highlight_note": "Notiz hinzufügen (optional)",
-    "no_highlights": "Noch keine Markierungen. Text auswählen und „Markieren“ wählen."
+    "no_highlights": "Noch keine Markierungen. Text auswählen und „Markieren“ wählen.",
+    "download_title": "Download chapter",
+    "download_translation": "Download translation too",
+    "download_translation_desc": "Translate while online and keep it with the chapter for offline reading.",
+    "download_translation_hint": "Long-press to download the translation too",
+    "downloaded": "Downloaded",
+    "translate_page": "Translate page",
+    "translating_page": "Translating page…",
+    "translation_hold_original": "Hold to show original"
   },
   "cloudflare": {
     "title": "Bestätige, dass du ein Mensch bist",
@@ -2128,7 +2138,17 @@
     "live_tv": "Live-TV",
     "catalogue": "Katalogreihen",
     "services": "Streamingdienste",
-    "watch_services": "Streamingdienste"
+    "watch_services": "Streamingdienste",
+    "banner_card": "Glass card",
+    "banner_edge": "Edge",
+    "banner_panels": "Panels",
+    "banner_style": "Featured banner style",
+    "catalogue_sections": "Catalogue sections",
+    "layout_anime": "Anime interface",
+    "layout_manga": "Manga interface",
+    "layout_movies": "Movies & series interface",
+    "layout_novel": "Novels interface",
+    "main_rows": "Home rows"
   },
   "stats": {
     "title": "Statistik",

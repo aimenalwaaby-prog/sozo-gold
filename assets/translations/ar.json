@@ -60,7 +60,9 @@
     "remove": "إزالة",
     "show": "إظهار",
     "hide": "إخفاء",
-    "installed": "مثبّت"
+    "installed": "مثبّت",
+    "download": "تنزيل",
+    "downloaded": "تم التنزيل"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -770,7 +772,6 @@
     "library_update_desc": "يتفقد العناوين التي تتابعها ويُعلمك عند صدور جديد",
     "library_update_every": "كل {} ساعات",
     "library_update_daily": "مرة يوميًا",
-
     "google_translate_key_title": "مفتاح Google Cloud Translation API",
     "google_translate_key_hint": "فعّل Cloud Translation API v2 في Google Cloud. يُحفظ المفتاح في التخزين الآمن على جهازك، ويُرسل نص الترجمة مباشرةً إلى Google. قد تنطبق رسوم Google وحدود الاستخدام لديها.",
     "google_translate_key_loading": "جارٍ تحميل المفتاح…",
@@ -1346,8 +1347,8 @@
     "translating_page": "جارٍ ترجمة الصفحة…",
     "download_title": "تنزيل الفصل",
     "download_translation": "تنزيل الترجمة معه",
-    "download_translation_desc": "يُترجم النص أثناء الاتصال ويحفظه داخل الفصل ليعمل دون إنترنت."
-    ,"download_translation_hint": "اضغط مطولًا لتنزيل الترجمة أيضًا",
+    "download_translation_desc": "يُترجم النص أثناء الاتصال ويحفظه داخل الفصل ليعمل دون إنترنت.",
+    "download_translation_hint": "اضغط مطولًا لتنزيل الترجمة أيضًا",
     "downloaded": "تم التنزيل"
   },
   "cloudflare": {

@@ -60,7 +60,9 @@
     "remove": "Удалить",
     "show": "Показать",
     "hide": "Скрыть",
-    "installed": "Установлено"
+    "installed": "Установлено",
+    "download": "Download",
+    "downloaded": "Downloaded"
   },
   "auth": {
     "login": "Войти",
@@ -770,7 +772,6 @@
     "library_update_desc": "Проверяет отслеживаемые тайтлы и сообщает о новых сериях",
     "library_update_every": "Каждые {} ч",
     "library_update_daily": "Раз в день",
-
     "google_translate_key_title": "Ключ Google Cloud Translation API",
     "google_translate_key_hint": "Включите Cloud Translation API v2 в Google Cloud. Ключ хранится на устройстве; текст отправляется напрямую в Google. Могут применяться тарифы и ограничения Google.",
     "google_translate_key_loading": "Загрузка ключа…",
@@ -1340,7 +1341,15 @@
     "highlights": "Выделения",
     "remove_highlight": "Убрать выделение",
     "highlight_note": "Добавить заметку (необязательно)",
-    "no_highlights": "Выделений пока нет. Выделите текст и выберите «Выделить»."
+    "no_highlights": "Выделений пока нет. Выделите текст и выберите «Выделить».",
+    "download_title": "Download chapter",
+    "download_translation": "Download translation too",
+    "download_translation_desc": "Translate while online and keep it with the chapter for offline reading.",
+    "download_translation_hint": "Long-press to download the translation too",
+    "downloaded": "Downloaded",
+    "translate_page": "Translate page",
+    "translating_page": "Translating page…",
+    "translation_hold_original": "Hold to show original"
   },
   "cloudflare": {
     "title": "Подтвердите, что вы человек",
@@ -2156,7 +2165,17 @@
     "live_tv": "Прямой эфир",
     "catalogue": "Блоки каталога",
     "services": "Стриминговые сервисы",
-    "watch_services": "Стриминговые сервисы"
+    "watch_services": "Стриминговые сервисы",
+    "banner_card": "Glass card",
+    "banner_edge": "Edge",
+    "banner_panels": "Panels",
+    "banner_style": "Featured banner style",
+    "catalogue_sections": "Catalogue sections",
+    "layout_anime": "Anime interface",
+    "layout_manga": "Manga interface",
+    "layout_movies": "Movies & series interface",
+    "layout_novel": "Novels interface",
+    "main_rows": "Home rows"
   },
   "stats": {
     "title": "Статистика",

@@ -34,7 +34,9 @@
     "remove": "لابردن",
     "show": "پیشاندان",
     "hide": "شاردنەوە",
-    "installed": "دامەزراوە"
+    "installed": "دامەزراوە",
+    "download": "تنزيل",
+    "downloaded": "تم التنزيل"
   },
   "auth": {
     "login": "چوونەژوورەوە",
@@ -1313,7 +1315,15 @@
     "highlights": "دیارکراوەکان",
     "remove_highlight": "لابردنی دیارکردن",
     "highlight_note": "تێبینییەک زیاد بکە (ئارەزوومەندانە)",
-    "no_highlights": "هێشتا هیچ دیارکراوێک نییە. هەندێک دەق هەڵبژێرە و دیارکردن هەڵبژێرە."
+    "no_highlights": "هێشتا هیچ دیارکراوێک نییە. هەندێک دەق هەڵبژێرە و دیارکردن هەڵبژێرە.",
+    "download_title": "تنزيل الفصل",
+    "download_translation": "تنزيل الترجمة أيضاً",
+    "download_translation_desc": "ترجم أثناء الاتصال واحتفظ بها مع الفصل للقراءة دون اتصال.",
+    "download_translation_hint": "اضغط مطولاً لتنزيل الترجمة أيضاً",
+    "downloaded": "تم التنزيل",
+    "translate_page": "ترجمة الصفحة",
+    "translating_page": "جارٍ ترجمة الصفحة…",
+    "translation_hold_original": "اضغط مطولاً لإظهار الأصل"
   },
   "cloudflare": {
     "title": "پشتڕاستی بکەرەوە کە مرۆڤیت",
@@ -2128,7 +2138,17 @@
     "live_tv": "تیڤیی ڕاستەوخۆ",
     "catalogue": "ڕیزەکانی کەتەلۆگ",
     "services": "خزمەتگوزارییەکانی پەخش",
-    "watch_services": "خزمەتگوزارییەکانی پەخش"
+    "watch_services": "خزمەتگوزارییەکانی پەخش",
+    "banner_card": "بطاقة زجاجية",
+    "banner_edge": "الحافة",
+    "banner_panels": "الألواح",
+    "banner_style": "نمط الشريط المميز",
+    "catalogue_sections": "أقسام الكتالوج",
+    "layout_anime": "واجهة الأنمي",
+    "layout_manga": "واجهة المانغا",
+    "layout_movies": "واجهة الأفلام والمسلسلات",
+    "layout_novel": "واجهة الروايات",
+    "main_rows": "صفوف الرئيسية"
   },
   "stats": {
     "title": "ئامار",

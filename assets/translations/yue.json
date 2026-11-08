@@ -34,7 +34,9 @@
     "remove": "移除",
     "show": "顯示",
     "hide": "隱藏",
-    "installed": "已安裝"
+    "installed": "已安裝",
+    "download": "Download",
+    "downloaded": "Downloaded"
   },
   "auth": {
     "login": "登入",
@@ -1313,7 +1315,15 @@
     "highlights": "標記清單",
     "remove_highlight": "移除標記",
     "highlight_note": "加個備註（可選）",
-    "no_highlights": "仲未有標記。揀選一段文字，再撳「標記」。"
+    "no_highlights": "仲未有標記。揀選一段文字，再撳「標記」。",
+    "download_title": "Download chapter",
+    "download_translation": "Download translation too",
+    "download_translation_desc": "Translate while online and keep it with the chapter for offline reading.",
+    "download_translation_hint": "Long-press to download the translation too",
+    "downloaded": "Downloaded",
+    "translate_page": "Translate page",
+    "translating_page": "Translating page…",
+    "translation_hold_original": "Hold to show original"
   },
   "cloudflare": {
     "title": "驗證你係真人",
@@ -2128,7 +2138,17 @@
     "live_tv": "直播電視",
     "catalogue": "目錄行",
     "services": "串流服務",
-    "watch_services": "串流平台"
+    "watch_services": "串流平台",
+    "banner_card": "Glass card",
+    "banner_edge": "Edge",
+    "banner_panels": "Panels",
+    "banner_style": "Featured banner style",
+    "catalogue_sections": "Catalogue sections",
+    "layout_anime": "Anime interface",
+    "layout_manga": "Manga interface",
+    "layout_movies": "Movies & series interface",
+    "layout_novel": "Novels interface",
+    "main_rows": "Home rows"
   },
   "stats": {
     "title": "統計",
