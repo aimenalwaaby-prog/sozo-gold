@@ -236,3 +236,21 @@ https://github.com/keishao2300-hash/sozo
 - عناوين Stremio المدمجة في Sozo Gold هي Cinemeta وOpenSubtitles وTorrentio. يتم التطبيع والحفظ محلياً، وتُتجاوز الإضافة غير المتاحة دون تعطيل بدء التطبيق.
 - لذلك تُصحح ملاحظة محور Vega ومحول Stremio: التكامل موجود في Sozo Gold على مستوى إدارة المستودع/الفهرس والواجهة والجلب، لكن لم يتم تشغيل كل provider أو addon خارجياً في هذه المراجعة لأسباب السلامة. وجود التكامل لا يساوي إثبات نجاح كل مصدر.
 - اختبار قارئ المانغا بعد التعديل الأخير نجح محلياً، كما نجح flutter analyze للملف المعدل دون أخطاء.
+
+18) اختبار حي فعلي للمصادر — 2026-11-09
+----------------------------------------
+تم تنفيذ اختبار شبكي فعلي، وليس فحص أسماء فقط. النتائج التفصيلية موجودة في LIVE_SOURCE_TEST_2026-11-09.md وlive_source_test_results.json.
+
+- Stremio/Cinemeta: manifest HTTP 200، و8 catalogs، وcatalog تجريبي أعاد 49 عنواناً.
+- Stremio/Torrentio: manifest HTTP 200، وطلب فيلم تجريبي بالمعرف tt0133093 أعاد 130 stream.
+- Stremio/OpenSubtitles: manifest HTTP 200 بلا catalogs (وهذا متوقع لأنه subtitles-only)، وطلب الفيلم نفسه أعاد 26 ترجمة.
+- Vega Zenda-Cross: manifest HTTP 200 وفيه 63 مزوداً؛ أول ثلاثة مزودين أعادوا ملفات catalog/posts/meta/stream HTTP 200 وبأحجام غير فارغة. تم تنزيل الوحدات وفحص exports، لكن تنفيذ JavaScript نفسه تعذر في بيئة Linux لأن flutter_inappwebview غير مدعوم هناك.
+- CloudStream: مستودع CloudStream الرسمي HTTP 200 وفي قائمته 5 إضافات، وPhisher 86، وRedowan 18 ضمن القوائم المقروءة؛ عينات CS3 أعادت HTTP 200 وبملفات غير فارغة. تشغيل CS3 يحتاج Android class loader، ولم يتوفر جهاز/محاكي Android في جلسة الاختبار.
+- Aniyomi: Yuzono index HTTP 200 وفيه 250 إضافة؛ عينات APK الفعلية أعادت HTTP 200 وأحجاماً 74451 و85847 و122473 بايت وفق مسار التطبيق repo/apk. فهرس Secozzi HTTP 200 لكنه يعلن Outdated App وAPK الخاص به 404، لذلك صُنّف غير صالح حالياً.
+- Manga/Keiyoushi: index.pb HTTP 200 وبحجم 114083 بايت؛ فكه وتشغيل APK لم يُنفذ في Linux.
+- Mangayomi الرسمي: index HTTP 200 وفيه 363 مصدراً؛ عينات JavaScript أعادت HTTP 200.
+- Mallyd11: anime index HTTP 200 وفيه 17 مصدراً؛ عينات JavaScript أعادت HTTP 200.
+- LNReader الرسمي: index HTTP 200 وفيه 327 إضافة؛ عينات عربية مثل ArNovel وAzora أعادت HTTP 200 لملفات JavaScript.
+- مستودع الروايات العربية 9vsv6: index HTTP 200 وفيه 4 مصادر؛ عينات الملفات العربية أعادت HTTP 200.
+
+الحد الفاصل: هذه نتائج تشغيل شبكي حقيقية تثبت أن الفهارس والملفات وموارد Stremio تجيب، لكنها لا تدعي أن كل APK/CS3/JavaScript استُخدم داخل runtime؛ لا يوجد Android device/emulator في بيئة الاختبار، وLinux لا يوفّر WebView الخاص بـVega/Mangayomi ولا DexClassLoader الخاص بـCloudStream/Aniyomi.
