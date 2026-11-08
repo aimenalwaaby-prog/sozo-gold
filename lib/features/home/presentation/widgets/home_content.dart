@@ -20,15 +20,12 @@ import 'package:soplay/core/navigation/nav_controller.dart';
 import 'package:soplay/core/storage/hive_service.dart';
 import 'package:soplay/core/system/responsive.dart';
 import 'package:soplay/core/theme/app_colors.dart';
-import 'package:soplay/core/theme/app_theme.dart';
 import 'package:soplay/core/theme/gold_glass.dart';
-import 'package:soplay/core/tv/tv.dart';
 import 'package:soplay/features/banners/domain/entities/banner_item.dart';
 import 'package:soplay/features/banners/presentation/bloc/banners_bloc.dart';
 import 'package:soplay/features/banners/presentation/widgets/banners_carousel.dart';
 import 'package:soplay/features/history/data/history_service.dart';
 import 'package:soplay/features/history/domain/entities/history_item.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:soplay/features/home/domain/entities/hero_slide.dart';
 import 'package:soplay/features/home/presentation/widgets/home_watch_services_section.dart';
 import 'package:soplay/features/home/presentation/widgets/home_picked_for_you_section.dart';
@@ -98,7 +95,6 @@ class _HomeContentState extends State<HomeContent> {
     _historyService.revision.addListener(_loadHistory);
     getIt<HiveService>().contentModeChanged.addListener(_loadHistory);
     _loadHistory();
-    TelegramPromo.maybeShow(context);
     final bloc = context.read<HomeBloc>();
     final initial = bloc.state;
     if (initial is HomeLoaded) _shownProvider = initial.homeData.provider;
@@ -606,221 +602,6 @@ class _GenreSection extends StatelessWidget {
               itemBuilder: (_, i) => GenreCard(genre: genres[i]),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-/// One-shot gate for the "Join our Telegram" sheet.
-///
-/// WHY THIS EXISTS (the "two sheets at once" bug):
-/// the sheet used to be pushed straight from `_HomeContentState.initState`,
-/// which tied the decision to the lifetime of a WIDGET instead of to the app
-/// session. [HomeContent] is destroyed and rebuilt on every
-/// `HomeLoading`/`HomeError` -> `HomeLoaded` transition of the app-level
-/// `HomeBloc` (see `home_page.dart`), and a modal route is NOT torn down when
-/// the widget that pushed it is disposed — so a second mount pushed a second
-/// sheet on top of the first one, which was still sitting on the Navigator.
-///
-/// These statics live for the whole isolate, so the gate survives any rebuild,
-/// remount, tab reorder or nav-style change. [_claimed] is taken BEFORE the
-/// post-frame gap, so two mounts inside the SAME frame can never both get past
-/// it.
-class TelegramPromo {
-  TelegramPromo._();
-
-  static const String _channelUrl = 'https://t.me/sozoApp';
-
-  /// The promo has already been shown (or deliberately skipped) this launch.
-  static bool _claimed = false;
-
-  /// A promo sheet is on the Navigator right now.
-  static bool _open = false;
-
-  /// Show the promo at most once per app launch, and never while one is open.
-  static void maybeShow(BuildContext context) {
-    if (_claimed || _open) return;
-
-    final hive = getIt<HiveService>();
-    if (hive.hasTelegramPromoSeen) {
-      _claimed = true;
-      return;
-    }
-
-    // Claim the slot synchronously: a second HomeContent mounting later in this
-    // same frame hits this guard before we ever reach the frame callback.
-    _claimed = true;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // The mount that claimed the slot is already gone (a bloc state flip tore
-      // it down mid-frame). Release the claim so the next mount can show it —
-      // still exactly one sheet, just one frame later.
-      if (!context.mounted) {
-        _claimed = false;
-        return;
-      }
-      // Re-read: the persisted flag may have landed during the frame gap.
-      if (hive.hasTelegramPromoSeen || _open) return;
-
-      _open = true;
-      showAdaptiveModal<void>(
-        context: context,
-        backgroundColor: AppColors.surface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        builder: (ctx) => _TelegramPromoSheet(
-          onJoin: () {
-            Navigator.of(ctx).pop();
-            launchUrl(
-              Uri.parse(_channelUrl),
-              mode: LaunchMode.externalApplication,
-            );
-          },
-          onDismiss: (dontShowAgain) {
-            if (dontShowAgain) hive.markTelegramPromoSeen();
-            Navigator.of(ctx).pop();
-          },
-          // Persist on every toggle (including untick) so the checkbox still
-          // works when the sheet is closed by a swipe or a barrier tap, which
-          // never routes through onDismiss.
-          onDontShowAgain: hive.setTelegramPromoSeen,
-        ),
-        // Covers every close path: button, swipe, barrier tap, system back.
-      ).whenComplete(() => _open = false);
-    });
-  }
-}
-
-class _TelegramPromoSheet extends StatefulWidget {
-  const _TelegramPromoSheet({
-    required this.onJoin,
-    required this.onDismiss,
-    required this.onDontShowAgain,
-  });
-
-  final VoidCallback onJoin;
-  final void Function(bool dontShowAgain) onDismiss;
-  final void Function(bool dontShowAgain) onDontShowAgain;
-
-  @override
-  State<_TelegramPromoSheet> createState() => _TelegramPromoSheetState();
-}
-
-class _TelegramPromoSheetState extends State<_TelegramPromoSheet> {
-  bool _dontShow = false;
-
-  void _toggleDontShow() {
-    setState(() => _dontShow = !_dontShow);
-    widget.onDontShowAgain(_dontShow);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final dontShowRow = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 18,
-          height: 18,
-          decoration: BoxDecoration(
-            color: _dontShow ? const Color(0xFF2AABEE) : Colors.transparent,
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: _dontShow ? const Color(0xFF2AABEE) : AppColors.textHint,
-              width: 1.5,
-            ),
-          ),
-          child: _dontShow
-              ? const Icon(Icons.check_rounded, color: Colors.white, size: 12)
-              : null,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          'home.dont_show_again'.tr(),
-          style: const TextStyle(color: AppColors.textHint, fontSize: 12),
-        ),
-      ],
-    );
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: const Color(0xFF2AABEE),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(Icons.telegram, color: Colors.white, size: 32),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'home.telegram_promo_title'.tr(),
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'home.telegram_promo_subtitle'.tr(),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 13,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: widget.onJoin,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2AABEE),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(kButtonRadius),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.telegram, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'home.telegram_join_channel'.tr(),
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          // Android TV: the Join button is an ElevatedButton and focusable for
-          // free, but this opt-out sat on a bare GestureDetector, so a remote
-          // could never tick it. Off TV the GestureDetector below is the
-          // original one.
-          if (isTvPlatform)
-            TvFocusable(
-              onPressed: _toggleDontShow,
-              borderRadius: 8,
-              scale: 1.0,
-              child: dontShowRow,
-            )
-          else
-            GestureDetector(onTap: _toggleDontShow, child: dontShowRow),
         ],
       ),
     );

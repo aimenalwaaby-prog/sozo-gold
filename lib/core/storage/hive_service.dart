@@ -1028,30 +1028,6 @@ class HiveService {
     await _settingsBox.put(AppConstants.keepScreenOnKey, value);
   }
 
-  /// In-memory mirror of [AppConstants.telegramPromoSeenKey].
-  ///
-  /// [setTelegramPromoSeen] is called fire-and-forget from the promo sheet, so
-  /// between the call and the Hive flush a second synchronous read would still
-  /// see `false` and let another sheet through. Writing the mirror before the
-  /// `await` closes that window.
-  bool? _telegramPromoSeen;
-
-  bool get hasTelegramPromoSeen {
-    return _telegramPromoSeen ??=
-        _settingsBox.get(
-          AppConstants.telegramPromoSeenKey,
-          defaultValue: false,
-        ) ==
-        true;
-  }
-
-  Future<void> setTelegramPromoSeen(bool value) async {
-    _telegramPromoSeen = value; // visible to the very next synchronous read
-    await _settingsBox.put(AppConstants.telegramPromoSeenKey, value);
-  }
-
-  Future<void> markTelegramPromoSeen() => setTelegramPromoSeen(true);
-
   bool get isAmoledMode {
     return _settingsBox.get(AppConstants.amoledModeKey, defaultValue: false) ==
         true;

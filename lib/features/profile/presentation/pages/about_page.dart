@@ -8,7 +8,7 @@ import 'package:soplay/core/theme/app_colors.dart';
 import 'package:soplay/features/profile/presentation/widgets/settings_tiles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Build, developer, server status and the support sheet.
+/// Build information and direct developer contact.
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
@@ -104,7 +104,7 @@ class AboutSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
-                    onTap: () => _open('https://t.me/ackles'),
+                    onTap: () => _open('mailto:aimenalwwaby@gmail.com'),
                     child: const Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 16,
@@ -113,13 +113,13 @@ class AboutSection extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.telegram,
+                            Icons.email_outlined,
                             color: Color(0xFF2AABEE),
                             size: 22,
                           ),
                           SizedBox(width: 10),
                           Text(
-                            '@ackles',
+                            'aimenalwwaby@gmail.com',
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 14,
@@ -177,7 +177,12 @@ class AboutSection extends StatelessWidget {
               onTap: () => _showDeveloper(context),
             ),
             const SettingsDivider(),
-            const _ServerCountdownTile(),
+            SettingsNavTile(
+              icon: Icons.email_outlined,
+              title: 'تواصل مع المطور',
+              value: 'aimenalwwaby@gmail.com',
+              onTap: () => _open('mailto:aimenalwwaby@gmail.com'),
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -185,9 +190,9 @@ class AboutSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _SocialIcon(
-              icon: Icons.telegram,
-              label: 'Telegram',
-              onTap: () => _open('https://t.me/sozoApp'),
+              icon: Icons.email_outlined,
+              label: 'Email',
+              onTap: () => _open('mailto:aimenalwwaby@gmail.com'),
             ),
             const SizedBox(width: 16),
             _SocialIcon(
@@ -265,262 +270,6 @@ class _SocialIcon extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ServerCountdownTile extends StatefulWidget {
-  const _ServerCountdownTile();
-
-  @override
-  State<_ServerCountdownTile> createState() => _ServerCountdownTileState();
-}
-
-class _ServerCountdownTileState extends State<_ServerCountdownTile> {
-  static final DateTime _deadline = DateTime.utc(2026, 10, 1);
-  late final Timer _timer;
-  final _remaining = ValueNotifier<Duration>(Duration.zero);
-
-  @override
-  void initState() {
-    super.initState();
-    _updateRemaining();
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) => _updateRemaining(),
-    );
-  }
-
-  void _updateRemaining() {
-    final diff = _deadline.difference(DateTime.now().toUtc());
-    _remaining.value = diff.isNegative ? Duration.zero : diff;
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    _remaining.dispose();
-    super.dispose();
-  }
-
-  void _showSupportSheet(BuildContext context) {
-    showAdaptiveModal<void>(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => _ServerSupportSheet(remaining: _remaining),
-    );
-  }
-
-  static String _fmt(Duration rem) {
-    final d = rem.inDays;
-    final h = rem.inHours.remainder(24);
-    final m = rem.inMinutes.remainder(60);
-    final s = rem.inSeconds.remainder(60);
-    if (d > 0) return '${d}d ${h}h ${m}m';
-    return '${h}h ${m}m ${s}s';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsNavTile(
-      icon: Icons.dns_outlined,
-      title: 'profile.server'.tr(),
-      onTap: () => _showSupportSheet(context),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: ValueListenableBuilder<Duration>(
-              valueListenable: _remaining,
-              builder: (_, rem, _) {
-                return Text(
-                  rem == Duration.zero ? 'profile.expired'.tr() : _fmt(rem),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    // "Expired" means nothing will load: an error, not a
-                    // place to show the theme.
-                    color: rem == Duration.zero
-                        ? AppColors.error
-                        : AppColors.textSecondary,
-                    fontSize: 13,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 4),
-          const SettingsChevron(),
-        ],
-      ),
-    );
-  }
-}
-
-class _ServerSupportSheet extends StatelessWidget {
-  const _ServerSupportSheet({required this.remaining});
-
-  final ValueNotifier<Duration> remaining;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const _SheetHandle(),
-          const SizedBox(height: 24),
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.dns_rounded,
-              color: AppColors.textSecondary,
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'profile.support_title'.tr(),
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ValueListenableBuilder<Duration>(
-            valueListenable: remaining,
-            builder: (_, rem, _) {
-              if (rem == Duration.zero) {
-                return Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'profile.server_expired'.tr(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.error,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                );
-              }
-              return Row(
-                children: [
-                  _SheetCountdownCell(
-                    value: rem.inDays,
-                    label: 'profile.days'.tr(),
-                  ),
-                  const SizedBox(width: 8),
-                  _SheetCountdownCell(
-                    value: rem.inHours.remainder(24),
-                    label: 'profile.hours'.tr(),
-                  ),
-                  const SizedBox(width: 8),
-                  _SheetCountdownCell(
-                    value: rem.inMinutes.remainder(60),
-                    label: 'profile.min'.tr(),
-                  ),
-                  const SizedBox(width: 8),
-                  _SheetCountdownCell(
-                    value: rem.inSeconds.remainder(60),
-                    label: 'profile.sec'.tr(),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          ValueListenableBuilder<Duration>(
-            valueListenable: remaining,
-            builder: (_, rem, _) => Text(
-              rem == Duration.zero
-                  ? 'profile.support_body_expired'.tr()
-                  : 'profile.support_body'.tr(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 13,
-                height: 1.5,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pop();
-                launchUrl(
-                  Uri.parse('https://t.me/ackles'),
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              icon: const Icon(Icons.favorite_rounded, size: 18),
-              label: Text('profile.support_developer'.tr()),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SheetCountdownCell extends StatelessWidget {
-  const _SheetCountdownCell({required this.value, required this.label});
-
-  final int value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value.toString().padLeft(2, '0'),
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                height: 1,
-                fontFeatures: [FontFeature.tabularFigures()],
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                color: AppColors.textHint,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

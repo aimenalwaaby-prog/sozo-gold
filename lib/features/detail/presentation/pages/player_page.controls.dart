@@ -368,15 +368,6 @@ extension _PlayerControls on _PlayerPageState {
   /// out rather than drawing a skeleton that never fills: HLS on iOS, which
   /// AVAssetImageGenerator cannot read, and DASH anywhere. Downloads are
   /// included: a local file is the cheapest preview there is.
-  /// "Title · Episode 5", for a support request about what is playing.
-  String get _supportContentLabel {
-    final eps = widget.args.episodes;
-    if (_episodeIndex >= 0 && _episodeIndex < eps.length) {
-      return '${widget.args.title} · ${eps[_episodeIndex].label}';
-    }
-    return widget.args.title;
-  }
-
   bool get _canGeneratePreview =>
       FramePreviewService.isSupported &&
       _videoUrl != null &&
@@ -528,21 +519,14 @@ extension _PlayerControls on _PlayerPageState {
                   ),
                 ],
                 const SizedBox(height: 10),
-                // Straight to a playback request, with this title, source and
-                // the player log already attached (the viewer can remove it).
                 TextButton.icon(
-                  onPressed: () => context.push(
-                    '/support/new',
-                    extra: SupportRequestArgs(
-                      category: SupportCategory.playback,
-                      provider: widget.args.provider,
-                      content: _supportContentLabel,
-                      screen: 'player',
-                    ),
+                  onPressed: () => launchUrl(
+                    Uri.parse('mailto:aimenalwwaby@gmail.com?subject=Sozo%20Gold%20playback%20issue'),
+                    mode: LaunchMode.externalApplication,
                   ),
                   style: TextButton.styleFrom(foregroundColor: Colors.white60),
-                  icon: const Icon(Icons.support_agent_rounded, size: 18),
-                  label: Text('support.contact_support'.tr()),
+                  icon: const Icon(Icons.email_outlined, size: 18),
+                  label: const Text('تواصل مع المطور'),
                 ),
                 TextButton.icon(
                   onPressed: () => LogViewerSheet.show(context),

@@ -7,7 +7,7 @@ import 'package:soplay/core/player/hls_variants.dart';
 import 'package:soplay/core/player/quality_preference.dart';
 import 'package:soplay/core/player/stream_cloudflare.dart';
 import 'package:soplay/core/player/url_signer.dart';
-import 'package:soplay/features/support/data/support_models.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:soplay/core/analytics/analytics.dart';
 import 'package:soplay/core/player/color_profile.dart';
 import 'package:soplay/core/player/shader_presets.dart';
@@ -112,7 +112,6 @@ import 'package:soplay/features/watch_party/domain/entities/party_playback.dart'
 import 'package:soplay/features/watch_party/domain/entities/party_state.dart';
 import 'package:soplay/features/watch_party/presentation/party_entry.dart';
 import 'package:soplay/features/watch_party/presentation/widgets/party_reactions_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:soplay/core/player/media_controller.dart';
 import 'package:soplay/core/player/dash_manifest.dart';
 import 'package:soplay/features/history/data/history_sync_service.dart';

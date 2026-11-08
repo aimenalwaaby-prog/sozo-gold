@@ -1,14 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:soplay/core/theme/app_colors.dart';
 import 'package:soplay/features/support/data/support_models.dart';
 
-/// "Keeps happening? Write to support" under an error.
-///
-/// Opens a request already on the right category, naming the screen, the
-/// source and the error that was on it, so the viewer only has to say what
-/// they were doing. Quiet on purpose: it sits under Retry, never instead of it.
+/// Keeps error-state call sites source-compatible while opening the developer
+/// email instead of the removed support inbox.
 class SupportSuggestion extends StatelessWidget {
   const SupportSuggestion({
     super.key,
@@ -28,19 +24,13 @@ class SupportSuggestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
-      onPressed: () => context.push(
-        '/support/new',
-        extra: SupportRequestArgs(
-          category: category,
-          screen: screen,
-          provider: provider,
-          content: content,
-          error: error,
-        ),
+      onPressed: () => launchUrl(
+        Uri.parse('mailto:aimenalwwaby@gmail.com?subject=Sozo%20Gold%20issue'),
+        mode: LaunchMode.externalApplication,
       ),
       style: TextButton.styleFrom(foregroundColor: AppColors.textSecondary),
-      icon: const Icon(Icons.support_agent_rounded, size: 17),
-      label: Text('support.suggest'.tr(), style: const TextStyle(fontSize: 13)),
+      icon: const Icon(Icons.email_outlined, size: 17),
+      label: const Text('تواصل مع المطور', style: TextStyle(fontSize: 13)),
     );
   }
 }
