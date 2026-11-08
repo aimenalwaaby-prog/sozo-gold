@@ -49,12 +49,12 @@ class HomeTopBar extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'SOZO',
+            'SOZO GOLD',
             style: TextStyle(
               color: AppColors.primary,
-              fontSize: compact ? 18 : 22,
+              fontSize: compact ? 13 : 22,
               fontWeight: FontWeight.w900,
-              letterSpacing: compact ? 1.6 : 2.5,
+              letterSpacing: compact ? 0.5 : 2.5,
               height: 1,
             ),
           ),
