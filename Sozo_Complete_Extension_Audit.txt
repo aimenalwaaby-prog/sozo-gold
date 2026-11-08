@@ -1,0 +1,238 @@
+تقرير تدقيق الامتدادات والمستودعات — Sozo / Sozo Gold
+========================================================
+
+تاريخ الفحص الموحد: 2026-11-09
+لغة التقرير: العربية
+طبيعة الفحص: فحص ساكن للصفحات والملفات والفهارس العامة، دون تشغيل إضافات مجهولة أو APK أو JavaScript خارجي.
+
+ملاحظة منهجية مهمة
+-------------------
+يفصل هذا التقرير بين الدليل المباشر والاستنتاج. وجود فهرس أو runtime أو رابط تنزيل لا يثبت نجاح التشغيل. والقيمة adult_count=0 تعني عدم وجود عدد بالغين تم التحقق منه في السجل أو الفحص المحدد، ولا تعني إثبات غياب المحتوى البالغ من المستودعات الخارجية.
+
+1) الملخص التنفيذي
+------------------
+- المستودعات الفريدة المسجلة في هذا التقرير: 23.
+- الإضافات/الامتدادات الفريدة بعد إزالة التكرار الاسمي: 24.
+- سجلات الامتدادات الخام قبل إزالة التكرار: 25؛ التكرار الوحيد هو runtime المصادر الخارجية المسجل للأصل وSozo Gold.
+- المستودعات ذات الحالة المحجوبة: 1 (الخادم الخلفي المعلن؛ لا تُذكر هويته أو رابطه امتثالاً للقيد).
+- الإضافات التي لها دليل مباشر على بنية أو فهرس: معظم السجلات، مع تفاوت في درجة التحقق.
+- الإضافات التي شُغلت فعلياً في Sozo أو Sozo Gold: 0.
+- الإضافات ذات التوافق النظري أو القابلية للاستنتاج من الكود/الفهرس: 12 تقريباً ضمن سجلات CloudStream وAniyomi/Mangayomi وVega، لكن هذا ليس اختبار تشغيل.
+- لا توجد نتيجة اختبار ميداني ناجح يمكن نسبتها إلى إضافة بعينها.
+- المستودع الأصلي نشط وقت الفحص، وSozo Gold نسخة مستقلة مشتقة/مكررة نشطة؛ لا يوجد مستودع ثبت أنه مهجور نهائياً. يوجد تفرع غير نشط نسبياً، لكنه غير مؤرشف ولا يجوز وصفه بالمهجور قطعاً.
+- الأنظمة المكتشفة: Sozo cloud، CloudStream، Aniyomi/Mihon/Tachiyomi، Mangayomi JavaScript، Vega (خارجي وغير مثبت التكامل)، Stremio (إضافات خارجية؛ التكامل داخل Sozo غير مثبت)، LNReader، ومستودعات عربية لمصادر Mangayomi.
+
+2) جميع المستودعات الفريدة
+---------------------------
+الجدول: الاسم | النظام | الحالة | تاريخ الفحص | الرابط
+
+1. المستودع الأصلي Sozo | تطبيق Flutter/Dart متعدد المنصات وطبقات مصادر | متحقق/نشط | 2026-11-09 | https://github.com/professorDeveloper/sozo
+2. النسخة المعدلة Sozo Gold | Flutter/Dart، فرع gold-development | متحقق/نسخة مشتقة مستقلة | 2026-11-09 | https://github.com/aimenalwaaby-prog/sozo-gold
+3. Sozo backend المرجعي المعلن | خادم Node.js للمصادر السحابية | محجوب؛ تفاصيله غير متحققة | 2026-11-09 | (محجوب؛ لا يُذكر الرابط)
+4. Mangayomi Extensions الرسمي | Mangayomi | متحقق جزئياً | 2026-11-09 | https://github.com/kodjodevf/mangayomi-extensions
+5. Aniyomi Extensions الرسمي | Aniyomi | متحقق جزئياً | 2026-11-09 | https://github.com/aniyomiorg/aniyomi-extensions
+6. Vega App | React Native/TypeScript | متحقق | 2026-11-09 | https://github.com/vega-org/vega-app
+7. Vega Providers Template | Vega | متحقق | 2026-11-09 | https://github.com/vega-org/providers-template
+8. Community Vega Providers | Vega | متحقق كصيغة Vega؛ Sozo غير متحقق | 2026-11-09 | https://github.com/Zenda-Cross/vega-providers
+9. Vega Organization Repository Index | فهرس Vega الرسمي | متحقق | 2026-11-09 | https://github.com/orgs/vega-org/repositories
+10. Stremio Addon SDK | Stremio | مرجع متحقق | 2026-11-09 | https://github.com/Stremio/stremio-addon-sdk
+11. Stremio central addon collection | فهرس Stremio المركزي | متحقق | 2026-11-09 | https://api.stremio.com/addonscollection.json
+12. Stremio Addons community list | فهرس مجتمعي | متحقق؛ الأعداد متغيرة | 2026-11-09 | https://stremio-addons.net/
+13. Stremio Community Subtitles | Stremio | مستودع وقائمة متحققان | 2026-11-09 | https://github.com/skoruppa/stremio-community-subtitles
+14. recloudstream/cloudstream | CloudStream | مصدر النظام | 2026-11-09 | https://github.com/recloudstream/cloudstream
+15. recloudstream/extensions | CloudStream | فهرس رسمي؛ التشغيل غير متحقق | 2026-11-09 | https://github.com/recloudstream/extensions
+16. NivinCNC/CNCVerse-Cloud-Stream-Extension | CloudStream | توافق نظري قوي | 2026-11-09 | https://github.com/NivinCNC/CNCVerse-Cloud-Stream-Extension
+17. Abodabodd/re-3arabi | CloudStream | توافق نظري قوي | 2026-11-09 | https://github.com/Abodabodd/re-3arabi
+18. CranberrySoup/AniyomiCompatExtension | CloudStream compatibility | نظري فقط | 2026-11-09 | https://github.com/CranberrySoup/AniyomiCompatExtension
+19. LNReader Plugins | LNReader | متحقق | 2026-11-09 | https://github.com/LNReader/lnreader-plugins
+20. 9vsv6/mangayomi-ar-extensions | Mangayomi عربي | متحقق | 2026-11-09 | https://github.com/9vsv6/mangayomi-ar-extensions
+21. Mallyd11/mangayomi-anime-extensions | Mangayomi متعدد اللغات | متحقق جزئياً | 2026-11-09 | https://github.com/Mallyd11/mangayomi-anime-extensions
+22. Sozo-app/sozo | fork للأصل | نشط وغير مؤرشف | 2026-11-09 | https://github.com/Sozo-app/sozo
+23. keishao2300-hash/sozo | fork للأصل | غير نشط نسبياً، غير مؤرشف | 2026-11-09 | https://github.com/keishao2300-hash/sozo
+
+3) التصنيف حسب النظام
+----------------------
+- Sozo runtime: Sozo cloud sources، CloudStream .cs3، Aniyomi/Mihon/Tachiyomi APK، Mangayomi JavaScript.
+- Mangayomi: الكتالوج الرسمي، الكتالوج العربي 9vsv6، كتالوج Mallyd11.
+- Aniyomi: الفهرس الرسمي APK.
+- CloudStream: DailymotionProvider، InvidiousProvider، AniKoto، BilibiliProvider، 3isk، Anime3rb.
+- Vega: قالب المزود، Community Vega Providers؛ التوافق مع Sozo غير مثبت.
+- Stremio: Anime Kitsu، AnimeSub+، Stremio Community Subtitles، LAT-ADD؛ تكامل Stremio داخل Sozo غير مثبت.
+- LNReader: السجل الرسمي للإضافات.
+- تفرعات وصيانة: Sozo-app/sozo وkeishao2300-hash/sozo.
+
+4) جميع الإضافات المكتشفة — دون تكرار
+--------------------------------------
+الحقول: الإضافة | المطور | الوظائف/القدرات | الأنواع واللغات | الحالة والدليل
+
+1. Aniyomi/Mihon extension runtime | Sozo runtime | قراءة index.min.json وindex.pb، تنزيل APK، التحقق من بصمة التوقيع عند توفرها، وسم nsfw من rating، تحميل المصدر عبر class loader | أنمي ومانغا/كوميكس؛ لغات المصدر حسب الفهرس | متحقق من ExtensionIndex.kt وAniyomiRepoManager.kt. المستودعات يضيفها المستخدم؛ لا فهرس افتراضي ثابت ثبت في الملفات المقروءة.
+2. CloudStream plugin runtime | Sozo runtime | قبول repo.json/plugins.json، تنزيل .cs3، تخزين metadata، تمييز NSFW من tvTypes، تحميل plugin | فيديو وأنمي وأنواع أخرى؛ لغات metadata حسب plugin | متحقق من RepoManager.kt وREADME؛ لا يثبت نجاح تشغيل plugin.
+3. Mangayomi JavaScript source runtime | Sozo runtime | تشغيل JavaScript في JS runtime، استخدام Mangayomi repositories، توفير الروايات بحسب README | مانغا، ويب تون، روايات خفيفة، JavaScript؛ حسب المصدر | متحقق من README؛ لم تُثبت عناوين افتراضية أو تشغيل فعلي.
+4. Sozo cloud sources | Backend | مصادر سحابية يعلن عنها README | محتوى سحابي؛ اللغات والأنواع غير متحققة | محجوب؛ لا تُثبت endpoints أو الفهرس أو عدد المحتوى.
+5. Mangayomi official source catalogue | kodjodevf | popular/latest/search، فلاتر، تفاصيل، فصول وقراءة | manga؛ الحقل isManga=true؛ index.json يحوي 363 سجلاً؛ اللغات المعلنة متعددة وتشمل العربية وغيرها | متحقق من index.json وCONTRIBUTING-DART.md؛ لم تُشغّل السجلات.
+6. Aniyomi official APK extension catalogue | aniyomiorg | تثبيت وإزالة APK، تصفح مانغا وقراءة فصول | manga؛ اللغات وadult_count غير قابلين للتحقق من الفهرس الحالي | متحقق جزئياً؛ لم يُفك أو يُشغّل الفهرس الثنائي.
+7. Vega provider template | vega-org | catalog/genre filters، metadata، post/search، stream/download، episodes اختياري، manifest discovery، sandbox | JavaScript/TypeScript؛ أفلام ومسلسلات وحلقات وبيانات وروابط بث | قالب رسمي؛ لا يوجد adapter موثق لـSozo.
+8. Community Vega providers | Zenda-Cross | provider modules، manifest، dist، tests وbuild tooling | TypeScript/JavaScript؛ providers/catalog/metadata/streams | توافق Vega مدعوم بالبنية؛ توافق Sozo غير مثبت ولم يُشغّل provider.
+9. Anime Kitsu | المطور غير متحقق من الفهرس | catalog، meta، subtitles | anime/movie/series؛ اللغة غير متحققة | سجل manifest مباشر في الفهرس المركزي؛ manifest تشغيلي أو repository لم يُتحقق منه.
+10. AnimeSub+ | jhonus | streams، subtitles، torrent/index discovery، debrid/usenet configuration | anime؛ متعدد اللغات | قائمة مجتمع متحققة؛ repository وmanifest العام غير متحققين.
+11. Stremio Community Subtitles | skoruppa | رفع subtitles، مطابقة video hash، اختيار يدوي، دعم web/mobile/TV/desktop | movie/series/anime وغير ذلك غير متحقق لكل نوع؛ متعدد اللغات | repository وlisting متحققان؛ لم تُشغّل الإضافة.
+12. LAT-ADD | sofialejjj | direct playback، multiple qualities | movies/series/anime؛ إسبانية لاتينية ومتعدد اللغات | صفحة مجتمع متحققة فقط؛ يتطلب رابطاً شخصياً، ولا repository أو manifest عام متحقق.
+13. DailymotionProvider | Luna712 | CloudStream .cs3، مشاهدة Dailymotion | Others؛ اللغة غير معلنة | descriptor مباشر في plugins.json؛ توافق نظري مع RepoManager، بلا اختبار تشغيل.
+14. InvidiousProvider | Cloudburst | CloudStream .cs3، محتوى عبر Invidious | Others؛ اللغة غير معلنة | descriptor مباشر؛ الشبكة والاستخراج والتشغيل غير مختبرة.
+15. AniKoto | NivinCNC | CloudStream .cs3، بحث/تفاصيل/حلقات وفق واجهة CloudStream | Anime/AnimeMovie/OVA؛ en | CNC manifest مباشر؛ لم يُشغّل الملف.
+16. BilibiliProvider | NivinCNC | CloudStream .cs3، فيديو وأنمي وأفلام ومسلسلات | Anime/Movies/TvSeries/Documentary؛ ta | manifest مباشر؛ status=3 ليس نتيجة تشغيل.
+17. 3isk | Abodabodd | CloudStream .cs3، فيديو عربي للأفلام والمسلسلات | TvSeries/Movie؛ ar | descriptor مباشر؛ لم يُتحقق من رابط البث.
+18. Anime3rb | Abodabodd | CloudStream .cs3، فيديو عربي للأنمي والمسلسلات | TvSeries/Anime؛ ar | descriptor مباشر؛ لم يُشغّل provider.
+19. LNReader official plugin registry | LNReader | manifest JSON، بحث وتفاصيل وفصول، JavaScript وتصفية حسب اللغة | روايات خفيفة/ويب؛ العربية وEspañol وFrançais وTürkçe وEnglish وРусский و中文 وغيرها؛ الصفحة تعرض 327 إضافة و17 لغة | متحقق؛ الأعداد لقطة زمنية وليست نسخة مضمّنة في Sozo.
+20. Mangayomi Arabic extensions | 9vsv6 | anime_index وmanga_index وnovel_index وروابط raw | أنمي ومانغا وروايات؛ العربية | متحقق من README والشجرة؛ لم تُشغّل ملفات JavaScript.
+21. Mangayomi Mally extensions | Mallyd11 | anime_index وindex وnovel_index وكتالوج JavaScript | أنمي ومانغا وروايات خفيفة؛ English وFrançais | متحقق جزئياً؛ لا دليل مباشر على العربية أو التركية.
+22. Sozo-app fork | Sozo-app | عميل أنمي ومانغا وبث وتنزيل | Flutter/Dart | fork نشط وغير مؤرشف؛ ليس إضافة محتوى مستقلة.
+23. keishao2300-hash fork | keishao2300-hash | تطبيق أفلام ومسلسلات وأنمي ومانغا وروايات | Flutter/Dart | غير نشط نسبياً حتى الفحص، غير مؤرشف؛ لا يكفي ذلك لإثبات الهجر النهائي.
+24. User-installed third-party source/extension runtimes | مصادر خارجية في Sozo وSozo Gold | fetch/search/play/read وتشغيل CloudStream وAniyomi/Mihon وJavaScript | فيديو، مانغا، manhwa، webtoon، light novel؛ English/Uzbek/Arabic معلنة للتطبيق | سجل مفاهيمي موحد بعد إزالة تكرار ظهوره في مستودعين؛ غير متحقق عالي الحذر، ولا يمثل إضافة محددة أو ضماناً للمصادر.
+
+5) الاختبارات الفعلية مقابل النظرية
+------------------------------------
+جدول الاختبار | النتيجة
+
+قراءة ملفات runtime والفهارس | منفذ ساكنياً؛ ثبتت صيغ RepoManager وPluginHost وExtensionIndex وبنية الفهارس.
+تنزيل وتشغيل CloudStream .cs3 | لم يُنفذ. التوافق النظري مستنتج من descriptor وRepoManager؛ لا نجاح تشغيل.
+تنزيل وتشغيل Aniyomi APK | لم يُنفذ. ثبت مسار APK/class loader نظرياً؛ لا تحقق من APK بعينه.
+تشغيل Mangayomi JavaScript | لم يُنفذ. ثبت وصف runtime والفهارس؛ لا تحقق من provider بعينه.
+تشغيل Vega provider داخل Sozo | لم يُنفذ، ولا adapter موثق؛ التوافق غير مثبت.
+تشغيل Stremio addon داخل Sozo | لم يُنفذ، ولم يثبت وجود تكامل Stremio في ملفات Sozo المقروءة.
+اختبار البحث/التفاصيل/الفصول/البث | لم يُنفذ لأي إضافة.
+اختبار الشبكة واستخراج الروابط | لم يُنفذ.
+اختبار CI أو flutter test أو build أو APK/desktop artifacts | لم يُنفذ؛ وجود test/ وintegration_test/ وworkflows لا يثبت نجاحها.
+اختبار التوقيع/سلامة الملفات | لم يُنفذ، باستثناء أن الكود يصف التحقق عند توفر بصمة في مسار Aniyomi.
+اختبار sandbox والعزل وPIN/biometric/AES | لم يُنفذ؛ المذكور وثائقي فقط.
+
+الخلاصة: كل حالات "التوافق" في التقرير هي نظرية أو وصف بنية، وليست نتيجة اختبار فعلي.
+
+6) التكرار والتفرعات
+---------------------
+- الأصل professorDeveloper/sozo: fork=false، غير مؤرشف، آخر دفع ظاهر 2026-11-08، وعدد forks المسجل 16. اعتُبر مرشح upstream نشطاً وقت الفحص.
+- Sozo Gold: fork=false في GitHub، فرع gold-development، غير مؤرشف، آخر دفع ظاهر 2026-11-08؛ نسخة مشتقة/مكررة مستقلة عالية التشابه البنيوي، وليست fork metadata رسمياً.
+- Sozo-app/sozo: fork=true، أُنشئ 2026-05-10، آخر دفع ظاهر 2026-11-07، غير مؤرشف؛ fork نشط وقت الفحص.
+- keishao2300-hash/sozo: fork=true، آخر دفع ظاهر 2026-10-28، غير مؤرشف، بلا نجوم؛ غير نشط نسبياً فقط، وليس مهجوراً مثبتاً.
+- تعذر استخراج Compare HTML، لذلك لا يثبت التقرير عدد commits ahead/behind أو قائمة الفروق الكاملة.
+- سجلات Gold تشير إلى تغييرات في routing والحماية والترجمة والمصادر والهوية البصرية، لكن لا تُنسب كل الفروق إلى نقطة fork دون مقارنة Git كاملة.
+
+7) الإضافات والمصادر العربية
+----------------------------
+- 3isk: CloudStream، language=ar، أفلام ومسلسلات.
+- Anime3rb: CloudStream، language=ar، أنمي ومسلسلات.
+- Mangayomi Arabic extensions: فهارس أنمي ومانغا وروايات عربية.
+- LNReader: سجلات عربية ومسارات plugins/arabic؛ الصفحة الرسمية تعرض العربية ضمن المرشحات.
+- Sozo وSozo Gold: وجود ar.json وتقارير عربية مثبت؛ هذا يثبت لغة واجهة/ملفات، لا جودة كل ترجمة أو توفر مصدر عربي.
+- المصادر ذات اللغات الأخرى: AniKoto بالإنجليزية، BilibiliProvider بالتاميلية، Mallyd11 بالإنجليزية والفرنسية، وكتالوجات متعددة اللغات.
+
+8) السلامة
+----------
+- التطبيق يعلن أنه لا يستضيف المحتوى وأن المستخدم يثبت المصادر يدوياً، لكن runtimes المحلية تحمل أو تشغل APK و.cs3 وJavaScript؛ لذلك لا تُعامل الإخلاءات العامة كضمان تقني.
+- SECURITY.md يضع وصول المصدر/الإضافة إلى filesystem أو keystore أو cookies أو runtime ضمن نطاق الثغرات، لكن لم يُختبر ذلك ديناميكياً.
+- لم يُشغّل أي كود مجهول أو APK أو provider، التزاماً بالسلامة؛ لذلك لا يمكن تقييم payloads أو سلوك الشبكة أو العزل.
+- لا يوجد دليل متحقق على تصنيف عمري رسمي أو حد أدنى للعمر أو parental controls.
+- لا يمكن إثبات سلامة توقيعات APK أو artifacts أو نتائج CI من الفهرس فقط.
+- لا يمكن إثبات فعالية PIN أو biometric lock أو AES-encrypted-at-rest دون اختبار مضبوط.
+- adult_count لا يمثل تصنيفاً شاملاً للمحتوى الخارجي.
+
+9) المصادر المحجوبة فقط
+------------------------
+العدد: 1.
+
+وفق القيد، لا تُذكر أسماء أو روابط المصدر المحجوب. سبب الحجب: تعذر فتح المستودع الخلفي مباشرة، وبالتالي لم تتحقق تفاصيل الخادم وواجهاته وفهرسه وقائمة المصادر الافتراضية. لا يجوز تحويل adult_count=0 في هذا السجل إلى نفي لوجود محتوى بالغ.
+
+10) المهجورة وغير القابلة للاختبار
+----------------------------------
+المهجورة قطعاً: 0 مثبتة.
+غير نشطة نسبياً: 1 fork، بسبب عدم ظهور دفع منذ 2026-10-28؛ غير مؤرشف، لذا لا يوصف بالمهجور نهائياً.
+غير قابلة للاختبار في هذا الفحص: جميع الإضافات الخارجية من ناحية التشغيل الفعلي، إضافة إلى Vega providers وStremio addons وAPK وCloudStream .cs3 وMangayomi JavaScript. السبب: لم يُشغّل كود خارجي ولم تتوفر بيئة Android/تطبيق مبني لاختبارات ميدانية.
+
+11) إحصاءات دقيقة بعد إزالة التكرار
+------------------------------------
+- المستودعات الفريدة: 23.
+- سجلات الامتدادات الخام: 25.
+- الامتدادات الفريدة: 24.
+- التكرار المحذوف: User-installed third-party source/extension runtimes، ظهر مرة للأصل ومرة لـGold.
+- سجلات CloudStream الفردية: 6.
+- سجلات Vega: 2.
+- سجلات Stremio الفردية: 4.
+- سجلات Mangayomi/Aniyomi الرسمية: 2.
+- سجلات Arabic-community الفردية: 3، مع تداخل لغوي مقصود في LNReader وMangayomi العربي؛ لم تُحسب السجلات نفسها مرتين.
+- سجلات runtime الخاصة بـSozo: 4، منها cloud blocked جزئياً.
+- إضافات/مصادر عربية مباشرة أو ذات سجل عربي: 5 تقريباً حسب التعريف؛ العدد لا يعني أن كل واحدة تعمل.
+- adult_count المحقق من الفهارس الفردية المذكورة: 2 في سجل Mangayomi الرسمي كما ورد في المحور؛ لا توجد أسماء مصادر بالغة في التقرير.
+- عدد المصادر البالغة الشامل لكل الفهارس: غير متحقق.
+- عدد المصادر المحجوبة فقط: 1.
+- اختبارات تشغيل ناجحة موثقة: 0.
+- repositories verified/partially verified أو ذات دليل مباشر: 22 من 23؛ واحد محجوب.
+
+12) حدود الفحص وأخطاء المحاور
+-----------------------------
+حدود عامة:
+- لم يُنفذ clone شامل أو بحث كامل محلي في جميع الشيفرات، ولم تُشغّل إضافات مجهولة أو APK أو JavaScript.
+- لم يُبنَ التطبيق ولم تُشغّل flutter test أو integration tests أو CI أو release workflows.
+- الفهارس الخارجية قد تتغير بعد تاريخ الفحص؛ أعداد LNReader وStremio community ليست ثابتة زمنياً.
+- وجود descriptor أو status في فهرس لا يساوي نجاح التشغيل داخل Sozo.
+- لا توجد قائمة default repositories ثابتة مؤكدة في الملفات المقروءة؛ أي عدد أو اسم غير وارد هنا سيكون اختلاقاً.
+- لم تثبت الحقول manhwa/manhua/webtoon كتصنيفات مستقلة في فهرس Mangayomi؛ عوملت كاستنتاجات غير مؤكدة.
+- لم يتحقق الفحص من ABI أو عقد API بين Vega وSozo.
+- لم يتحقق الفحص من manifest العام أو repository لبعض إضافات Stremio، لذلك وُسمت تلك الحقول بغير متحقق بدلاً من التخمين.
+- لم يمكن استخراج مقارنة Git HTML وعدد commits ahead/behind بدقة.
+
+أخطاء أو إخفاقات المحاور المبلّغ عنها:
+- لم تُسجل إخفاقات محاور صريحة؛ الحقل الوارد كان فارغاً.
+- مع ذلك، سجّلت المحاور قيوداً تشغيلية وفهرسية عديدة، وقد أُبقيت في هذا التقرير كقيود لا كحقائق ناقصة.
+
+13) قائمة الروابط المرجعية
+--------------------------
+https://github.com/professorDeveloper/sozo
+https://github.com/aimenalwaaby-prog/sozo-gold
+https://github.com/kodjodevf/mangayomi-extensions
+https://github.com/aniyomiorg/aniyomi-extensions
+https://github.com/vega-org/vega-app
+https://github.com/vega-org/providers-template
+https://github.com/Zenda-Cross/vega-providers
+https://github.com/orgs/vega-org/repositories
+https://github.com/Stremio/stremio-addon-sdk
+https://api.stremio.com/addonscollection.json
+https://stremio-addons.net/
+https://github.com/skoruppa/stremio-community-subtitles
+https://stremio-community-subtitles.top/
+https://anime-kitsu.strem.fun/manifest.json
+https://stremio-addons.net/addons/animesub
+https://stremio-addons.net/addons/lat-add
+https://github.com/recloudstream/cloudstream
+https://github.com/recloudstream/extensions
+https://github.com/NivinCNC/CNCVerse-Cloud-Stream-Extension
+https://github.com/Abodabodd/re-3arabi
+https://github.com/CranberrySoup/AniyomiCompatExtension
+https://github.com/LNReader/lnreader-plugins
+https://www.lnreader.app/plugins
+https://github.com/9vsv6/mangayomi-ar-extensions
+https://github.com/Mallyd11/mangayomi-anime-extensions
+https://github.com/Sozo-app/sozo
+https://github.com/keishao2300-hash/sozo
+
+نهاية التقرير
+=============
+
+17) تصحيح الفحص المحلي للنسخة المعدلة Sozo Gold
+------------------------------------------------
+بعد انتهاء الفحص العام للصفحات العامة، تمت مراجعة شجرة العمل المحلية للفرع gold-development حتى لا يُخلط بين عدم ظهور التكامل في README وبين وجوده في الشيفرة.
+
+- Vega موجود فعلياً في النسخة المعدلة عبر:
+  - lib/features/vega/data/vega_repo_store.dart
+  - lib/features/vega/presentation/pages/vega_sources_page.dart
+  - lib/features/vega/presentation/pages/vega_provider_page.dart
+  - lib/features/extensions/data/mangayomi_runtime.dart
+  - lib/features/sources/data/builtin_extension_sources.dart
+- المستودع المدمج افتراضياً لـVega هو Zenda-Cross/vega-providers، ويُعاد تحديثه إذا كان محفوظاً بلا مزود صالح.
+- Stremio موجود فعلياً عبر:
+  - lib/features/stremio/data/stremio_addon_client.dart
+  - lib/features/stremio/data/stremio_addon_store.dart
+  - lib/features/stremio/presentation/pages/stremio_addons_page.dart
+  - lib/features/sources/data/builtin_extension_sources.dart
+- عناوين Stremio المدمجة في Sozo Gold هي Cinemeta وOpenSubtitles وTorrentio. يتم التطبيع والحفظ محلياً، وتُتجاوز الإضافة غير المتاحة دون تعطيل بدء التطبيق.
+- لذلك تُصحح ملاحظة محور Vega ومحول Stremio: التكامل موجود في Sozo Gold على مستوى إدارة المستودع/الفهرس والواجهة والجلب، لكن لم يتم تشغيل كل provider أو addon خارجياً في هذه المراجعة لأسباب السلامة. وجود التكامل لا يساوي إثبات نجاح كل مصدر.
+- اختبار قارئ المانغا بعد التعديل الأخير نجح محلياً، كما نجح flutter analyze للملف المعدل دون أخطاء.

@@ -76,6 +76,74 @@ class _ReaderPageState extends State<ReaderPage> {
 
   late int _chapterIndex;
   List<MangaPageEntity> _pages = const [];
+  final Map<String, MangaPageTranslation> _pageTranslations = {};
+  bool _translatingPages = false;
+  int _translationFailures = 0;
+
+  String _translationKey(MangaPageEntity page, String language) =>
+      '${page.cacheKey ?? page.imageUrl}|$language';
+
+  Future<void> _translateAllPages() async {
+    if (_translatingPages || _pages.isEmpty || _html != null) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final pages = List<MangaPageEntity>.of(_pages);
+    final language = Localizations.localeOf(context).languageCode.isEmpty
+        ? 'ar'
+        : Localizations.localeOf(context).languageCode;
+    setState(() {
+      _translatingPages = true;
+      _translationFailures = 0;
+      _pageTranslations.removeWhere(
+        (key, _) =>
+            !pages.any((page) => key == _translationKey(page, language)),
+      );
+    });
+
+    final translated = await Future.wait(
+      pages.map((page) async {
+        try {
+          MangaPageTranslation? result;
+          if (!page.imageUrl.startsWith('http')) {
+            result = await MangaPageTranslationService.readOffline(
+              imagePath: page.imageUrl,
+              targetLanguage: language,
+            );
+          }
+          result ??= await MangaPageTranslationService.instance.translatePage(
+            page: page,
+            headers: mergeHttpHeaders([
+              _headers,
+              page.headers,
+              if (page.cookie?.isNotEmpty == true) {'Cookie': page.cookie!},
+            ]),
+            targetLanguage: language,
+          );
+          return MapEntry(_translationKey(page, language), result);
+        } catch (_) {
+          return null;
+        }
+      }),
+    );
+    if (!mounted) return;
+    final successful = translated
+        .whereType<MapEntry<String, MangaPageTranslation>>();
+    setState(() {
+      for (final entry in successful) {
+        _pageTranslations[entry.key] = entry.value;
+      }
+      _translationFailures = pages.length - successful.length;
+      _translatingPages = false;
+    });
+    if (_translationFailures > 0) {
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(
+            'تمت ترجمة ${successful.length} من ${pages.length} صفحات، وتعذر ترجمة $_translationFailures.',
+          ),
+        ),
+      );
+    }
+  }
 
   /// A novel chapter's prose, when the source returned text instead of images.
   /// See MangaPagesEntity.html — the two are different shapes, not two ways of
@@ -441,6 +509,9 @@ class _ReaderPageState extends State<ReaderPage> {
       _error = null;
       _localChapter = false;
       _pages = const [];
+      _pageTranslations.clear();
+      _translatingPages = false;
+      _translationFailures = 0;
       _html = null;
       _bookPages = const [];
       _bookMetrics = null;
@@ -1606,6 +1677,11 @@ class _ReaderPageState extends State<ReaderPage> {
             page: _pages[i],
             headers: _headers,
             zoomable: false,
+            translation:
+                _pageTranslations[_translationKey(
+                  _pages[i],
+                  Localizations.localeOf(context).languageCode,
+                )],
           );
         },
       ),
@@ -1656,6 +1732,11 @@ class _ReaderPageState extends State<ReaderPage> {
               page: _pages[i],
               headers: _headers,
               zoomable: true,
+              translation:
+                  _pageTranslations[_translationKey(
+                    _pages[i],
+                    Localizations.localeOf(context).languageCode,
+                  )],
             ),
           ),
         ),
@@ -1703,6 +1784,11 @@ class _ReaderPageState extends State<ReaderPage> {
                       key: ValueKey('s_${_chapterIndex}_$i'),
                       page: _pages[i],
                       headers: _headers,
+                      translation:
+                          _pageTranslations[_translationKey(
+                            _pages[i],
+                            Localizations.localeOf(context).languageCode,
+                          )],
                       // Not zoomable in a spread: a pinch would zoom one half
                       // out from under the other.
                       zoomable: false,
@@ -2231,6 +2317,21 @@ class _ReaderPageState extends State<ReaderPage> {
                 onPressed: (_tts?.isActive ?? false)
                     ? () => _tts!.stop()
                     : _startTts,
+              ),
+            if (_html == null && _pages.isNotEmpty)
+              IconButton(
+                tooltip: 'manga.translate_page'.tr(),
+                icon: _translatingPages
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.translate_rounded, color: Colors.white),
+                onPressed: _translatingPages ? null : _translateAllPages,
               ),
             _downloadButton(ch),
             // Only when there is somewhere to go. A provider with no web page
@@ -3220,11 +3321,13 @@ class _PageImage extends StatefulWidget {
     required this.page,
     required this.headers,
     required this.zoomable,
+    this.translation,
   });
 
   final MangaPageEntity page;
   final Map<String, String> headers;
   final bool zoomable;
+  final MangaPageTranslation? translation;
 
   @override
   State<_PageImage> createState() => _PageImageState();
@@ -3244,10 +3347,7 @@ class _PageImageState extends State<_PageImage> {
   /// anything twice. Null until then, which is the same thing as "not zoomable
   /// yet".
   String? _sourcePath;
-  MangaPageTranslation? _translation;
-  bool _translating = false;
   bool _showOriginal = false;
-  String? _translationError;
 
   @override
   void initState() {
@@ -3293,52 +3393,8 @@ class _PageImageState extends State<_PageImage> {
     ]);
   }
 
-  Future<void> _translatePage(BuildContext context) async {
-    if (_translating || _translation != null) return;
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    final language = Localizations.localeOf(context).languageCode;
-    setState(() {
-      _translating = true;
-      _translationError = null;
-    });
-    try {
-      final localPath = widget.page.imageUrl;
-      if (!localPath.startsWith('http')) {
-        final offline = await MangaPageTranslationService.readOffline(
-          imagePath: localPath,
-          targetLanguage: language.isEmpty ? 'ar' : language,
-        );
-        if (offline != null) {
-          if (mounted) setState(() => _translation = offline);
-          return;
-        }
-      }
-      final result = await MangaPageTranslationService.instance.translatePage(
-        page: widget.page,
-        headers: _imageHeaders,
-        targetLanguage: language.isEmpty ? 'ar' : language,
-      );
-      if (mounted) setState(() => _translation = result);
-    } catch (error) {
-      if (!mounted) return;
-      setState(() => _translationError = error.toString());
-      messenger?.showSnackBar(
-        SnackBar(
-          content: Text(
-            _translationError!.replaceFirst('Exception: ', ''),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _translating = false);
-    }
-  }
-
   Widget _translatedCanvas(Widget image, double width) {
-    final translation = _translation;
+    final translation = widget.translation;
     if (translation == null || _showOriginal) return image;
     final scale = width / translation.imageSize.width;
     return AspectRatio(
@@ -3451,45 +3507,16 @@ class _PageImageState extends State<_PageImage> {
               child: SizedBox(width: width, child: canvas),
             );
       return GestureDetector(
-        onLongPressStart: _translation == null
+        onLongPressStart: widget.translation == null
             ? null
             : (_) => setState(() => _showOriginal = true),
-        onLongPressEnd: _translation == null
+        onLongPressEnd: widget.translation == null
             ? null
             : (_) => setState(() => _showOriginal = false),
         child: Stack(
           children: [
             page,
-            if (_translation == null)
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Material(
-                  color: Colors.black.withValues(alpha: 0.58),
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: IconButton(
-                    tooltip: 'manga.translate_page'.tr(),
-                    icon: _translating
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.translate_rounded,
-                            color: Colors.white,
-                          ),
-                    onPressed: _translating
-                        ? null
-                        : () => _translatePage(context),
-                  ),
-                ),
-              ),
-            if (_translation != null && !_showOriginal)
+            if (widget.translation != null && !_showOriginal)
               Positioned(
                 left: 10,
                 top: 12,
