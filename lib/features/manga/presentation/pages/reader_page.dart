@@ -735,6 +735,7 @@ class _ReaderPageState extends State<ReaderPage> {
     // an empty page list is what used to leave novels out of history entirely.
     final isNovel = _html != null;
     if (!isNovel && _pageCount == 0) return;
+    if (!getIt.isRegistered<HistoryService>()) return;
     final ch = widget.args.chapters[_chapterIndex];
     getIt<HistoryService>().save(
       HistoryItem(
@@ -2314,6 +2315,15 @@ class _ReaderPageState extends State<ReaderPage> {
       );
 
   Widget _downloadButton(EpisodeEntity ch) {
+    if (_html != null) {
+      return Tooltip(
+        message: 'manga.novel_download_unavailable'.tr(),
+        child: const IconButton(
+          onPressed: null,
+          icon: Icon(Icons.download_outlined, color: Colors.white),
+        ),
+      );
+    }
     final id = DownloadRequest.mangaChapterId(
       contentUrl: widget.args.contentUrl,
       provider: widget.args.provider,

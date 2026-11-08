@@ -66,11 +66,18 @@ NotificationRoute resolveNotificationRoute(
     case 'system_comment_reply':
     case 'system_comment_like':
       return hasTitle
-          ? _push('/detail', DetailArgs(contentUrl: contentUrl, provider: provider))
+          ? _push(
+              '/detail',
+              DetailArgs(contentUrl: contentUrl, provider: provider),
+            )
           : fallback;
     case 'system_ban':
       if (fromList) return _nothing;
-      return (action: NotificationAction.signOut, location: '/login', extra: null);
+      return (
+        action: NotificationAction.signOut,
+        location: '/login',
+        extra: null,
+      );
     // A followed title grew. The detail page, opened on the new episode: it
     // offers "Watch episode N" first, and its list opens scrolled to it.
     case 'new_release':
@@ -94,12 +101,17 @@ NotificationRoute resolveNotificationRoute(
         '/detail',
         DetailArgs(
           contentUrl: contentUrl,
-          provider: provider == null || provider.isEmpty ? 'cat:anilist' : provider,
+          provider: provider == null || provider.isEmpty
+              ? 'cat:anilist'
+              : provider,
           focusEpisode: episode != null && episode > 0 ? episode : null,
         ),
       );
     case 'auto_download':
       return _push('/downloads');
+    case 'support_reply':
+      final ticketId = data['ticketId']?.toString() ?? '';
+      return _push(ticketId.isEmpty ? '/support' : '/support/$ticketId');
     case 'friend_request':
       return _push('/friends?tab=requests');
     case 'friend_accept':
@@ -110,7 +122,11 @@ NotificationRoute resolveNotificationRoute(
             : '/u/${Uri.encodeComponent(username)}',
       );
     case 'streak_risk':
-      return (action: NotificationAction.streakTab, location: '/main', extra: null);
+      return (
+        action: NotificationAction.streakTab,
+        location: '/main',
+        extra: null,
+      );
     case 'system_unban':
     case 'admin_broadcast':
     case 'admin_direct':
