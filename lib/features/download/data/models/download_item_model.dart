@@ -42,6 +42,8 @@ abstract final class DownloadItemModel {
     'imageHeaders': item.imageHeaders,
     'chapterRef': item.chapterRef,
     'chapterIndex': item.chapterIndex,
+    'translateOffline': item.translateOffline,
+    'translationLanguage': item.translationLanguage,
     'failure': item.failure?.id,
     'failureDetail': item.failureDetail,
     'attempts': item.attempts,
@@ -159,6 +161,8 @@ abstract final class DownloadItemModel {
           const [],
       chapterRef: _stringOrNull(json['chapterRef']),
       chapterIndex: _intOrNull(json['chapterIndex']),
+      translateOffline: json['translateOffline'] == true,
+      translationLanguage: _stringOrNull(json['translationLanguage']),
       failure: json['failure'] == null
           ? null
           : DownloadFailureKind.fromId(_stringOrNull(json['failure'])),

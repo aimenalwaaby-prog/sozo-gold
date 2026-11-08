@@ -44,6 +44,7 @@ import 'package:soplay/features/manga/data/chapter_read_store.dart';
 import 'package:soplay/features/manga/data/novel_highlight_store.dart';
 import 'package:soplay/features/manga/domain/reading/novel_highlight.dart';
 import 'package:soplay/features/manga/data/page_tiles.dart';
+import 'package:soplay/features/manga/data/manga_page_translation_service.dart';
 import 'package:soplay/features/manga/presentation/widgets/tiled_zoom.dart';
 import 'package:soplay/features/manga/domain/reading/chapter_progress.dart';
 import 'package:soplay/features/manga/domain/reading/tts_language.dart';
@@ -112,9 +113,12 @@ class _ReaderPageState extends State<ReaderPage> {
   String? _error;
 
   late String _mode;
-  static const MethodChannel _readerKeysChannel =
-      MethodChannel('soplay/reader_keys');
+  static const MethodChannel _readerKeysChannel = MethodChannel(
+    'soplay/reader_keys',
+  );
   late bool _volumePageKeys;
+  Timer? _volumeTurnTimer;
+  int? _queuedVolumeDirection;
 
   /// Whether the reader pairs pages in landscape. See [_spread].
   late bool _spreadPref;
@@ -266,10 +270,12 @@ class _ReaderPageState extends State<ReaderPage> {
     _novelScrollController.addListener(_onNovelScroll);
     if (Platform.isAndroid && !isTvPlatform) {
       _readerKeysChannel.setMethodCallHandler(_onReaderKeyCall);
-      unawaited(_readerKeysChannel.invokeMethod<void>('setReaderState', {
-        'active': true,
-        'enabled': _volumePageKeys,
-      }));
+      unawaited(
+        _readerKeysChannel.invokeMethod<void>('setReaderState', {
+          'active': true,
+          'enabled': _volumePageKeys,
+        }),
+      );
     }
     if (!isDesktopPlatform) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -343,13 +349,16 @@ class _ReaderPageState extends State<ReaderPage> {
     _ttsLifecycle?.dispose();
     if (Platform.isAndroid && !isTvPlatform) {
       _readerKeysChannel.setMethodCallHandler(null);
-      unawaited(_readerKeysChannel.invokeMethod<void>('setReaderState', {
-        'active': false,
-        'enabled': false,
-      }));
+      unawaited(
+        _readerKeysChannel.invokeMethod<void>('setReaderState', {
+          'active': false,
+          'enabled': false,
+        }),
+      );
     }
     _tts?.removeListener(_onTtsChanged);
     _tts?.dispose();
+    _volumeTurnTimer?.cancel();
     _spreadController.dispose();
     _novelScrollController.removeListener(_onNovelScroll);
     _saveProgress();
@@ -380,17 +389,33 @@ class _ReaderPageState extends State<ReaderPage> {
   }
 
   Future<void> _onReaderKeyCall(MethodCall call) async {
-    if (call.method != 'page' || !_volumePageKeys || _loading || _error != null) {
+    if (call.method != 'page' ||
+        !_volumePageKeys ||
+        _loading ||
+        _error != null) {
       return;
     }
     final args = call.arguments;
     final direction = args is Map ? (args['direction'] as num?)?.toInt() : null;
     if (direction == null) return;
-    if (direction > 0) {
-      _goNextPage();
-    } else {
-      _goPrevPage();
+    _queueVolumeTurn(direction > 0 ? 1 : -1);
+  }
+
+  /// Hardware volume events can arrive faster than a page animation. The old
+  /// handler started a new animation for every event, which made long presses
+  /// stutter and occasionally skip the page currently being painted.
+  void _queueVolumeTurn(int direction) {
+    if (_volumeTurnTimer != null) {
+      _queuedVolumeDirection = direction;
+      return;
     }
+    direction > 0 ? _goNextPage() : _goPrevPage();
+    _volumeTurnTimer = Timer(const Duration(milliseconds: 180), () {
+      _volumeTurnTimer = null;
+      final next = _queuedVolumeDirection;
+      _queuedVolumeDirection = null;
+      if (next != null && mounted) _queueVolumeTurn(next);
+    });
   }
 
   Future<void> _setVolumePageKeys(bool enabled) async {
@@ -657,7 +682,11 @@ class _ReaderPageState extends State<ReaderPage> {
 
   void _jumpVerticalTo(int page) {
     if (!_itemScrollController.isAttached || _pageCount == 0) return;
-    _itemScrollController.jumpTo(index: page.clamp(0, _pageCount - 1));
+    _itemScrollController.scrollTo(
+      index: page.clamp(0, _pageCount - 1),
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   /// Scrolls a freshly loaded novel chapter to where the reader left it.
@@ -2285,15 +2314,6 @@ class _ReaderPageState extends State<ReaderPage> {
       );
 
   Widget _downloadButton(EpisodeEntity ch) {
-    if (_html != null) {
-      return Tooltip(
-        message: 'manga.novel_download_unavailable'.tr(),
-        child: const IconButton(
-          icon: Icon(Icons.download_outlined, color: Colors.white38),
-          onPressed: null,
-        ),
-      );
-    }
     final id = DownloadRequest.mangaChapterId(
       contentUrl: widget.args.contentUrl,
       provider: widget.args.provider,
@@ -2322,19 +2342,65 @@ class _ReaderPageState extends State<ReaderPage> {
           );
         }
         final done = _localChapter || status == DownloadStatus.completed;
-        return IconButton(
-          icon: Icon(
-            done ? Icons.download_done_rounded : Icons.download_outlined,
-            color: Colors.white,
+        return GestureDetector(
+          onLongPress: done ? null : _downloadWithTranslationChoice,
+          child: Tooltip(
+            message: done
+                ? 'general.downloaded'.tr()
+                : 'manga.download_translation_hint'.tr(),
+            child: IconButton(
+              icon: Icon(
+                done ? Icons.download_done_rounded : Icons.download_outlined,
+                color: Colors.white,
+              ),
+              onPressed: done ? null : _downloadCurrentChapter,
+            ),
           ),
-          onPressed: done ? null : _downloadCurrentChapter,
         );
       },
     );
   }
 
-  Future<void> _downloadCurrentChapter() async {
-    if (_pages.isEmpty) return;
+  Future<bool?> _askOfflineTranslation() {
+    var enabled = false;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Text('manga.download_title'.tr()),
+            content: CheckboxListTile(
+              value: enabled,
+              contentPadding: EdgeInsets.zero,
+              title: Text('manga.download_translation'.tr()),
+              subtitle: Text('manga.download_translation_desc'.tr()),
+              onChanged: (value) =>
+                  setDialogState(() => enabled = value == true),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('general.cancel'.tr()),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(enabled),
+                child: Text('general.download'.tr()),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _downloadWithTranslationChoice() async {
+    final translateOffline = await _askOfflineTranslation();
+    if (translateOffline == null || !mounted) return;
+    await _downloadCurrentChapter(translateOffline: translateOffline);
+  }
+
+  Future<void> _downloadCurrentChapter({bool translateOffline = false}) async {
+    if (_pages.isEmpty && _html == null) return;
     final ch = widget.args.chapters[_chapterIndex];
     // The pages are already resolved on screen, so they travel with the
     // request rather than being fetched again — a chapter's page urls are
@@ -2355,6 +2421,9 @@ class _ReaderPageState extends State<ReaderPage> {
               if (page.cookie?.isNotEmpty == true) 'Cookie': page.cookie!,
             },
         ],
+        chapterHtml: _html,
+        translateOffline: translateOffline,
+        translationLanguage: Localizations.localeOf(context).languageCode,
         chapterRef: ch.mediaRef,
         chapterIndex: _chapterIndex,
         episodeNumber: ch.episode,
@@ -3165,6 +3234,10 @@ class _PageImageState extends State<_PageImage> {
   /// anything twice. Null until then, which is the same thing as "not zoomable
   /// yet".
   String? _sourcePath;
+  MangaPageTranslation? _translation;
+  bool _translating = false;
+  bool _showOriginal = false;
+  String? _translationError;
 
   @override
   void initState() {
@@ -3208,6 +3281,104 @@ class _PageImageState extends State<_PageImage> {
       widget.page.headers,
       if (cookie != null && cookie.isNotEmpty) {'Cookie': cookie},
     ]);
+  }
+
+  Future<void> _translatePage(BuildContext context) async {
+    if (_translating || _translation != null) return;
+    setState(() {
+      _translating = true;
+      _translationError = null;
+    });
+    try {
+      final language = Localizations.localeOf(context).languageCode;
+      final localPath = widget.page.imageUrl;
+      if (!localPath.startsWith('http')) {
+        final offline = await MangaPageTranslationService.readOffline(
+          imagePath: localPath,
+          targetLanguage: language.isEmpty ? 'ar' : language,
+        );
+        if (offline != null) {
+          if (mounted) setState(() => _translation = offline);
+          return;
+        }
+      }
+      final result = await MangaPageTranslationService.instance.translatePage(
+        page: widget.page,
+        headers: _imageHeaders,
+        targetLanguage: language.isEmpty ? 'ar' : language,
+      );
+      if (mounted) setState(() => _translation = result);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _translationError = error.toString());
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(
+            _translationError!.replaceFirst('Exception: ', ''),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _translating = false);
+    }
+  }
+
+  Widget _translatedCanvas(Widget image, double width) {
+    final translation = _translation;
+    if (translation == null || _showOriginal) return image;
+    final scale = width / translation.imageSize.width;
+    return AspectRatio(
+      aspectRatio: translation.imageSize.aspectRatio,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          image,
+          IgnorePointer(
+            child: Stack(
+              children: [
+                for (final region in translation.regions)
+                  Positioned(
+                    left: region.bounds.left * scale,
+                    top: region.bounds.top * scale,
+                    width: (region.bounds.width * scale).clamp(28.0, width),
+                    height: (region.bounds.height * scale).clamp(24.0, 180.0),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.78),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: _accent.withValues(alpha: 0.8),
+                          width: 1,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            region.translation,
+                            textAlign: TextAlign.center,
+                            maxLines: 4,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              height: 1.15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -3260,16 +3431,79 @@ class _PageImageState extends State<_PageImage> {
               errorWidget: (_, _, _) => _errorTile(width),
             );
 
-      if (!widget.zoomable) return img;
-      // Zoomed, the image above is a bitmap decoded at column width being
-      // magnified — which is exactly when a dense page or small lettering turns
-      // to mush. [TiledZoom] re-reads the part that is on screen from the file
-      // at the size it is being shown at, and falls back to precisely this
-      // InteractiveViewer wherever it cannot.
-      return TiledZoom(
-        sourcePath: _sourcePath,
-        maxScale: 4,
-        child: SizedBox(width: width, child: img),
+      final canvas = _translatedCanvas(img, width);
+      final page = !widget.zoomable
+          ? canvas
+          : TiledZoom(
+              sourcePath: _sourcePath,
+              maxScale: 4,
+              child: SizedBox(width: width, child: canvas),
+            );
+      return GestureDetector(
+        onLongPressStart: _translation == null
+            ? null
+            : (_) => setState(() => _showOriginal = true),
+        onLongPressEnd: _translation == null
+            ? null
+            : (_) => setState(() => _showOriginal = false),
+        child: Stack(
+          children: [
+            page,
+            if (_translation == null)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Material(
+                  color: Colors.black.withValues(alpha: 0.58),
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  child: IconButton(
+                    tooltip: 'manga.translate_page'.tr(),
+                    icon: _translating
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.translate_rounded,
+                            color: Colors.white,
+                          ),
+                    onPressed: _translating
+                        ? null
+                        : () => _translatePage(context),
+                  ),
+                ),
+              ),
+            if (_translation != null && !_showOriginal)
+              Positioned(
+                left: 10,
+                top: 12,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.62),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      'manga.translation_hold_original'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       );
     },
   );

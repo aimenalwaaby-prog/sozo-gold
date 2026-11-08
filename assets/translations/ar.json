@@ -1340,7 +1340,15 @@
     "highlights": "التظليلات",
     "remove_highlight": "إزالة التظليل",
     "highlight_note": "أضف ملاحظة (اختياري)",
-    "no_highlights": "لا توجد تظليلات بعد. حدّد نصًا واختر «تظليل»."
+    "no_highlights": "لا توجد تظليلات بعد. حدّد نصًا واختر «تظليل».",
+    "translate_page": "ترجمة الصفحة",
+    "translation_hold_original": "اضغط مطوّلًا لإظهار الأصل",
+    "translating_page": "جارٍ ترجمة الصفحة…",
+    "download_title": "تنزيل الفصل",
+    "download_translation": "تنزيل الترجمة معه",
+    "download_translation_desc": "يُترجم النص أثناء الاتصال ويحفظه داخل الفصل ليعمل دون إنترنت."
+    ,"download_translation_hint": "اضغط مطولًا لتنزيل الترجمة أيضًا",
+    "downloaded": "تم التنزيل"
   },
   "cloudflare": {
     "title": "تأكيد أنك لست روبوتاً",

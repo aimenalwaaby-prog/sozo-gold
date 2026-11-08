@@ -34,6 +34,8 @@ class DownloadItem {
     this.episodeLabel,
     this.pageUrls = const [],
     this.chapterHtml,
+    this.translateOffline = false,
+    this.translationLanguage,
     this.imageHeaders = const [],
     this.chapterRef,
     this.chapterIndex,
@@ -118,6 +120,8 @@ class DownloadItem {
   /// Null until resolved, and null forever for a comic — which is what lets
   /// the transfer tell the two shapes apart without asking the provider again.
   final String? chapterHtml;
+  final bool translateOffline;
+  final String? translationLanguage;
   final List<Map<String, String>> imageHeaders;
   final String? chapterRef;
   final int? chapterIndex;
@@ -190,6 +194,8 @@ class DownloadItem {
     int? sizeBytes,
     List<String>? pageUrls,
     String? chapterHtml,
+    bool? translateOffline,
+    String? translationLanguage,
     List<Map<String, String>>? imageHeaders,
     Object? failure = _unset,
     String? failureDetail,
@@ -219,6 +225,8 @@ class DownloadItem {
     episodeLabel: episodeLabel,
     pageUrls: pageUrls ?? this.pageUrls,
     chapterHtml: chapterHtml ?? this.chapterHtml,
+    translateOffline: translateOffline ?? this.translateOffline,
+    translationLanguage: translationLanguage ?? this.translationLanguage,
     imageHeaders: imageHeaders ?? this.imageHeaders,
     chapterRef: chapterRef,
     chapterIndex: chapterIndex,

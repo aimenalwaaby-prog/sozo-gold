@@ -18,6 +18,7 @@ import 'package:soplay/features/download/data/datasources/download_local_data_so
 import 'package:soplay/features/download/data/datasources/download_native_data_source.dart';
 import 'package:soplay/features/download/data/datasources/download_transfer_data_source.dart';
 import 'package:soplay/features/download/data/epub_builder.dart';
+import 'package:soplay/features/download/data/offline_translation_service.dart';
 import 'package:soplay/features/download/data/models/download_item_model.dart';
 import 'package:soplay/features/download/data/storage/download_storage.dart';
 import 'package:soplay/features/download/domain/download_layout.dart';
@@ -236,6 +237,9 @@ class DownloadRepositoryImpl implements DownloadRepository {
       episodeNumber: request.episodeNumber,
       episodeLabel: request.episodeLabel,
       pageUrls: request.pageUrls,
+      chapterHtml: request.chapterHtml,
+      translateOffline: request.translateOffline,
+      translationLanguage: request.translationLanguage,
       imageHeaders: request.imageHeaders,
       chapterRef: request.chapterRef,
       chapterIndex: request.chapterIndex,
@@ -632,6 +636,10 @@ class DownloadRepositoryImpl implements DownloadRepository {
         failure: null,
         failureDetail: '',
       ),
+    );
+    await const OfflineTranslationService().translate(
+      done,
+      _storage.dirOf(done.id),
     );
     await _local.put(done);
     await _writeSidecar(done);

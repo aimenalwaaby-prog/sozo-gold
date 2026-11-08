@@ -26,6 +26,9 @@ class DownloadRequest {
     this.episodeLabel,
     this.pageUrls = const [],
     this.imageHeaders = const [],
+    this.chapterHtml,
+    this.translateOffline = false,
+    this.translationLanguage,
     this.chapterRef,
     this.chapterIndex,
     this.subtitles = const [],
@@ -84,6 +87,9 @@ class DownloadRequest {
     int? chapterIndex,
     int? episodeNumber,
     String? episodeLabel,
+    String? chapterHtml,
+    bool translateOffline = false,
+    String? translationLanguage,
   }) => DownloadRequest(
     id: mangaChapterId(
       contentUrl: contentUrl,
@@ -102,6 +108,9 @@ class DownloadRequest {
     episodeLabel: episodeLabel,
     pageUrls: pageUrls,
     imageHeaders: imageHeaders,
+    chapterHtml: chapterHtml,
+    translateOffline: translateOffline,
+    translationLanguage: translationLanguage,
     chapterRef: chapterRef,
     chapterIndex: chapterIndex,
   );
@@ -131,6 +140,9 @@ class DownloadRequest {
   final String? episodeLabel;
   final List<String> pageUrls;
   final List<Map<String, String>> imageHeaders;
+  final String? chapterHtml;
+  final bool translateOffline;
+  final String? translationLanguage;
   final String? chapterRef;
   final int? chapterIndex;
 

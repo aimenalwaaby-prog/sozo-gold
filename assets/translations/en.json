@@ -1340,7 +1340,15 @@
     "highlights": "Highlights",
     "remove_highlight": "Remove highlight",
     "highlight_note": "Add a note (optional)",
-    "no_highlights": "No highlights yet. Select some text and choose Highlight."
+    "no_highlights": "No highlights yet. Select some text and choose Highlight.",
+    "translate_page": "Translate page",
+    "translation_hold_original": "Hold to show original",
+    "translating_page": "Translating page…",
+    "download_title": "Download chapter",
+    "download_translation": "Download translation too",
+    "download_translation_desc": "Translate while online and keep it with the chapter for offline reading."
+    ,"download_translation_hint": "Long-press to download the translation too",
+    "downloaded": "Downloaded"
   },
   "cloudflare": {
     "title": "Verify you're human",
