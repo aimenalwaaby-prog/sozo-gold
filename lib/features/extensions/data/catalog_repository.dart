@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import 'package:soplay/features/extensions/domain/entities/catalog_source_entity.dart';
 import 'package:soplay/features/extensions/domain/entities/extension_repo_entity.dart';
+import 'package:soplay/features/sources/domain/watch_source_policy.dart';
 
 /// Reads the server-harvested source catalog.
 ///
@@ -58,6 +59,13 @@ class CatalogRepository {
               .whereType<Map>()
               .map((e) => CatalogSourceEntity.fromJson(Map<String, dynamic>.from(e)))
               .whereType<CatalogSourceEntity>()
+              .where((source) => WatchSourcePolicy.allowsCatalogItem(
+                    name: source.name,
+                    id: source.id,
+                    repo: source.repoName,
+                    lang: source.lang,
+                    nsfw: source.nsfw,
+                  ))
               .toList()
           : const [],
       page: (data is Map ? (data['page'] as num?)?.toInt() : null) ?? page,

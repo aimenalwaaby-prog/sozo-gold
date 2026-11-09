@@ -16,6 +16,7 @@ import 'package:soplay/features/profile/domain/entities/provider_entity.dart';
 import 'package:soplay/features/profile/domain/entities/providers_snapshot.dart';
 import 'package:soplay/features/profile/domain/usecases/get_providers_usecase.dart';
 import 'package:soplay/features/sources/domain/watch_source_policy.dart';
+import 'package:soplay/features/sources/data/watch_server_registry.dart';
 import 'provider_event.dart';
 import 'provider_state.dart';
 
@@ -61,6 +62,10 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
     if (previous is! ProviderLoaded) {
       emit(ProviderLoading());
     }
+
+    // Curated video repositories are installed internally before providers
+    // enumerate. The user sees them as servers, not as a setup task.
+    await WatchServerRegistry.ensureInstalled();
 
     // The on-device plugin hosts are loaded CONCURRENTLY with the backend list,
     // never after it. They talk to Kotlin over a platform channel and need no
@@ -293,7 +298,6 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
     // a hidden source is also one the resolver will not keep selected. Turning
     // the setting off therefore retires a dangling 18+ selection on the next
     // load instead of leaving it live but invisible.
-    final allowNsfw = hiveService.showAdultContent;
     try {
       final list = await MangaChannel.ensureLoaded();
       for (final e in list) {
@@ -301,7 +305,7 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
         final m = Map<String, dynamic>.from(e);
         final id = (m['id'] as String?)?.trim() ?? '';
         if (id.isEmpty) continue;
-        if (m['nsfw'] == true && !allowNsfw) continue;
+        if (m['nsfw'] == true) continue;
         into.add(
           ProviderModel(
             id: id,
@@ -333,10 +337,9 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
   /// "show 18+ sources", not one per ecosystem.
   Future<void> _appendMangayomiProviders(List<ProviderEntity> into) async {
     if (!MangayomiBridge.isSupported) return;
-    final allowNsfw = hiveService.showAdultContent;
     try {
       final list = getIt<MangayomiBridge>().listProviders(
-        includeNsfw: allowNsfw,
+        includeNsfw: false,
       );
       for (final m in list) {
         final id = (m['id'] as String?)?.trim() ?? '';
