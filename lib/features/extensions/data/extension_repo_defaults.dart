@@ -58,6 +58,52 @@ class ExtensionRepoDefaults {
       order: 2,
     ),
 
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.cloudstream,
+      name: 'Arabic Re 3arabi',
+      description: 'Arabic CloudStream providers',
+      url:
+          'https://raw.githubusercontent.com/Abodabodd/re-3arabi/refs/heads/main/repo.json',
+      order: 3,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.cloudstream,
+      name: 'Arabic CloudStream',
+      description: 'Arabic CloudStream providers',
+      url:
+          'https://raw.githubusercontent.com/dhomred/cloudstream-extensions-arabic/master/repo.json',
+      order: 4,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.cloudstream,
+      name: 'Arabico',
+      description: 'Arabic CloudStream providers',
+      url: 'https://raw.githubusercontent.com/aymanbest/Arabico/main/repo.json',
+      order: 5,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.cloudstream,
+      name: 'TotalArab',
+      description: 'Arabic CloudStream providers',
+      url: 'https://raw.githubusercontent.com/rhoulou/TotalArab/main/repo.json',
+      order: 6,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.cloudstream,
+      name: 'CloudStream Arab',
+      description: 'Arabic CloudStream providers',
+      url: 'https://codeberg.org/cloudstream/arab/raw/branch/builds/repo.json',
+      order: 7,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.cloudstream,
+      name: 'Abu Repo',
+      description: 'Arabic CloudStream providers',
+      url:
+          'https://raw.githubusercontent.com/alyabroudy1/Abu-Repo/builds/repo.json',
+      order: 8,
+    ),
+
     // --- Aniyomi (anime) --------------------------------------------------
     ExtensionRepoEntity(
       kind: ExtensionRepoKind.aniyomi,
@@ -75,6 +121,67 @@ class ExtensionRepoDefaults {
       url:
           'https://raw.githubusercontent.com/Secozzi/aniyomi-extensions/repo/index.min.json',
       order: 1,
+    ),
+
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.aniyomi,
+      name: 'Salman Bappi Anime',
+      description: 'Anime viewing sources',
+      url:
+          'https://raw.githubusercontent.com/salmanbappi/extensions-repo/main/index.min.json',
+      order: 2,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.aniyomi,
+      name: 'MSR Anime',
+      description: 'Anime viewing sources',
+      url:
+          'https://raw.githubusercontent.com/msrofficial/anime-repo/repo/index.min.json',
+      order: 3,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.aniyomi,
+      name: 'Aniyomi Addons',
+      description: 'Anime viewing sources',
+      url:
+          'https://raw.githubusercontent.com/aniyomi-addons/anime-extensions-repo/repo/index.min.json',
+      order: 4,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.aniyomi,
+      name: 'Kholbi Anime',
+      description: 'Anime viewing sources',
+      url:
+          'https://raw.githubusercontent.com/Kholbi/aniyomiext/repo/index.min.json',
+      order: 5,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.aniyomi,
+      name: 'Confused Creature Anime',
+      description: 'Anime viewing sources',
+      url:
+          'https://raw.githubusercontent.com/Confused-Creature-180/aniyomi-extensions/repo/index.min.json',
+      order: 6,
+    ),
+
+    // --- Mangayomi anime viewing ------------------------------------------
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.mangayomi,
+      name: 'M2K3A Anime',
+      description: 'Mangayomi anime viewing sources only',
+      url: 'https://m2k3a.github.io/mangayomi-extensions/anime_index.json',
+      animeUrl: 'https://m2k3a.github.io/mangayomi-extensions/anime_index.json',
+      order: 20,
+    ),
+    ExtensionRepoEntity(
+      kind: ExtensionRepoKind.mangayomi,
+      name: 'Kashrtx Anime',
+      description: 'Mangayomi anime viewing sources only',
+      url:
+          'https://raw.githubusercontent.com/kashrtx/yomi-extensions/refs/heads/main/anime_index.json',
+      animeUrl:
+          'https://raw.githubusercontent.com/kashrtx/yomi-extensions/refs/heads/main/anime_index.json',
+      order: 21,
     ),
 
     // --- Manga ------------------------------------------------------------

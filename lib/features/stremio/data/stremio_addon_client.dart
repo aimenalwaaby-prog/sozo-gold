@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'stremio_addon_models.dart';
+import 'package:soplay/features/sources/domain/watch_source_policy.dart';
 import 'stremio_addon_store.dart';
 
 /// Thrown for invalid addon URLs/manifests or malformed protocol responses.
@@ -46,8 +47,44 @@ class StremioAddonClient {
     final uri = normalizeManifestUrl(url);
     final json = await _getJson(uri);
     final manifest = validateManifest(json);
+    final hints = json['behaviorHints'];
+    final adult = hints is Map && hints['adult'] == true;
+    if (!WatchSourcePolicy.allowsCatalogItem(
+      name: manifest.name,
+      id: manifest.id,
+      repo: uri.host,
+      lang: '',
+      nsfw: adult,
+    )) {
+      throw const StremioAddonException('Adult or blocked addons are not allowed.');
+    }
     await _store.put(manifest.id, {'url': uri.toString(), 'manifest': json});
     return manifest;
+  }
+
+  /// Official viewing addons sourced from the Stremio official-addons index.
+  /// The local-file addon is intentionally excluded; it cannot run in Sozo.
+  static const officialViewingAddonUrls = <String>[
+    'https://v3-cinemeta.strem.io/manifest.json',
+    'https://v3-channels.strem.io/manifest.json',
+    'https://watchhub.strem.io/manifest.json',
+    'https://caching.stremio.net/publicdomainmovies.now.sh/manifest.json',
+    'https://opensubtitles-v3.strem.io/manifest.json',
+    'https://opensubtitles.strem.io/stremio/v1',
+  ];
+
+  /// Installs or refreshes the safe official addons once the page is opened.
+  Future<int> ensureOfficialViewingAddons() async {
+    var count = 0;
+    for (final url in officialViewingAddonUrls) {
+      try {
+        await addOrUpdate(url);
+        count++;
+      } on Object {
+        // One unavailable official addon must not hide the others.
+      }
+    }
+    return count;
   }
 
   /// Read previously stored raw addon record by manifest id.

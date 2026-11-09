@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:soplay/core/theme/app_colors.dart';
@@ -31,6 +33,22 @@ class _VegaSourcesPageState extends State<VegaSourcesPage> {
     _url.dispose();
     _search.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_ensureRequestedRepository());
+  }
+
+  Future<void> _ensureRequestedRepository() async {
+    if (_store.repositories.isNotEmpty) return;
+    try {
+      await _store.addRepository('https://github.com/rohan-js/vega-stremio-addon');
+      if (mounted) setState(() => _message = 'Vega repository loaded.');
+    } catch (_) {
+      // The manual URL field remains available when the remote repo is offline.
+    }
   }
 
   bool _matches(VegaProvider provider) {
