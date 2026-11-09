@@ -5,7 +5,6 @@ import 'package:soplay/features/extensions/data/extension_repo_defaults.dart';
 import 'package:soplay/features/extensions/data/mangayomi_repo_store.dart';
 import 'package:soplay/features/extensions/domain/entities/catalog_source_entity.dart';
 import 'package:soplay/features/extensions/domain/entities/extension_repo_entity.dart';
-import 'package:soplay/features/sources/domain/watch_source_policy.dart';
 
 /// Resolves old catalog responses too, without guessing paths for custom repos.
 String sourceInstallUrl(CatalogSourceEntity source) {
@@ -27,15 +26,6 @@ Future<int> installCatalogSource(
   CatalogSourceEntity source,
   MangayomiRepoStore store,
 ) async {
-  if (!WatchSourcePolicy.allowsCatalogItem(
-    name: source.name,
-    id: source.id,
-    repo: source.repoName,
-    lang: source.lang,
-    nsfw: source.nsfw,
-  )) {
-    throw StateError('Adult or blocked sources are not allowed');
-  }
   final url = sourceInstallUrl(source);
   Map<String, dynamic> result;
   String countKey;

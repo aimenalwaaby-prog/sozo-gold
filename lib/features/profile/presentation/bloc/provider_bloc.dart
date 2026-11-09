@@ -293,6 +293,7 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
     // a hidden source is also one the resolver will not keep selected. Turning
     // the setting off therefore retires a dangling 18+ selection on the next
     // load instead of leaving it live but invisible.
+    final allowNsfw = hiveService.showAdultContent;
     try {
       final list = await MangaChannel.ensureLoaded();
       for (final e in list) {
@@ -300,7 +301,7 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
         final m = Map<String, dynamic>.from(e);
         final id = (m['id'] as String?)?.trim() ?? '';
         if (id.isEmpty) continue;
-        if (m['nsfw'] == true) continue;
+        if (m['nsfw'] == true && !allowNsfw) continue;
         into.add(
           ProviderModel(
             id: id,
@@ -332,9 +333,10 @@ class ProviderBloc extends Bloc<ProviderEvent, ProviderState> {
   /// "show 18+ sources", not one per ecosystem.
   Future<void> _appendMangayomiProviders(List<ProviderEntity> into) async {
     if (!MangayomiBridge.isSupported) return;
+    final allowNsfw = hiveService.showAdultContent;
     try {
       final list = getIt<MangayomiBridge>().listProviders(
-        includeNsfw: false,
+        includeNsfw: allowNsfw,
       );
       for (final m in list) {
         final id = (m['id'] as String?)?.trim() ?? '';

@@ -90,7 +90,7 @@ class ExtensionRepoRepository {
   List<ExtensionRepoEntity> _visible(
     List<ExtensionRepoEntity> list,
     bool nsfwAllowed,
-  ) => list.where((r) => !r.nsfw).toList();
+  ) => nsfwAllowed ? list : list.where((r) => !r.nsfw).toList();
 
   ExtensionRepoEntity? _fromJson(Map<String, dynamic> json) {
     final kind = ExtensionRepoKind.parse(json['kind'] as String?);

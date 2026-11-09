@@ -49,7 +49,9 @@ class _MangayomiSourcesPageState extends State<MangayomiSourcesPage> {
     // sorting the branch that passed the original list straight through blew up
     // the whole page for any user with adult sources enabled and no sources yet.
     final all = _store.sources();
-    final visible = all.where((s) => !s.isNsfw).toList();
+    final visible = _hive.showAdultContent
+        ? all.toList()
+        : all.where((s) => !s.isNsfw).toList();
     visible.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return visible;
   }
